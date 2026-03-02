@@ -14,7 +14,7 @@ function PandCoLogo({ className }: { className?: string }) {
       viewBox="0 0 85 18"
       width="85"
       height="18"
-      aria-label="Ishtyle"
+      aria-label="Ishtile"
       className={className}
       fill="currentColor"
     >
@@ -26,7 +26,7 @@ function PandCoLogo({ className }: { className?: string }) {
         fontSize="16"
         letterSpacing="1"
       >
-        ISHTYLE
+        ISHTILE
       </text>
     </svg>
   );
