@@ -1,10 +1,21 @@
 export interface CartItem {
-  productId: string;
+  id: number;
+  variantId: number;
   quantity: number;
-  price: number;
+  productName: string;
+  variantSize: string;
+  variantColor: string | null;
+  variantSku: string;
+  unitPrice: number;
+  lineTotal: number;
+  imageUrl: string | null;
+  availableStock: number;
 }
 
 export interface Cart {
+  id: number;
+  userId: number;
   items: CartItem[];
-  total: number;
+  subtotal: number;
+  totalItems: number;
 }

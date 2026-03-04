@@ -58,7 +58,7 @@ export default function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const headerBg = scrolled ? 'bg-[#1C1A19]' : 'bg-transparent';
+  const headerBg = scrolled ? 'bg-[var(--brand-dark)]' : 'bg-transparent';
 
   return (
     <header

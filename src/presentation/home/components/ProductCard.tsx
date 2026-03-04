@@ -13,6 +13,8 @@ export interface ProductCardData {
   slug: string;
   name: string;
   category: string;
+  /** Domain category ID — used for client-side filtering */
+  categoryId?: number;
   price: number;
   salePrice?: number;
   images: string[];
@@ -124,7 +126,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         <div className="flex items-center gap-2">
           {formattedSalePrice ? (
             <>
-              <span className="text-sm font-medium text-[#A58C69]">{formattedSalePrice}</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--brand-gold)' }}>{formattedSalePrice}</span>
               <span className="text-sm text-muted-foreground line-through">{formattedPrice}</span>
             </>
           ) : (

@@ -1,4 +1,6 @@
-// Use case: fetch a single product by slug
-export async function getProductBySlug(slug: string) {
-  // TODO: inject repository
+import { productRepository } from '@/lib/di';
+import type { Product } from '@/domain/product/product.entity';
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  return productRepository.getBySlug(slug);
 }

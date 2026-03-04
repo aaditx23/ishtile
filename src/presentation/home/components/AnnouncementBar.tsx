@@ -15,7 +15,7 @@ export default function AnnouncementBar({ text }: AnnouncementBarProps) {
         fontSize: '0.875rem',
         padding: '0.5rem 0',
         color: 'white',
-        backgroundColor: 'var(--color-brand-dark)',
+        backgroundColor: 'var(--brand-dark)',
       }}
     >
       {text}

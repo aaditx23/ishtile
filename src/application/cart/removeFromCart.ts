@@ -1,4 +1,5 @@
-// Use case: remove item from cart
-export async function removeFromCart(productId: string) {
-  // TODO
+import { cartRepository } from '@/lib/di';
+
+export async function removeFromCart(itemId: number): Promise<void> {
+  await cartRepository.removeItem(itemId);
 }

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 
 interface CountdownBannerProps {
-  targetDate?: Date | null;
+  /** Pass an ISO-8601 date string from Server Components — Date objects are not serializable across the server/client boundary. */
+  targetDate?: string | null;
 }
 
 type TimeParts = { days: number; hours: number; minutes: number; seconds: number };
@@ -30,9 +31,11 @@ export default function CountdownBanner({ targetDate }: CountdownBannerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeParts | null>(null);
 
   useEffect(() => {
-    if (!targetDate || targetDate <= new Date()) return;
-    setTimeLeft(getTimeLeft(targetDate));
-    const id = setInterval(() => setTimeLeft(getTimeLeft(targetDate!)), 1000);
+    if (!targetDate) return;
+    const target = new Date(targetDate);
+    if (target <= new Date()) return;
+    setTimeLeft(getTimeLeft(target));
+    const id = setInterval(() => setTimeLeft(getTimeLeft(target)), 1000);
     return () => clearInterval(id);
   }, [targetDate]);
 
@@ -48,7 +51,7 @@ export default function CountdownBanner({ targetDate }: CountdownBannerProps) {
         gap: '1.5rem',
         padding: '1.5rem 0',
         color: 'white',
-        backgroundColor: 'var(--color-brand-dark)',
+        backgroundColor: 'var(--brand-dark)',
       }}
     >
       {[

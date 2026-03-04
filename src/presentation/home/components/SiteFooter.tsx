@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { FiInstagram, FiFacebook, FiTwitter, FiYoutube } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import NewsletterForm from './NewsletterForm';
 
 const shopLinks = [
   { label: "Men's",       href: '/collections/men' },
@@ -56,7 +56,7 @@ function FooterColumn({ title, links }: { title: string; links: { label: string;
 
 export default function SiteFooter() {
   return (
-    <footer style={{ backgroundColor: '#1C1A19', color: '#fff', padding:'1rem'}}>
+    <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>
       {/* Main grid */}
       <div className="px-6 md:px-12 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
@@ -76,21 +76,7 @@ export default function SiteFooter() {
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white">
                 Stay in the loop
               </p>
-              <form onSubmit={(e) => e.preventDefault()} className="flex gap-0">
-                <Input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 rounded-l-full rounded-r-none border-0 bg-neutral-800 text-white placeholder:text-neutral-500 focus-visible:ring-0 min-w-0 h-9"
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="rounded-l-none rounded-r-full bg-[#A58C69] hover:bg-[#8f6f4a] text-white text-xs uppercase tracking-widest shrink-0 h-9"
-                  style={{padding:'0.5rem'}}
-                >
-                  Join
-                </Button>
-              </form>
+              <NewsletterForm />
             </div>
             {/* Socials */}
             <div className="flex gap-3">
