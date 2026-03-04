@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'pand.co' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'ishtile-backend.onrender.com' },
     ],
   },
   async headers() {
