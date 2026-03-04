@@ -123,14 +123,28 @@ function VariantRow({
             {(['size', 'color', 'sku', 'price'] as const).map((k) => (
               <div key={k}>
                 <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.2rem' }}>{k}</p>
-                <Input
-                  value={form[k]}
-                  placeholder={k}
-                  onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
-                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
-                  disabled={busy}
-                  type={k === 'price' ? 'number' : 'text'}
-                />
+                {k === 'size' ? (
+                  <select
+                    value={form.size}
+                    onChange={(e) => setForm((p) => ({ ...p, size: e.target.value }))}
+                    disabled={busy}
+                    style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.78rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                  >
+                    <option value="" disabled hidden>Size</option>
+                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
+                      <option key={sz} value={sz}>{sz}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    value={form[k]}
+                    placeholder={k}
+                    onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
+                    style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
+                    disabled={busy}
+                    type={k === 'price' ? 'number' : 'text'}
+                  />
+                )}
               </div>
             ))}
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.78rem', cursor: 'pointer' }}>
@@ -138,7 +152,7 @@ function VariantRow({
               Active
             </label>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Button onClick={save} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem', backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+              <Button onClick={save} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>
                 {busy ? '…' : 'Save'}
               </Button>
               <Button variant="outline" onClick={() => setEditing(false)} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>Cancel</Button>
@@ -154,7 +168,7 @@ function VariantRow({
       <td style={cellStyle}>{variant.size}</td>
       <td style={cellStyle}>{variant.color ?? '—'}</td>
       <td style={{ ...cellStyle, fontFamily: 'monospace', fontSize: '0.7rem' }}>{variant.sku}</td>
-      <td style={{ ...cellStyle, fontWeight: 700 }}>৳{variant.price.toFixed(0)}</td>
+      <td style={{ ...cellStyle, fontWeight: 700 }}>৳{Number(variant.price || 0).toFixed(0)}</td>
       <td style={cellStyle}><InvCell variantId={variant.id} /></td>
       <td style={cellStyle}>
         <button
@@ -233,18 +247,32 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
             {(['size', 'color', 'sku', 'price'] as const).map((k) => (
               <div key={k}>
                 <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.2rem' }}>{k}</p>
-                <Input
-                  value={newForm[k]}
-                  placeholder={k}
-                  onChange={(e) => setNewForm((p) => ({ ...p, [k]: e.target.value }))}
-                  style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
-                  disabled={busy}
-                  type={k === 'price' ? 'number' : 'text'}
-                />
+                {k === 'size' ? (
+                  <select
+                    value={newForm.size}
+                    onChange={(e) => setNewForm((p) => ({ ...p, size: e.target.value }))}
+                    disabled={busy}
+                    style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.78rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                  >
+                    <option value="" disabled hidden>Size</option>
+                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
+                      <option key={sz} value={sz}>{sz}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    value={newForm[k]}
+                    placeholder={k}
+                    onChange={(e) => setNewForm((p) => ({ ...p, [k]: e.target.value }))}
+                    style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
+                    disabled={busy}
+                    type={k === 'price' ? 'number' : 'text'}
+                  />
+                )}
               </div>
             ))}
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-              <Button onClick={handleAdd} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem', backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+              <Button onClick={handleAdd} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>
                 {busy ? '…' : 'Add'}
               </Button>
               <Button variant="outline" onClick={() => setAdding(false)} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>Cancel</Button>

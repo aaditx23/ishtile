@@ -25,10 +25,6 @@ const USER_LINKS = [
 
 const ADMIN_LINKS = [
   { label: 'Dashboard', href: '/admin' },
-  { label: 'Products',  href: '/admin/products' },
-  { label: 'Orders',    href: '/admin/orders' },
-  { label: 'Analytics', href: '/admin/analytics' },
-  { label: 'Promos',    href: '/admin/promos' },
 ];
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────

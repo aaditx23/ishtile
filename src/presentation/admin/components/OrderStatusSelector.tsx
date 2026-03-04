@@ -87,7 +87,7 @@ export default function OrderStatusSelector({ orderId, currentStatus }: OrderSta
       <Button
         onClick={handleSave}
         disabled={!isDirty || saving}
-        style={{ alignSelf: 'flex-start', backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', minWidth: '9rem' }}
+        style={{ alignSelf: 'flex-start', minWidth: '9rem' }}
       >
         {saving ? 'Saving…' : 'Save Status'}
       </Button>

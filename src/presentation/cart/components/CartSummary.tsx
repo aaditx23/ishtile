@@ -7,7 +7,7 @@ interface CartSummaryProps {
   cart: Cart;
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 /**
  * Order summary sidebar — shows subtotal, item count, and checkout CTA.
@@ -53,8 +53,7 @@ export default function CartSummary({ cart }: CartSummaryProps) {
       <Button
         asChild
         size="lg"
-        className="w-full"
-        style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}
+        className="w-full tracking-[0.08em] uppercase"
       >
         <Link href="/checkout">Proceed to Checkout →</Link>
       </Button>

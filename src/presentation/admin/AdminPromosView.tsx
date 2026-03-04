@@ -148,7 +148,7 @@ function PromoFormModal({
           </label>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
             <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
-            <Button type="submit" disabled={saving} style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+            <Button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save'}
             </Button>
           </div>
@@ -207,12 +207,24 @@ export default function AdminPromosView() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Promos</h1>
-          <Button
+          <button
             onClick={() => { setEditing(undefined); setModalOpen(true); }}
-            style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', fontSize: '0.8rem' }}
+            style={{
+              display:         'inline-flex',
+              alignItems:      'center',
+              gap:             '0.375rem',
+              padding:         '0.5rem 1rem',
+              borderRadius:    '0.5rem',
+              backgroundColor: 'var(--primary)',
+              color:           'var(--on-primary)',
+              border:          'none',
+              fontSize:        '0.8rem',
+              fontWeight:      700,
+              cursor:          'pointer',
+            }}
           >
             + New Promo
-          </Button>
+          </button>
         </div>
 
         <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>

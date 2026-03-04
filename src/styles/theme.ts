@@ -24,170 +24,170 @@
 export interface ColorScheme {
   // ── Brand anchors ────────────────────────────────────────────────────────
   /** Deep warm near-black. Primary surface in header, footer, badges. */
-  brandDark:       string;
+  brandDark: string;
   /** Warm gold. Sale prices, active outlines, accents. */
-  brandGold:       string;
+  brandGold: string;
   /** Slightly darker gold for hover states. */
-  brandGoldHover:  string;
+  brandGoldHover: string;
   /** Deep gold for subtle pressed states. */
-  brandGoldDeep:   string;
+  brandGoldDeep: string;
 
   // ── Surfaces ─────────────────────────────────────────────────────────────
   /** Page background. */
-  background:      string;
+  background: string;
   /** Card / sheet / elevated surface. */
-  surface:         string;
+  surface: string;
   /** Tinted warm surface — product card bg, input fills. */
-  surfaceVariant:  string;
+  surfaceVariant: string;
 
   // ── Content on surfaces ───────────────────────────────────────────────────
   /** Primary text on background. */
-  onBackground:    string;
+  onBackground: string;
   /** Primary text on surface. */
-  onSurface:       string;
+  onSurface: string;
   /** Secondary / muted text. */
-  onSurfaceMuted:  string;
+  onSurfaceMuted: string;
   /** Disabled text. */
   onSurfaceDisabled: string;
 
   // ── Primary action (maps to shadcn --primary) ─────────────────────────────
   /** Button fill, link colour. */
-  primary:         string;
+  primary: string;
   /** Text on primary-coloured surfaces. */
-  onPrimary:       string;
+  onPrimary: string;
 
   // ── Accent (gold — used for highlights, sale prices) ─────────────────────
-  accent:          string;
-  onAccent:        string;
+  accent: string;
+  onAccent: string;
 
   // ── Component tokens ──────────────────────────────────────────────────────
-  border:          string;
-  input:           string;
-  ring:            string;
+  border: string;
+  input: string;
+  ring: string;
 
   // ── Semantic ──────────────────────────────────────────────────────────────
-  destructive:     string;
-  onDestructive:   string;
+  destructive: string;
+  onDestructive: string;
 
   // ── Product-specific ──────────────────────────────────────────────────────
   /** Warm neutral bg behind product images. */
-  productBg:       string;
+  productBg: string;
 }
 
 export interface TypographyScheme {
   /** Base sans-serif stack. */
-  fontSans:          string;
+  fontSans: string;
   /** Wide tracking used on all section labels / nav items (like letterSpacing in Compose). */
-  labelTracking:     string;
+  labelTracking: string;
   /** Tight tracking for heading text. */
-  headingTracking:   string;
+  headingTracking: string;
 }
 
 export interface RadiusScheme {
-  none:   string;
-  xs:     string;
-  sm:     string;
-  md:     string;
-  lg:     string;
-  xl:     string;
-  '2xl':  string;
-  '3xl':  string;
-  full:   string;
+  none: string;
+  xs: string;
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+  '2xl': string;
+  '3xl': string;
+  full: string;
 }
 
 export interface Theme {
-  colors:     ColorScheme;
+  colors: ColorScheme;
   typography: TypographyScheme;
-  radius:     RadiusScheme;
+  radius: RadiusScheme;
 }
 
 // ─── Light ColorScheme ────────────────────────────────────────────────────────
 
 export const LightColorScheme: ColorScheme = {
   // Brand
-  brandDark:         '#1C1A19',
-  brandGold:         '#A58C69',
-  brandGoldHover:    '#8F6F4A',
-  brandGoldDeep:     '#684F40',
+  brandDark: '#1C1A19',
+  brandGold: '#A58C69',
+  brandGoldHover: '#8F6F4A',
+  brandGoldDeep: '#684F40',
 
   // Surfaces
-  background:        '#FFFFFF',
-  surface:           '#FAFAFA',
-  surfaceVariant:    '#F0EDE8',
+  background: '#FFFFFF',
+  surface: '#FAFAFA',
+  surfaceVariant: '#F0EDE8',
 
   // Content
-  onBackground:      '#1C1A19',
-  onSurface:         '#1C1A19',
-  onSurfaceMuted:    '#737373',
+  onBackground: '#1C1A19',
+  onSurface: '#1C1A19',
+  onSurfaceMuted: '#737373',
   onSurfaceDisabled: '#A3A3A3',
 
   // Primary
-  primary:           '#1C1A19',
-  onPrimary:         '#FAFAFA',
+  primary: '#1C1A19',
+  onPrimary: '#FAFAFA',
 
   // Accent
-  accent:            '#A58C69',
-  onAccent:          '#FFFFFF',
+  accent: '#A58C69',
+  onAccent: '#FFFFFF',
 
   // Components
-  border:            '#E5E0D8',
-  input:             '#E5E0D8',
-  ring:              '#A58C69',
+  border: '#E5E0D8',
+  input: '#E5E0D8',
+  ring: '#A58C69',
 
   // Semantic
-  destructive:       '#DC2626',
-  onDestructive:     '#FFFFFF',
+  destructive: '#DC2626',
+  onDestructive: '#FFFFFF',
 
   // Product
-  productBg:         '#F0EDE8',
+  productBg: '#F0EDE8',
 };
 
 // ─── Dark ColorScheme ─────────────────────────────────────────────────────────
 
 export const DarkColorScheme: ColorScheme = {
   // Brand
-  brandDark:         '#1C1A19',
-  brandGold:         '#C4A882',
-  brandGoldHover:    '#A58C69',
-  brandGoldDeep:     '#8F6F4A',
+  brandDark: '#1C1A19',
+  brandGold: '#C4A882',
+  brandGoldHover: '#A58C69',
+  brandGoldDeep: '#8F6F4A',
 
   // Surfaces
-  background:        '#111110',
-  surface:           '#1C1A19',
-  surfaceVariant:    '#2A2826',
+  background: '#111110',
+  surface: '#1C1A19',
+  surfaceVariant: '#2A2826',
 
   // Content
-  onBackground:      '#F5F0E8',
-  onSurface:         '#F5F0E8',
-  onSurfaceMuted:    '#A3A3A3',
+  onBackground: '#F5F0E8',
+  onSurface: '#F5F0E8',
+  onSurfaceMuted: '#A3A3A3',
   onSurfaceDisabled: '#525252',
 
   // Primary
-  primary:           '#F5F0E8',
-  onPrimary:         '#1C1A19',
+  primary: '#F5F0E8',
+  onPrimary: '#1C1A19',
 
   // Accent
-  accent:            '#C4A882',
-  onAccent:          '#1C1A19',
+  accent: '#C4A882',
+  onAccent: '#1C1A19',
 
   // Components
-  border:            '#2E2C2A',
-  input:             '#2E2C2A',
-  ring:              '#C4A882',
+  border: '#2E2C2A',
+  input: '#2E2C2A',
+  ring: '#C4A882',
 
   // Semantic
-  destructive:       '#EF4444',
-  onDestructive:     '#FFFFFF',
+  destructive: '#EF4444',
+  onDestructive: '#FFFFFF',
 
   // Product
-  productBg:         '#2A2826',
+  productBg: '#2A2826',
 };
 
 // ─── Typography (shared across themes) ───────────────────────────────────────
 
 export const IshtileTypography: TypographyScheme = {
-  fontSans:        '"Geist", "Inter", system-ui, -apple-system, sans-serif',
-  labelTracking:   '0.18em',
+  fontSans: '"Geist", "Inter", system-ui, -apple-system, sans-serif',
+  labelTracking: '0.18em',
   headingTracking: '-0.02em',
 };
 
@@ -195,29 +195,29 @@ export const IshtileTypography: TypographyScheme = {
 // Larger values = the modern rounded feel from the product card
 
 export const IshtileRadius: RadiusScheme = {
-  none:  '0px',
-  xs:    '4px',
-  sm:    '8px',
-  md:    '12px',
-  lg:    '16px',
-  xl:    '20px',
+  none: '0px',
+  xs: '4px',
+  sm: '8px',
+  md: '12px',
+  lg: '16px',
+  xl: '20px',
   '2xl': '24px',
   '3xl': '32px',
-  full:  '9999px',
+  full: '9999px',
 };
 
 // ─── Theme objects (analogous to lightColorScheme / darkColorScheme in Compose)
 
 export const LightTheme: Theme = {
-  colors:     LightColorScheme,
+  colors: LightColorScheme,
   typography: IshtileTypography,
-  radius:     IshtileRadius,
+  radius: IshtileRadius,
 };
 
 export const DarkTheme: Theme = {
-  colors:     DarkColorScheme,
+  colors: DarkColorScheme,
   typography: IshtileTypography,
-  radius:     IshtileRadius,
+  radius: IshtileRadius,
 };
 
 // ─── CSS variable compiler ────────────────────────────────────────────────────
@@ -231,76 +231,76 @@ export function toCssVars(theme: Theme): Record<string, string> {
 
   return {
     // ── Brand ──────────────────────────────────────────────────
-    '--brand-dark':          c.brandDark,
-    '--brand-gold':          c.brandGold,
-    '--brand-gold-hover':    c.brandGoldHover,
-    '--brand-gold-deep':     c.brandGoldDeep,
+    '--brand-dark': c.brandDark,
+    '--brand-gold': c.brandGold,
+    '--brand-gold-hover': c.brandGoldHover,
+    '--brand-gold-deep': c.brandGoldDeep,
 
     // ── Surfaces ───────────────────────────────────────────────
-    '--background':          c.background,
-    '--surface':             c.surface,
-    '--surface-variant':     c.surfaceVariant,
+    '--background': c.background,
+    '--surface': c.surface,
+    '--surface-variant': c.surfaceVariant,
 
     // ── Content ────────────────────────────────────────────────
-    '--on-background':       c.onBackground,
-    '--on-surface':          c.onSurface,
-    '--on-surface-muted':    c.onSurfaceMuted,
+    '--on-background': c.onBackground,
+    '--on-surface': c.onSurface,
+    '--on-surface-muted': c.onSurfaceMuted,
     '--on-surface-disabled': c.onSurfaceDisabled,
 
     // ── Primary ────────────────────────────────────────────────
-    '--primary':             c.primary,
-    '--on-primary':          c.onPrimary,
+    '--primary': c.primary,
+    '--on-primary': c.onPrimary,
 
     // ── Accent ─────────────────────────────────────────────────
-    '--accent':              c.accent,
-    '--on-accent':           c.onAccent,
+    '--accent': c.accent,
+    '--on-accent': c.onAccent,
 
     // ── Components ─────────────────────────────────────────────
-    '--border':              c.border,
-    '--input':               c.input,
-    '--ring':                c.ring,
+    '--border': c.border,
+    '--input': c.input,
+    '--ring': c.ring,
 
     // ── Semantic ───────────────────────────────────────────────
-    '--destructive':         c.destructive,
-    '--on-destructive':      c.onDestructive,
+    '--destructive': c.destructive,
+    '--on-destructive': c.onDestructive,
 
     // ── Product ────────────────────────────────────────────────
-    '--product-bg':          c.productBg,
+    '--product-bg': c.productBg,
 
     // ── Typography ─────────────────────────────────────────────
-    '--font-sans':           t.fontSans,
-    '--label-tracking':      t.labelTracking,
-    '--heading-tracking':    t.headingTracking,
+    '--font-sans': t.fontSans,
+    '--label-tracking': t.labelTracking,
+    '--heading-tracking': t.headingTracking,
 
     // ── Radius ─────────────────────────────────────────────────
-    '--radius-none':   r.none,
-    '--radius-xs':     r.xs,
-    '--radius-sm':     r.sm,
-    '--radius-md':     r.md,
-    '--radius-lg':     r.lg,
-    '--radius-xl':     r.xl,
-    '--radius-2xl':    r['2xl'],
-    '--radius-3xl':    r['3xl'],
-    '--radius-full':   r.full,
+    '--radius-none': r.none,
+    '--radius-xs': r.xs,
+    '--radius-sm': r.sm,
+    '--radius-md': r.md,
+    '--radius-lg': r.lg,
+    '--radius-xl': r.xl,
+    '--radius-2xl': r['2xl'],
+    '--radius-3xl': r['3xl'],
+    '--radius-full': r.full,
 
     // ── Shadcn token aliases ────────────────────────────────────
     // Shadcn components read these — we redirect them to our tokens.
     // Keys that are already defined above (--background, --primary, etc.)
     // are omitted here to avoid duplicate-key errors; they map to the same value.
-    '--foreground':          c.onBackground,
-    '--card':                c.surface,
-    '--card-foreground':     c.onSurface,
-    '--popover':             c.surface,
-    '--popover-foreground':  c.onSurface,
-    '--primary-foreground':  c.onPrimary,
-    '--secondary':           c.surfaceVariant,
-    '--secondary-foreground':c.onSurface,
-    '--muted':               c.surfaceVariant,
-    '--muted-foreground':    c.onSurfaceMuted,
-    '--accent-foreground':   c.onAccent,
+    '--foreground': c.onBackground,
+    '--card': c.surface,
+    '--card-foreground': c.onSurface,
+    '--popover': c.surface,
+    '--popover-foreground': c.onSurface,
+    '--primary-foreground': c.onPrimary,
+    '--secondary': c.surfaceVariant,
+    '--secondary-foreground': c.onSurface,
+    '--muted': c.surfaceVariant,
+    '--muted-foreground': c.onSurfaceMuted,
+    '--accent-foreground': c.onAccent,
 
     // ── Shadcn radius alias ─────────────────────────────────────
-    '--radius':              r.md,
+    '--radius': r.md,
   };
 }
 

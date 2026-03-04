@@ -6,7 +6,7 @@ interface OrderReviewProps {
   shippingCost?:   number;
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function OrderReview({ cart, promoDiscount = 0, shippingCost = 0 }: OrderReviewProps) {
   const total = cart.subtotal - promoDiscount + shippingCost;

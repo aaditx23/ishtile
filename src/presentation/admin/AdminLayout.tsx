@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
-import { FiGrid, FiShoppingBag, FiPackage, FiTag, FiBarChart2 } from 'react-icons/fi';
+import { FiGrid, FiShoppingBag, FiPackage, FiTag, FiBarChart2, FiFolder } from 'react-icons/fi';
 
 const NAV_ITEMS = [
-  { href: '/admin',            label: 'Dashboard',  Icon: FiGrid },
-  { href: '/admin/orders',     label: 'Orders',     Icon: FiShoppingBag },
-  { href: '/admin/products',   label: 'Products',   Icon: FiPackage },
-  { href: '/admin/promos',     label: 'Promos',     Icon: FiTag },
-  { href: '/admin/analytics',  label: 'Analytics',  Icon: FiBarChart2 },
+  { href: '/admin',             label: 'Dashboard',  Icon: FiGrid },
+  { href: '/admin/orders',      label: 'Orders',     Icon: FiShoppingBag },
+  { href: '/admin/products',    label: 'Products',   Icon: FiPackage },
+  { href: '/admin/categories',  label: 'Categories', Icon: FiFolder },
+  { href: '/admin/promos',      label: 'Promos',     Icon: FiTag },
+  { href: '/admin/analytics',   label: 'Analytics',  Icon: FiBarChart2 },
 ] as const;
 
 interface AdminLayoutProps {
@@ -69,7 +70,7 @@ export default function AdminLayout({ children, activeHref }: AdminLayoutProps) 
                   fontWeight:      isActive ? 700 : 500,
                   textDecoration:  'none',
                   color:           isActive ? 'var(--on-primary)' : 'var(--on-surface)',
-                  backgroundColor: isActive ? 'var(--brand-dark)' : 'transparent',
+                  backgroundColor: isActive ? 'var(--primary)' : 'transparent',
                 }}
               >
                 <Icon size={15} />

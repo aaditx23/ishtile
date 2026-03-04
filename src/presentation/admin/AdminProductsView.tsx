@@ -37,16 +37,16 @@ export default function AdminProductsView() {
           <Link
             href="/admin/products/new"
             style={{
-              display:         'inline-flex',
-              alignItems:      'center',
-              gap:             '0.375rem',
-              padding:         '0.5rem 1rem',
-              borderRadius:    '0.5rem',
-              backgroundColor: 'var(--brand-dark)',
-              color:           'var(--on-primary)',
-              textDecoration:  'none',
-              fontSize:        '0.8rem',
-              fontWeight:      700,
+              display:        'inline-flex',
+              alignItems:     'center',
+              gap:            '0.375rem',
+              padding:        '0.5rem 1rem',
+              borderRadius:   '0.5rem',
+              backgroundColor: 'var(--primary)',
+              color:          'var(--on-primary)',
+              textDecoration: 'none',
+              fontSize:       '0.8rem',
+              fontWeight:     700,
             }}
           >
             + New Product
@@ -107,7 +107,7 @@ export default function AdminProductsView() {
                       {product.sku}
                     </td>
                     <td style={{ padding: '0.75rem 1rem', fontWeight: 700 }}>
-                      ৳{product.basePrice.toFixed(0)}
+                      ৳{Number(product.basePrice || 0).toFixed(0)}
                     </td>
                     <td style={{ padding: '0.75rem 1rem' }}>
                       <span

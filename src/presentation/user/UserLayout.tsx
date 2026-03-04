@@ -52,7 +52,7 @@ export default function UserLayout({ children, activeHref }: UserLayoutProps) {
                   fontWeight:      isActive ? 700 : 500,
                   textDecoration:  'none',
                   color:           isActive ? 'var(--on-primary)' : 'var(--on-surface)',
-                  backgroundColor: isActive ? 'var(--brand-dark)' : 'transparent',
+                  backgroundColor: isActive ? 'var(--primary)' : 'transparent',
                   transition:      'background-color 0.15s',
                 }}
               >

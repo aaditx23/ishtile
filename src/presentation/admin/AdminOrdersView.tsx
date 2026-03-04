@@ -14,7 +14,7 @@ import { getOrders } from '@/application/order/getOrders';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function AdminOrdersView() {
   const searchParams              = useSearchParams();

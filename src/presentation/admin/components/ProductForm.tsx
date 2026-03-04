@@ -10,6 +10,10 @@ import type { Product } from '@/domain/product/product.entity';
 import type { Category } from '@/domain/category/category.entity';
 import type { UpdateProductPayload } from '@/domain/product/admin-product.repository';
 
+function slugify(s: string) {
+  return s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
 interface ProductFormProps {
   product:    Product;
   categories: Category[];
@@ -41,8 +45,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     slug:             product.slug,
     sku:              product.sku,
     description:      product.description ?? '',
-    basePrice:        product.basePrice,
-    compareAtPrice:   product.compareAtPrice ?? undefined,
     brand:            product.brand ?? '',
     material:         product.material ?? '',
     careInstructions: product.careInstructions ?? '',
@@ -65,7 +67,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         material:         form.material || undefined,
         careInstructions: form.careInstructions || undefined,
         description:      form.description || undefined,
-        compareAtPrice:   form.compareAtPrice ? Number(form.compareAtPrice) : undefined,
       });
       toast.success('Product saved.');
       router.refresh();
@@ -80,7 +81,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <Field label="Name">
-          <Input value={form.name ?? ''} onChange={(e) => set('name', e.target.value)} required disabled={saving} />
+          <Input value={form.name ?? ''} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
         </Field>
         <Field label="Slug">
           <Input value={form.slug ?? ''} onChange={(e) => set('slug', e.target.value)} required disabled={saving} />
@@ -88,12 +89,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         <Field label="SKU">
           <Input value={form.sku ?? ''} onChange={(e) => set('sku', e.target.value)} required disabled={saving} />
         </Field>
-        <Field label="Base Price (৳)">
-          <Input type="number" value={form.basePrice ?? ''} onChange={(e) => set('basePrice', Number(e.target.value))} required disabled={saving} />
-        </Field>
-        <Field label="Compare-at Price (৳)">
-          <Input type="number" value={form.compareAtPrice ?? ''} onChange={(e) => set('compareAtPrice', e.target.value ? Number(e.target.value) : undefined)} disabled={saving} />
-        </Field>
+
         <Field label="Category">
           <select
             value={form.categoryId ?? ''}
@@ -157,7 +153,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         </label>
       </div>
 
-      <Button type="submit" disabled={saving} style={{ alignSelf: 'flex-start', backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', minWidth: '8rem' }}>
+      <Button type="submit" disabled={saving} style={{ alignSelf: 'flex-start', minWidth: '8rem' }}>
         {saving ? 'Saving…' : 'Save Product'}
       </Button>
     </form>

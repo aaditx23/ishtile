@@ -39,7 +39,7 @@ export default function PromoInput({ subtotal, onApply, onRemove, appliedCode, d
     }
   };
 
-  const fmt = (n: number) => `৳${n.toFixed(0)}`;
+  const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
   // Applied state
   if (appliedCode) {

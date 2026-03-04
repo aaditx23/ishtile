@@ -59,9 +59,8 @@ export default function VariantPicker({ variants, onVariantChange }: VariantPick
             <Button
               key={size}
               variant={selectedSize === size ? 'default' : 'outline'}
-              size="sm"
+              style={{ minWidth: '3rem', borderRadius: '9999px', padding: '0.4rem 1rem', fontSize: '0.875rem' }}
               onClick={() => handleSizeClick(size)}
-              style={{ minWidth: '3rem' }}
             >
               {size}
             </Button>
@@ -80,7 +79,7 @@ export default function VariantPicker({ variants, onVariantChange }: VariantPick
               <Button
                 key={color}
                 variant={selectedColor === color ? 'default' : 'outline'}
-                size="sm"
+                style={{ borderRadius: '9999px', padding: '0.4rem 1rem', fontSize: '0.875rem' }}
                 onClick={() => handleColorClick(color)}
               >
                 {color}

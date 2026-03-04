@@ -9,7 +9,7 @@ import { getFavourites } from '@/application/favourite/getFavourites';
 import { removeFavourite } from '@/application/favourite/removeFavourite';
 import type { FavouriteDto } from '@/shared/types/api.types';
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function FavouritesView() {
   const [items, setItems]     = useState<FavouriteDto[]>([]);

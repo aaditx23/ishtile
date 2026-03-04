@@ -80,9 +80,8 @@ export default function PasswordLoginForm() {
 
       <Button
         type="submit"
-        className="w-full"
+        className="w-full tracking-widest uppercase"
         disabled={loading}
-        style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' }}
       >
         {loading ? 'Logging in…' : 'Login'}
       </Button>

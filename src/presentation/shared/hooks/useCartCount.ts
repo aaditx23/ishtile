@@ -15,16 +15,26 @@ export function useCartCount(): number {
   useEffect(() => {
     let cancelled = false;
 
-    apiClient
-      .get<GetCartResponse>(ENDPOINTS.cart.root)
-      .then((res) => {
-        if (!cancelled) setCount(res.data.totalItems ?? 0);
-      })
-      .catch(() => {
-        // Unauthenticated or network error — silently keep 0
-      });
+    const fetchCount = () => {
+      apiClient
+        .get<GetCartResponse>(ENDPOINTS.cart.root)
+        .then((res) => {
+          if (!cancelled) setCount(res.data.totalItems ?? 0);
+        })
+        .catch(() => {
+          // Unauthenticated or network error — silently keep 0
+        });
+    };
 
-    return () => { cancelled = true; };
+    fetchCount();
+
+    const handleCartUpdate = () => fetchCount();
+    window.addEventListener('CART_UPDATED', handleCartUpdate);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('CART_UPDATED', handleCartUpdate);
+    };
   }, []);
 
   return count;

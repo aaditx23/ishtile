@@ -109,7 +109,7 @@ function RegisterForm() {
             <label style={labelStyle}>Phone Number</label>
             <Input type="tel" placeholder="01XXXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required autoFocus />
           </div>
-          <Button type="submit" className="w-full" disabled={loading} style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Sending…' : 'Send OTP'}
           </Button>
         </form>
@@ -124,7 +124,7 @@ function RegisterForm() {
             <label style={labelStyle}>Enter OTP</label>
             <Input type="text" inputMode="numeric" placeholder="XXXXXX" value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={8} required autoFocus />
           </div>
-          <Button type="submit" className="w-full" disabled={loading} style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+          <Button type="submit" className="w-full" disabled={loading}>
             Continue →
           </Button>
           <Button type="button" variant="ghost" size="sm" onClick={() => { setOtp(''); setStep('phone'); }}>
@@ -158,7 +158,7 @@ function RegisterForm() {
               </button>
             </div>
           </div>
-          <Button type="submit" className="w-full" disabled={loading} style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)' }}>
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Creating account…' : 'Create Account'}
           </Button>
         </form>

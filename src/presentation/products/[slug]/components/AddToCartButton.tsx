@@ -17,7 +17,7 @@ export default function AddToCartButton({ variant, availableStock = 0 }: AddToCa
   const [qty, setQty] = useState(1);
 
   const outOfStock = !variant || availableStock === 0;
-  const maxQty = Math.min(availableStock, 10);
+  const maxQty = availableStock;
 
   const handleAddToCart = async () => {
     if (!variant) {
@@ -74,10 +74,9 @@ export default function AddToCartButton({ variant, availableStock = 0 }: AddToCa
 
       <Button
         size="lg"
-        className="w-full"
+        className="w-full tracking-widest uppercase"
         disabled={outOfStock || loading}
         onClick={handleAddToCart}
-        style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', letterSpacing: '0.1em', textTransform: 'uppercase' }}
       >
         {loading       ? 'Adding…'     :
          outOfStock    ? 'Out of Stock' :

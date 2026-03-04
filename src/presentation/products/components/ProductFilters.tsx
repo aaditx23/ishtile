@@ -73,10 +73,10 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
       </div>
 
       {/* Category pills */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
         <Button
           variant={!current.category ? 'default' : 'outline'}
-          size="sm"
+          style={{ borderRadius: '9999px', padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}
           onClick={() => push({ category: '' })}
         >
           All
@@ -85,7 +85,7 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
           <Button
             key={cat.id}
             variant={current.category === cat.slug ? 'default' : 'outline'}
-            size="sm"
+            style={{ borderRadius: '9999px', padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}
             onClick={() => push({ category: cat.slug })}
           >
             {cat.name}

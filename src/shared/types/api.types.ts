@@ -363,6 +363,12 @@ export type UpdateProfileResponse = DataResponse<UserDto>;
 
 export type ListCategoriesResponse = PaginatedResponse<CategoryWithSubcategoriesDto>;
 export type GetCategoryResponse = DataResponse<CategoryWithSubcategoriesDto>;
+export type CreateCategoryResponse = DataResponse<CategoryDto>;
+export type UpdateCategoryResponse = DataResponse<CategoryDto>;
+export type DeleteCategoryResponse = ActionResponse;
+export type CreateSubcategoryResponse = DataResponse<SubcategoryDto>;
+export type UpdateSubcategoryResponse = DataResponse<SubcategoryDto>;
+export type DeleteSubcategoryResponse = ActionResponse;
 
 export type ListProductsResponse = PaginatedResponse<ProductDto | ProductWithVariantsDto>;
 export type GetProductResponse = DataResponse<ProductDto | ProductWithVariantsDto>;

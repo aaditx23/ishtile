@@ -4,7 +4,7 @@ interface OrderItemListProps {
   items: OrderItem[];
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function OrderItemList({ items }: OrderItemListProps) {
   if (items.length === 0) return null;

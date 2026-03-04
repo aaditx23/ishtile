@@ -6,7 +6,7 @@ interface OrderSummaryCardProps {
   order: Order;
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
   return (

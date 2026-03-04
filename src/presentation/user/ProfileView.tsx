@@ -131,7 +131,7 @@ export default function ProfileView() {
             <Button
               type="submit"
               disabled={saving}
-              style={{ alignSelf: 'flex-start', backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', minWidth: '9rem' }}
+              style={{ alignSelf: 'flex-start', minWidth: '9rem' }}
             >
               {saving ? 'Saving…' : 'Save Changes'}
             </Button>

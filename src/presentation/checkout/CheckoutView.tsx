@@ -171,12 +171,10 @@ export default function CheckoutView() {
                   type="submit"
                   disabled={!canSubmit}
                   style={{
-                    width:           '100%',
-                    backgroundColor: canSubmit ? 'var(--brand-dark)' : undefined,
-                    color:           canSubmit ? 'var(--on-primary)' : undefined,
-                    padding:         '0.75rem',
-                    fontSize:        '0.9rem',
-                    fontWeight:      700,
+                    width:      '100%',
+                    padding:    '0.75rem',
+                    fontSize:   '0.9rem',
+                    fontWeight: 700,
                   }}
                 >
                   {submitting ? 'Placing Order…' : 'Place Order'}

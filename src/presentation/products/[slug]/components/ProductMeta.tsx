@@ -11,7 +11,7 @@ interface ProductMetaProps {
   categoryName?: string;
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 /**
  * Static product information — server-renderable (no interactivity).
@@ -25,7 +25,7 @@ export default function ProductMeta({ product, displayPrice, compareAtPrice, cat
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Category badge */}
       {categoryName && (
-        <Badge variant="secondary" style={{ width: 'fit-content', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+        <Badge variant="secondary" style={{ width: 'fit-content', borderRadius: '9999px', padding: '0.4rem 1rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.7rem' }}>
           {categoryName}
         </Badge>
       )}

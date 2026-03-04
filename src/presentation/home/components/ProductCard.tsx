@@ -34,8 +34,8 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
     setImgIndex((i) => (i + 1) % product.images.length);
   };
 
-  const formattedPrice = `৳${product.price.toFixed(2)}`;
-  const formattedSalePrice = product.salePrice ? `৳${product.salePrice.toFixed(2)}` : null;
+  const formattedPrice = `৳${Number(product.price || 0).toFixed(2)}`;
+  const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
     <Card className="overflow-hidden group">

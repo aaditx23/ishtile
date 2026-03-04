@@ -15,7 +15,7 @@ interface CartItemRowProps {
   onUpdate: () => void; // tells parent to refresh cart
 }
 
-const fmt = (n: number) => `৳${n.toFixed(0)}`;
+const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function CartItemRow({ item, onUpdate }: CartItemRowProps) {
   const [qty, setQty]         = useState(item.quantity);
