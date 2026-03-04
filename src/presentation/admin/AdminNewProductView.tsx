@@ -1,18 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import AdminLayout from './AdminLayout';
 import { createProduct } from '@/application/product/adminProduct';
+import { getCategories } from '@/application/category/getCategories';
 import type { Category } from '@/domain/category/category.entity';
-
-interface AdminNewProductViewProps {
-  categories: Category[];
-}
 
 const labelStyle: React.CSSProperties = {
   fontSize:      '0.65rem',
@@ -33,8 +31,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function AdminNewProductView({ categories }: AdminNewProductViewProps) {
+export default function AdminNewProductView() {
   const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [catsLoading, setCatsLoading] = useState(true);
   const [form, setForm] = useState({
     name:           '',
     slug:           '',
@@ -49,6 +49,13 @@ export default function AdminNewProductView({ categories }: AdminNewProductViewP
     isFeatured:     false,
   });
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    getCategories({ activeOnly: true })
+      .then(setCategories)
+      .catch(() => toast.error('Failed to load categories.'))
+      .finally(() => setCatsLoading(false));
+  }, []);
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -110,12 +117,15 @@ export default function AdminNewProductView({ categories }: AdminNewProductViewP
                 <select
                   value={form.categoryId}
                   onChange={(e) => set('categoryId', Number(e.target.value))}
-                  disabled={saving}
+                  disabled={saving || catsLoading}
                   style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                 >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
+                  {catsLoading
+                    ? <option>Loading…</option>
+                    : categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))
+                  }
                 </select>
               </Field>
               <Field label="Brand">

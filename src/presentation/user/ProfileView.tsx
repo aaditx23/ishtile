@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import BuyerLayout from './BuyerLayout';
+import UserLayout from './UserLayout';
 import { getProfile } from '@/application/user/getProfile';
 import { updateProfile } from '@/application/user/updateProfile';
 import type { User } from '@/domain/user/user.entity';
@@ -80,7 +80,7 @@ export default function ProfileView() {
   };
 
   return (
-    <BuyerLayout activeHref="/buyer">
+    <UserLayout activeHref="/profile">
       <div
         style={{
           border:          '1px solid var(--border)',
@@ -138,6 +138,6 @@ export default function ProfileView() {
           </form>
         ) : null}
       </div>
-    </BuyerLayout>
+    </UserLayout>
   );
 }

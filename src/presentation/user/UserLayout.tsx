@@ -2,17 +2,17 @@ import Link from 'next/link';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 
 const NAV_ITEMS = [
-  { href: '/buyer',            label: 'Profile' },
-  { href: '/buyer/orders',     label: 'My Orders' },
-  { href: '/buyer/favourites', label: 'Favourites' },
+  { href: '/profile',    label: 'Profile' },
+  { href: '/orders',     label: 'My Orders' },
+  { href: '/favourites', label: 'Favourites' },
 ] as const;
 
-interface BuyerLayoutProps {
+interface UserLayoutProps {
   children:   React.ReactNode;
   activeHref: string;
 }
 
-export default function BuyerLayout({ children, activeHref }: BuyerLayoutProps) {
+export default function UserLayout({ children, activeHref }: UserLayoutProps) {
   return (
     <ShopLayout>
       <div

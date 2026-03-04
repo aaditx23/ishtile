@@ -16,22 +16,30 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const params = await searchParams;
   const page = Number(params.page ?? '1');
 
-  // Fetch categories first so we can resolve slug → ID
-  const categories = await getCategories({ activeOnly: true, includeSubcategories: true });
+  let categories: Awaited<ReturnType<typeof getCategories>> = [];
+  let cardProducts: ReturnType<typeof toProductCardData>[]  = [];
+  let pagination = { page: 1, pageSize: 24, total: 0, totalPages: 0, hasNext: false, hasPrev: false };
 
-  const matchedCategory = params.category
-    ? categories.find((c) => c.slug === params.category)
-    : undefined;
+  try {
+    categories = await getCategories({ activeOnly: true, includeSubcategories: true });
 
-  const { items, pagination } = await getProducts({
-    page,
-    pageSize:   24,
-    categoryId: matchedCategory?.id,
-    search:     params.search,
-    activeOnly: true,
-  });
+    const matchedCategory = params.category
+      ? categories.find((c) => c.slug === params.category)
+      : undefined;
 
-  const cardProducts = items.map((p) => toProductCardData(p, categories));
+    const { items, pagination: pg } = await getProducts({
+      page,
+      pageSize:   24,
+      categoryId: matchedCategory?.id,
+      search:     params.search,
+      activeOnly: true,
+    });
+
+    cardProducts = items.map((p) => toProductCardData(p, categories));
+    pagination   = pg;
+  } catch {
+    // Backend unreachable — render empty shell
+  }
 
   return (
     <ProductsPageView

@@ -1,17 +1,34 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 import AdminLayout from './AdminLayout';
 import Pagination from '@/presentation/shared/components/Pagination';
+import AdminProductsActions from './components/AdminProductsActions';
+import { getProducts } from '@/application/product/getProducts';
 import type { Product } from '@/domain/product/product.entity';
 import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
-import AdminProductsActions from './components/AdminProductsActions';
 
-interface AdminProductsViewProps {
-  products:   Product[];
-  pagination: PaginationMeta;
-}
+export default function AdminProductsView() {
+  const searchParams                  = useSearchParams();
+  const page                          = Math.max(1, Number(searchParams.get('page')) || 1);
+  const search                        = searchParams.get('search') ?? undefined;
+  const [products, setProducts]       = useState<Product[]>([]);
+  const [pagination, setPagination]   = useState<PaginationMeta | null>(null);
+  const [loading, setLoading]         = useState(true);
 
-export default function AdminProductsView({ products, pagination }: AdminProductsViewProps) {
+  useEffect(() => {
+    setLoading(true);
+    getProducts({ page, pageSize: 25, search })
+      .then(({ items, pagination: pg }) => { setProducts(items); setPagination(pg); })
+      .catch(() => toast.error('Failed to load products.'))
+      .finally(() => setLoading(false));
+  }, [page, search]);
+
   return (
     <AdminLayout activeHref="/admin/products">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -36,6 +53,11 @@ export default function AdminProductsView({ products, pagination }: AdminProduct
           </Link>
         </div>
 
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.5rem' }} />)}
+          </div>
+        ) : (
         <div
           style={{
             border:          '1px solid var(--border)',
@@ -120,8 +142,9 @@ export default function AdminProductsView({ products, pagination }: AdminProduct
             </table>
           )}
         </div>
+        )}
 
-        {pagination.totalPages > 1 && (
+        {pagination && pagination.totalPages > 1 && (
           <Suspense><Pagination pagination={pagination} /></Suspense>
         )}
       </div>

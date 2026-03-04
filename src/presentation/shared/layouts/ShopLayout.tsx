@@ -17,7 +17,7 @@ export default function ShopLayout({ children, announcement }: ShopLayoutProps) 
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AnnouncementBar text={announcement} />
       <SiteHeader />
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, paddingTop: '4rem' }}>
         {children}
       </main>
       <SiteFooter />

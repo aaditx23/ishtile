@@ -3,16 +3,18 @@ import type { NextRequest } from 'next/server';
 
 // ─── Route groups ─────────────────────────────────────────────────────────────
 
-const BUYER_PREFIX   = '/buyer';
 const ADMIN_PREFIX   = '/admin';
 const CART_PATH      = '/cart';
 const CHECKOUT_PATH  = '/checkout';
 const ORDERS_PREFIX  = '/orders';
 const LOGIN_PATH     = '/login';
-const SESSION_COOKIE = 'ishtile_sess';
+const SESSION_COOKIE = 'Ishtile_sess';
 
-function isProtectedBuyer(pathname: string): boolean {
-  return pathname.startsWith(BUYER_PREFIX);
+// User account pages that require login
+const USER_PROTECTED = ['/profile', '/favourites'];
+
+function isProtectedUser(pathname: string): boolean {
+  return USER_PROTECTED.some((p) => pathname === p || pathname.startsWith(p + '/'));
 }
 
 function isProtectedAdmin(pathname: string): boolean {
@@ -34,19 +36,20 @@ export function middleware(request: NextRequest) {
   const hasSession = request.cookies.has(SESSION_COOKIE);
 
   // Redirect unauthenticated users away from protected routes
-  if ((isProtectedBuyer(pathname) || isProtectedAdmin(pathname) || isProtectedShop(pathname)) && !hasSession) {
+  if ((isProtectedUser(pathname) || isProtectedAdmin(pathname) || isProtectedShop(pathname)) && !hasSession) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = LOGIN_PATH;
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect authenticated users away from the login page
+  // Redirect authenticated users away from the login/register pages
   if (isAuthPage(pathname) && hasSession) {
-    const homeUrl = request.nextUrl.clone();
-    homeUrl.pathname = '/';
-    homeUrl.searchParams.delete('next');
-    return NextResponse.redirect(homeUrl);
+    const next = request.nextUrl.searchParams.get('next');
+    const dest = request.nextUrl.clone();
+    dest.pathname = next && next.startsWith('/') ? next : '/';
+    dest.search = '';
+    return NextResponse.redirect(dest);
   }
 
   return NextResponse.next();

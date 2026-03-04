@@ -85,7 +85,7 @@ function RegisterForm() {
         email:     email    || undefined,
         password:  password || undefined,
       });
-      toast.success('Account created! Welcome to Ishtyle.');
+      toast.success('Account created! Welcome to Ishtile.');
       router.push('/');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
@@ -174,7 +174,7 @@ export default function RegisterView() {
 
         <Link href="/" style={{ textAlign: 'center', textDecoration: 'none' }}>
           <span style={{ fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--brand-dark)' }}>
-            Ishtyle
+            Ishtile
           </span>
         </Link>
 

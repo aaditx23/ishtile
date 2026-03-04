@@ -1,5 +1,5 @@
 /**
- * ISHTYLE — Centralized Theme
+ * Ishtile — Centralized Theme
  *
  * This is the single source of truth for the entire design system.
  * Analogous to Theme.kt + ColorScheme + Typography in Jetpack Compose.
@@ -185,7 +185,7 @@ export const DarkColorScheme: ColorScheme = {
 
 // ─── Typography (shared across themes) ───────────────────────────────────────
 
-export const IshtyleTypography: TypographyScheme = {
+export const IshtileTypography: TypographyScheme = {
   fontSans:        '"Geist", "Inter", system-ui, -apple-system, sans-serif',
   labelTracking:   '0.18em',
   headingTracking: '-0.02em',
@@ -194,7 +194,7 @@ export const IshtyleTypography: TypographyScheme = {
 // ─── Radius (shared across themes) ───────────────────────────────────────────
 // Larger values = the modern rounded feel from the product card
 
-export const IshtyleRadius: RadiusScheme = {
+export const IshtileRadius: RadiusScheme = {
   none:  '0px',
   xs:    '4px',
   sm:    '8px',
@@ -210,14 +210,14 @@ export const IshtyleRadius: RadiusScheme = {
 
 export const LightTheme: Theme = {
   colors:     LightColorScheme,
-  typography: IshtyleTypography,
-  radius:     IshtyleRadius,
+  typography: IshtileTypography,
+  radius:     IshtileRadius,
 };
 
 export const DarkTheme: Theme = {
   colors:     DarkColorScheme,
-  typography: IshtyleTypography,
-  radius:     IshtyleRadius,
+  typography: IshtileTypography,
+  radius:     IshtileRadius,
 };
 
 // ─── CSS variable compiler ────────────────────────────────────────────────────

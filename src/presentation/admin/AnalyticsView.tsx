@@ -1,7 +1,15 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 import AdminLayout from './AdminLayout';
+import { getDailySales } from '@/application/analytics/getDailySales';
+import { getProductSales } from '@/application/analytics/getProductSales';
+import { getPromoSales } from '@/application/analytics/getPromoSales';
 import type { DailySalesDto, ProductSalesDto, PromoSalesDto } from '@/shared/types/api.types';
 
-interface AnalyticsViewProps {
+interface AnalyticsData {
   dailySales:   DailySalesDto[];
   productSales: ProductSalesDto[];
   promoSales:   PromoSalesDto[];
@@ -81,7 +89,37 @@ function BarChart({ data }: { data: DailySalesDto[] }) {
   );
 }
 
-export default function AnalyticsView({ dailySales, productSales, promoSales }: AnalyticsViewProps) {
+export default function AnalyticsView() {
+  const [data, setData]       = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const end   = new Date().toISOString().slice(0, 10);
+    const start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    Promise.all([getDailySales(start, end), getProductSales(10), getPromoSales(10)])
+      .then(([dailySales, productSales, promoSales]) => setData({ dailySales, productSales, promoSales }))
+      .catch(() => toast.error('Failed to load analytics.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <AdminLayout activeHref="/admin/analytics">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            {[1,2].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)}
+          </div>
+          <Skeleton style={{ height: '10rem', borderRadius: '0.75rem' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            {[1,2].map((i) => <Skeleton key={i} style={{ height: '14rem', borderRadius: '0.75rem' }} />)}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  const { dailySales, productSales, promoSales } = data;
   const totalRevenue = dailySales.reduce((s, d) => s + d.totalRevenue, 0);
   const totalOrders  = dailySales.reduce((s, d) => s + d.totalOrders, 0);
 

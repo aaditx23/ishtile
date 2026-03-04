@@ -1,20 +1,37 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 import AdminLayout from './AdminLayout';
 import StatusFilterTabs from './components/StatusFilterTabs';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
+import { getOrders } from '@/application/order/getOrders';
 import type { Order } from '@/domain/order/order.entity';
-import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
-
-interface AdminOrdersViewProps {
-  orders:     Order[];
-  pagination: PaginationMeta;
-}
+import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
 const fmt = (n: number) => `৳${n.toFixed(0)}`;
 
-export default function AdminOrdersView({ orders, pagination }: AdminOrdersViewProps) {
+export default function AdminOrdersView() {
+  const searchParams              = useSearchParams();
+  const page                      = Math.max(1, Number(searchParams.get('page')) || 1);
+  const status                    = searchParams.get('status') as OrderStatus | null;
+  const [orders, setOrders]       = useState<Order[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  const [loading, setLoading]     = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getOrders({ page, pageSize: 20, status: status ?? undefined })
+      .then(({ items, pagination: pg }) => { setOrders(items); setPagination(pg); })
+      .catch(() => toast.error('Failed to load orders.'))
+      .finally(() => setLoading(false));
+  }, [page, status]);
+
   return (
     <AdminLayout activeHref="/admin/orders">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -25,6 +42,11 @@ export default function AdminOrdersView({ orders, pagination }: AdminOrdersViewP
         <Suspense><StatusFilterTabs /></Suspense>
 
         {/* Table */}
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.5rem' }} />)}
+          </div>
+        ) : (
         <div
           style={{
             border:          '1px solid var(--border)',
@@ -101,8 +123,9 @@ export default function AdminOrdersView({ orders, pagination }: AdminOrdersViewP
             </table>
           )}
         </div>
+        )}
 
-        {pagination.totalPages > 1 && (
+        {pagination && pagination.totalPages > 1 && (
           <Suspense><Pagination pagination={pagination} /></Suspense>
         )}
       </div>

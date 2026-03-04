@@ -10,10 +10,17 @@ interface Params {
 export default async function ProductDetailPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
 
-  const [product, categories] = await Promise.all([
-    getProductBySlug(slug),
-    getCategories({ activeOnly: true, includeSubcategories: true }),
-  ]);
+  let product:    Awaited<ReturnType<typeof getProductBySlug>>  = null;
+  let categories: Awaited<ReturnType<typeof getCategories>>     = [];
+
+  try {
+    [product, categories] = await Promise.all([
+      getProductBySlug(slug),
+      getCategories({ activeOnly: true, includeSubcategories: true }),
+    ]);
+  } catch {
+    // Backend unreachable
+  }
 
   if (!product) notFound();
 
@@ -22,9 +29,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
 
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
-  return {
-    title: product ? `${product.name} — Ishtyle` : 'Product Not Found',
-    description: product?.description ?? undefined,
-  };
+  try {
+    const product = await getProductBySlug(slug);
+    return {
+      title: product ? `${product.name} — Ishtile` : 'Product Not Found',
+      description: product?.description ?? undefined,
+    };
+  } catch {
+    return { title: 'Ishtile' };
+  }
 }

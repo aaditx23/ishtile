@@ -5,30 +5,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import AdminLayout from './AdminLayout';
+import UserLayout from './UserLayout';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
-import OrderStatusSelector from './components/OrderStatusSelector';
 import { Button } from '@/components/ui/button';
 import { getOrder } from '@/application/order/getOrder';
 import type { Order } from '@/domain/order/order.entity';
 
-const sectionStyle: React.CSSProperties = {
-  border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
-  padding:         '1.25rem',
-  backgroundColor: 'var(--surface)',
-};
-
-const headingStyle: React.CSSProperties = {
-  fontSize:      '0.7rem',
-  fontWeight:    700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.12em',
-  color:         'var(--on-surface-muted)',
-  marginBottom:  '1rem',
-};
-
-export default function AdminOrderDetailView() {
+export default function OrderDetailView() {
   const params                  = useParams<{ id: string }>();
   const [order, setOrder]       = useState<Order | null>(null);
   const [loading, setLoading]   = useState(true);
@@ -44,31 +27,19 @@ export default function AdminOrderDetailView() {
   }, [params.id]);
 
   return (
-    <AdminLayout activeHref="/admin/orders">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <UserLayout activeHref="/orders">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
-            <Link href="/admin/orders">← Orders</Link>
+            <Link href="/orders">← Orders</Link>
           </Button>
           {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Order #{order.orderNumber}</h1>}
         </div>
 
-        {loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {[1,2].map((i) => <Skeleton key={i} style={{ height: '12rem', borderRadius: '0.75rem' }} />)}
-          </div>
-        )}
+        {loading && <Skeleton style={{ height: '12rem', borderRadius: '0.75rem' }} />}
         {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Order not found.</p>}
-        {order && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
-            <OrderSummaryCard order={order} />
-            <div style={sectionStyle}>
-              <p style={headingStyle}>Update Status</p>
-              <OrderStatusSelector orderId={order.id} currentStatus={order.status} />
-            </div>
-          </div>
-        )}
+        {order && <OrderSummaryCard order={order} />}
       </div>
-    </AdminLayout>
+    </UserLayout>
   );
 }

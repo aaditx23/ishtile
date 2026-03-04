@@ -14,7 +14,7 @@
  * │                 │                  │ cookie instead.                       │
  * ├─────────────────┼──────────────────┼──────────────────────────────────────┤
  * │ Session flag    │ SameSite=Lax     │ Non-secret presence cookie read by    │
- * │ (ishtile_sess)  │ cookie (JS-set)  │ middleware for server-side redirects. │
+ * │ (Ishtile_sess)  │ cookie (JS-set)  │ middleware for server-side redirects. │
  * │                 │                  │ Does NOT contain the JWT.            │
  * └─────────────────┴──────────────────┴──────────────────────────────────────┘
  *
@@ -22,8 +22,8 @@
  */
 
 const KEYS = {
-  refresh: 'ishtile_rt',
-  session: 'ishtile_sess', // cookie name — read by middleware
+  refresh: 'Ishtile_rt',
+  session: 'Ishtile_sess', // cookie name — read by middleware
 } as const;
 
 function isBrowser(): boolean {

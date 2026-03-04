@@ -2,165 +2,227 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { SearchIcon, BookmarkIcon, PersonIcon, BagIcon, HamburgerIcon } from '@/components/icons';
+import { useCartCount } from '@/presentation/shared/hooks/useCartCount';
+import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
 
-// ── Logo SVG ──────────────────────────────────────────────────────────────────
-function PandCoLogo({ className }: { className?: string }) {
+// ─── Link definitions ─────────────────────────────────────────────────────────
+
+const SHOP_LINKS = [
+  { label: 'Shop',   href: '/products' },
+  { label: 'New In', href: '/products?sort=newest' },
+  { label: 'Sale',   href: '/products?sale=true' },
+];
+
+const USER_LINKS = [
+  { label: 'My Orders',  href: '/orders' },
+  { label: 'Favourites', href: '/favourites' },
+];
+
+const ADMIN_LINKS = [
+  { label: 'Dashboard', href: '/admin' },
+  { label: 'Products',  href: '/admin/products' },
+  { label: 'Orders',    href: '/admin/orders' },
+  { label: 'Analytics', href: '/admin/analytics' },
+  { label: 'Promos',    href: '/admin/promos' },
+];
+
+// ─── Logo ─────────────────────────────────────────────────────────────────────
+function IshtileLogo() {
   return (
-    <svg
-      viewBox="0 0 85 18"
-      width="85"
-      height="18"
-      aria-label="Ishtyle"
-      className={className}
-      fill="currentColor"
-    >
-      <text
-        x="0"
-        y="14"
-        fontFamily="system-ui, sans-serif"
-        fontWeight="900"
-        fontSize="16"
-        letterSpacing="1"
-      >
-        ISHTYLE
-      </text>
-    </svg>
+    <span className="text-lg font-black tracking-[0.15em] uppercase text-white select-none">
+      Ishtile
+    </span>
   );
 }
 
-// ── Left Nav ──────────────────────────────────────────────────────────────────
-const leftNavItems = [
-  { label: 'MENS',     href: '/collections/mens' },
-  { label: 'WOMENS',   href: '/collections/womens' },
-  { label: 'GOODS',    href: '/collections/goods' },
-  { label: 'LOOKBOOK', href: '/blogs/lookbook' },
-];
+// ─── NavLink ──────────────────────────────────────────────────────────────────
+function NavLink({ href, label, gold = false }: { href: string; label: string; gold?: boolean }) {
+  const pathname = usePathname();
+  const base = href.split('?')[0];
+  const isActive = pathname === base || pathname.startsWith(base + '/');
 
-const rightNavTextLinks = [
-  { label: 'BRAND',   href: '/pages/manifesto' },
-  { label: 'REWARDS', href: '/pages/rewards' },
-];
+  return (
+    <Link
+      href={href}
+      className={`
+        text-xs font-semibold uppercase tracking-widest transition-colors duration-150 whitespace-nowrap
+        ${isActive
+          ? 'text-white border-b border-white pb-px'
+          : gold
+            ? 'text-[var(--brand-gold)] hover:text-white'
+            : 'text-neutral-300 hover:text-white'
+        }
+      `}
+    >
+      {label}
+    </Link>
+  );
+}
 
-const allMobileNavItems = [...leftNavItems, ...rightNavTextLinks];
+// ─── Divider ─────────────────────────────────────────────────────────────────
+function NavDivider() {
+  return <span className="h-4 w-px bg-white/20 mx-1" aria-hidden />;
+}
 
-// ── Main Header ───────────────────────────────────────────────────────────────
+// ─── Mobile nav item ─────────────────────────────────────────────────────────
+function MobileNavItem({ href, label, onClick }: { href: string; label: string; onClick: () => void }) {
+  const pathname = usePathname();
+  const base = href.split('?')[0];
+  const isActive = pathname === base || pathname.startsWith(base + '/');
+
+  return (
+    <li>
+      <Link
+        href={href}
+        onClick={onClick}
+        className={`block px-3 py-2.5 text-sm font-semibold uppercase tracking-widest rounded-lg transition-colors
+          ${isActive ? 'text-white bg-white/10' : 'text-neutral-300 hover:text-white hover:bg-white/5'}
+        `}
+      >
+        {label}
+      </Link>
+    </li>
+  );
+}
+
+// ─── Mobile section label ────────────────────────────────────────────────────
+function MobileSectionLabel({ label }: { label: string }) {
+  return (
+    <li className="pt-4 pb-1 mt-2 border-t border-white/10">
+      <span className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{label}</span>
+    </li>
+  );
+}
+
+// ─── Main Navbar ──────────────────────────────────────────────────────────────
 export default function SiteHeader() {
-  const [scrolled, setScrolled] = useState(false);
-  const [cartCount] = useState(0);
+  const cartCount  = useCartCount();
+  const auth       = useCurrentUser();
+  const [scrolled, setScrolled]   = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isAuth  = auth.status === 'authenticated';
+  const isAdmin = isAuth && auth.user.role === 'admin';
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const headerBg = scrolled ? 'bg-[var(--brand-dark)]' : 'bg-transparent';
+  const closeMobile = () => setMobileOpen(false);
 
   return (
     <header
-      className={`fixed top-0 left-20 right-20 z-50 transition-colors duration-300 text-white rounded-b-2xl ${headerBg}`}
-      style={{ height: '60px' }}
+      className={`
+        fixed inset-x-0 top-0 z-50 h-16
+        transition-all duration-300
+        ${scrolled ? 'bg-[var(--brand-dark)] shadow-lg' : 'bg-[var(--brand-dark)]/90 backdrop-blur-sm'}
+      `}
     >
-      <div className="w-full h-full px-6 flex items-center justify-between" >
+      <div className="max-w-screen-xl mx-auto h-full px-4 md:px-8 flex items-center justify-between gap-4">
 
-        {/* ── Mobile: Sheet drawer ── */}
-        <div className="lg:hidden">
-          <Sheet>
+        {/* ── Mobile hamburger ─────────────────────────────────────────────── */}
+        <div className="flex items-center lg:hidden">
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open navigation menu">
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="text-white hover:bg-white/10">
                 <HamburgerIcon />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
-              <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <SheetContent side="left" className="bg-[var(--brand-dark)] text-white border-r border-white/10 w-72 overflow-y-auto">
+              <SheetTitle className="text-white tracking-widest text-sm uppercase font-black mb-6">
+                Ishtile
+              </SheetTitle>
               <nav>
-                <ul className="flex flex-col gap-1">
-                  {allMobileNavItems.map((item) => (
-                    <li key={item.label}>
-                      <Button asChild variant="ghost">
-                        <Link href={item.href}>{item.label}</Link>
-                      </Button>
-                    </li>
-                  ))}
+                <ul className="flex flex-col gap-0.5">
+                  {/* Shop */}
+                  <MobileSectionLabel label="Shop" />
+                  {SHOP_LINKS.map((l) => <MobileNavItem key={l.href} {...l} onClick={closeMobile} />)}
+
+                  {/* User account links */}
+                  {isAuth && (
+                    <>
+                      <MobileSectionLabel label="My Account" />
+                      <MobileNavItem href="/profile" label="Profile" onClick={closeMobile} />
+                      {USER_LINKS.map((l) => <MobileNavItem key={l.href} {...l} onClick={closeMobile} />)}
+                    </>
+                  )}
+
+                  {/* Admin links */}
+                  {isAdmin && (
+                    <>
+                      <MobileSectionLabel label="Admin" />
+                      {ADMIN_LINKS.map((l) => <MobileNavItem key={l.href} {...l} onClick={closeMobile} />)}
+                    </>
+                  )}
+
+                  {/* Auth action */}
+                  <MobileSectionLabel label="" />
+                  {isAuth ? (
+                    <MobileNavItem href="/profile" label="Sign Out" onClick={closeMobile} />
+                  ) : (
+                    <MobileNavItem href="/login" label="Sign In" onClick={closeMobile} />
+                  )}
                 </ul>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
 
-        {/* ── Left Nav (desktop) ── */}
-        <nav className="hidden lg:flex items-center gap-8" aria-label="Main left navigation">
-          <ul className="flex gap-8 list-none">
-            {leftNavItems.map((item) => (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  style={{padding: '0 0.75rem'}}
-                  className="text-xs font-semibold uppercase tracking-widest hover:border-b hover:border-white transition-all duration-200"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* ── Center Logo ── */}
-        <Link
-          href="/"
-          className="absolute left-1/2 -translate-x-1/2 flex items-center text-white"
-          aria-label="Home"
-        >
-          <PandCoLogo />
+        {/* ── Logo ─────────────────────────────────────────────────────────── */}
+        <Link href="/" aria-label="Ishtile Home" className="flex-shrink-0">
+          <IshtileLogo />
         </Link>
 
-        {/* ── Right Nav (desktop) ── */}
-        <div className="hidden lg:flex items-center gap-6">
-          {rightNavTextLinks.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-xs font-semibold uppercase tracking-widest hover:border-b hover:border-white transition-all duration-200"
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* ── Desktop Nav ───────────────────────────────────────────────────── */}
+        <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
+          {/* Shop links — always */}
+          {SHOP_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
 
-          <div className="flex items-center gap-1">
-            <Button asChild variant="ghost" size="icon" aria-label="Search">
-              <Link href="/search"><SearchIcon /></Link>
-            </Button>
-            <Button asChild variant="ghost" size="icon" aria-label="Wishlist">
-              <Link href="/pages/wishlist"><BookmarkIcon /></Link>
-            </Button>
-            <Button asChild variant="ghost" size="icon" aria-label="Account">
-              <Link href="/account"><PersonIcon /></Link>
-            </Button>
-            <Button asChild variant="ghost" size="icon" aria-label="Bag">
-              <Link href="/cart">
-                <BagIcon />
-                {cartCount > 0 && (
-                  <Badge>{cartCount}</Badge>
-                )}
-              </Link>
-            </Button>
-          </div>
-        </div>
+          {/* User links — when logged in */}
+          {isAuth && (
+            <>
+              <NavDivider />
+              {USER_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
+            </>
+          )}
 
-        {/* ── Mobile: right icons ── */}
-        <div className="lg:hidden flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label="Search">
-            <SearchIcon />
+          {/* Admin links — admin only */}
+          {isAdmin && (
+            <>
+              <NavDivider />
+              {ADMIN_LINKS.map((l) => <NavLink key={l.href} {...l} gold={true} />)}
+            </>
+          )}
+        </nav>
+
+        {/* ── Right icons ───────────────────────────────────────────────────── */}
+        <div className="flex items-center gap-1">
+          <Button asChild variant="ghost" size="icon" aria-label="Search" className="text-white hover:bg-white/10">
+            <Link href="/search"><SearchIcon /></Link>
           </Button>
-          <Button asChild variant="ghost" size="icon" aria-label="Bag">
+
+          <Button asChild variant="ghost" size="icon" aria-label="Favourites" className="hidden sm:inline-flex text-white hover:bg-white/10">
+            <Link href="/favourites"><BookmarkIcon /></Link>
+          </Button>
+
+          <Button asChild variant="ghost" size="icon" aria-label={isAuth ? 'My profile' : 'Sign in'} className="text-white hover:bg-white/10">
+            <Link href={isAuth ? '/profile' : '/login'}><PersonIcon /></Link>
+          </Button>
+
+          <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10">
             <Link href="/cart">
               <BagIcon />
               {cartCount > 0 && (
-                <Badge>{cartCount}</Badge>
+                <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </Badge>
               )}
             </Link>
           </Button>

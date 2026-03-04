@@ -7,11 +7,18 @@ import { toProductCardData } from '@/presentation/home/utils/productCard.utils';
 export const revalidate = 300;
 
 export default async function Page() {
-  // Fetch featured products and all active categories in parallel
-  const [{ items: products }, categories] = await Promise.all([
-    getProducts({ isFeatured: true, activeOnly: true, pageSize: 20 }),
-    getCategories({ activeOnly: true, includeSubcategories: true }),
-  ]);
+  let products:   Awaited<ReturnType<typeof getProducts>>['items']   = [];
+  let categories: Awaited<ReturnType<typeof getCategories>>          = [];
+
+  try {
+    [{ items: products }, categories] = await Promise.all([
+      getProducts({ isFeatured: true, activeOnly: true, pageSize: 20 }),
+      getCategories({ activeOnly: true, includeSubcategories: true }),
+    ]);
+  } catch {
+    // Backend unreachable (cold start, network error) — render empty shell;
+    // ISR will retry on the next request interval.
+  }
 
   const cardProducts = products.map((p) => toProductCardData(p, categories));
 

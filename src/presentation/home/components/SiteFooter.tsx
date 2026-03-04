@@ -65,7 +65,7 @@ export default function SiteFooter() {
           <div className="col-span-2 md:col-span-1 flex flex-col gap-6">
             <Link href="/" aria-label="Home">
               <span className="text-2xl font-black uppercase tracking-widest text-white">
-                Ishtyle
+                Ishtile
               </span>
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed max-w-[200px]">
@@ -109,7 +109,7 @@ export default function SiteFooter() {
       {/* Bottom bar */}
       <div className="px-6 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
         <p className="text-xs text-neutral-500">
-          © {new Date().getFullYear()} Ishtyle. All rights reserved.
+          © {new Date().getFullYear()} Ishtile. All rights reserved.
         </p>
         <div className="flex gap-2">
           <Button asChild variant="link" size="sm" className="text-xs text-neutral-500 hover:text-white px-0 h-auto">

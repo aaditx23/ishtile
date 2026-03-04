@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import BuyerLayout from './BuyerLayout';
+import UserLayout from './UserLayout';
 import { getFavourites } from '@/application/favourite/getFavourites';
 import { removeFavourite } from '@/application/favourite/removeFavourite';
 import type { FavouriteDto } from '@/shared/types/api.types';
@@ -43,7 +43,7 @@ export default function FavouritesView() {
   };
 
   return (
-    <BuyerLayout activeHref="/buyer/favourites">
+    <UserLayout activeHref="/favourites">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Favourites</h1>
 
@@ -71,29 +71,16 @@ export default function FavouritesView() {
                   flexDirection:   'column',
                 }}
               >
-                {/* Image */}
                 <Link href={`/products/${fav.productSlug}`} style={{ display: 'block', textDecoration: 'none' }}>
-                  <div
-                    style={{
-                      aspectRatio:     '3/4',
-                      backgroundColor: 'var(--surface-muted)',
-                      overflow:        'hidden',
-                    }}
-                  >
+                  <div style={{ aspectRatio: '3/4', backgroundColor: 'var(--surface-muted)', overflow: 'hidden' }}>
                     {fav.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={fav.imageUrl}
-                        alt={fav.productName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
+                      <img src={fav.imageUrl} alt={fav.productName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '100%', height: '100%' }} />
                     )}
                   </div>
                 </Link>
-
-                {/* Info */}
                 <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
                   <Link href={`/products/${fav.productSlug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <p style={{ fontSize: '0.8rem', fontWeight: 600, lineHeight: 1.3 }}>{fav.productName}</p>
@@ -102,14 +89,14 @@ export default function FavouritesView() {
                   <button
                     onClick={() => handleRemove(fav.id)}
                     style={{
-                      marginTop:   'auto',
-                      background:  'none',
-                      border:      '1px solid var(--border)',
+                      marginTop:    'auto',
+                      background:   'none',
+                      border:       '1px solid var(--border)',
                       borderRadius: '0.375rem',
-                      padding:     '0.3rem 0.5rem',
-                      fontSize:    '0.7rem',
-                      cursor:      'pointer',
-                      color:       'var(--destructive)',
+                      padding:      '0.3rem 0.5rem',
+                      fontSize:     '0.7rem',
+                      cursor:       'pointer',
+                      color:        'var(--destructive)',
                     }}
                   >
                     Remove
@@ -120,6 +107,6 @@ export default function FavouritesView() {
           </div>
         )}
       </div>
-    </BuyerLayout>
+    </UserLayout>
   );
 }

@@ -41,7 +41,7 @@ export default function LoginView() {
         {/* Logo */}
         <Link href="/" style={{ textAlign: 'center', textDecoration: 'none' }}>
           <span style={{ fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--brand-dark)' }}>
-            Ishtyle
+            Ishtile
           </span>
         </Link>
 
@@ -74,7 +74,7 @@ export default function LoginView() {
 
         {/* Footer link */}
         <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
-          New to Ishtyle?{' '}
+          New to Ishtile?{' '}
           <Link href="/register" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
             Create an account →
           </Link>

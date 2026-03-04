@@ -1,6 +1,7 @@
 import type { ApiResponse } from '@/shared/types/api.types';
 import { ENDPOINTS } from './endpoints';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
+import { toCamelCase, toSnakeCase } from './caseConverters';
 
 // ─── Error ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +44,8 @@ function buildUrl(
   params?: RequestOptions['params'],
 ): string {
   if (!params) return url;
-  const qs = Object.entries(params)
+  const snakeParams = toSnakeCase(params) as Record<string, string | number | boolean | undefined | null>;
+  const qs = Object.entries(snakeParams)
     .filter(([, v]) => v !== undefined && v !== null)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
     .join('&');
@@ -57,7 +59,12 @@ function getToken(override?: string): string | null {
   return null;
 }
 
-async function tryRefreshTokens(): Promise<boolean> {
+// ─── Singleton refresh lock ───────────────────────────────────────────────────
+// Ensures concurrent 401 responses share ONE refresh call instead of each
+// burning the refresh token independently (which would fail on single-use tokens).
+let _refreshPromise: Promise<boolean> | null = null;
+
+async function doRefresh(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   const refreshToken = tokenStore.getRefresh();
   if (!refreshToken) return false;
@@ -66,12 +73,12 @@ async function tryRefreshTokens(): Promise<boolean> {
     const res = await fetch(ENDPOINTS.auth.refresh, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify(toSnakeCase({ refreshToken })),
     });
 
     if (!res.ok) return false;
 
-    const json = await res.json() as { token?: string };
+    const json = toCamelCase(await res.json()) as { token?: string };
     if (json.token) {
       tokenStore.setAccess(json.token);
       return true;
@@ -80,6 +87,16 @@ async function tryRefreshTokens(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+async function tryRefreshTokens(): Promise<boolean> {
+  // If a refresh is already in-flight, wait for that same promise.
+  if (_refreshPromise) return _refreshPromise;
+
+  _refreshPromise = doRefresh().finally(() => {
+    _refreshPromise = null;
+  });
+  return _refreshPromise;
 }
 
 // ─── Core request ─────────────────────────────────────────────────────────────
@@ -91,6 +108,13 @@ async function request<T extends AnyApiResponse>(
   options: RequestOptions = {},
   _isRetry = false,
 ): Promise<T> {
+  // Proactive restore: access token is memory-only and lost on every page load.
+  // If it's absent but a refresh token exists, silently obtain a new access
+  // token BEFORE sending the request so the first call always has auth.
+  if (!options.token && !tokenStore.getAccess() && tokenStore.getRefresh() && !_isRetry) {
+    await tryRefreshTokens();
+  }
+
   const token = getToken(options.token);
   const fullUrl = buildUrl(url, options.params);
 
@@ -119,12 +143,13 @@ async function request<T extends AnyApiResponse>(
     const res = await fetch(fullUrl, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? JSON.stringify(toSnakeCase(body)) : undefined,
       signal,
     });
 
-    // Handle 401 → try silent refresh once
-    if (res.status === 401 && !_isRetry) {
+    // Handle 401/403 → try silent refresh once.
+    // Backend returns 403 (not 401) for missing/expired tokens.
+    if ((res.status === 401 || res.status === 403) && !_isRetry) {
       const refreshed = await tryRefreshTokens();
       if (refreshed) {
         return request<T>(method, url, body, options, true);
@@ -133,7 +158,7 @@ async function request<T extends AnyApiResponse>(
       tokenStore.clearAll();
     }
 
-    const json = await res.json() as T & { data?: { errors?: string[] } };
+    const json = toCamelCase(await res.json()) as T & { data?: { errors?: string[] } };
 
     if (!res.ok || !json.success) {
       const errBody = json as unknown as { data?: { errors?: string[] }; message: string };

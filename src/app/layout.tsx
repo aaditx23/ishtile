@@ -10,8 +10,8 @@ const darkCss  = varsToCss(toCssVars(DarkTheme));
 const themeStyles = `:root {\n${lightCss}\n}\n.dark {\n${darkCss}\n}`;
 
 export const metadata: Metadata = {
-  title: 'Ishtyle',
-  description: 'Ishtyle — fashion for everyone',
+  title: 'Ishtile',
+  description: 'Ishtile — fashion for everyone',
 };
 
 export default function RootLayout({
