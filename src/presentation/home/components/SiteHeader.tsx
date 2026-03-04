@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
-import { SearchIcon, BookmarkIcon, PersonIcon, BagIcon, HamburgerIcon } from '@/components/icons';
+import { SearchIcon, BagIcon, HamburgerIcon } from '@/components/icons';
 import { useCartCount } from '@/presentation/shared/hooks/useCartCount';
 import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
 
@@ -19,6 +19,7 @@ const SHOP_LINKS = [
 ];
 
 const USER_LINKS = [
+  { label: 'Profile',    href: '/profile' },
   { label: 'My Orders',  href: '/orders' },
   { label: 'Favourites', href: '/favourites' },
 ];
@@ -202,14 +203,6 @@ export default function SiteHeader() {
         <div className="flex items-center gap-1">
           <Button asChild variant="ghost" size="icon" aria-label="Search" className="text-white hover:bg-white/10">
             <Link href="/search"><SearchIcon /></Link>
-          </Button>
-
-          <Button asChild variant="ghost" size="icon" aria-label="Favourites" className="hidden sm:inline-flex text-white hover:bg-white/10">
-            <Link href="/favourites"><BookmarkIcon /></Link>
-          </Button>
-
-          <Button asChild variant="ghost" size="icon" aria-label={isAuth ? 'My profile' : 'Sign in'} className="text-white hover:bg-white/10">
-            <Link href={isAuth ? '/profile' : '/login'}><PersonIcon /></Link>
           </Button>
 
           <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10">

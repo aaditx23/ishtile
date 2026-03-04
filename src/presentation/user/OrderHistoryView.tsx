@@ -64,8 +64,9 @@ export default function OrderHistoryView() {
                 borderRadius:    '0.75rem',
                 padding:         '1rem 1.25rem',
                 backgroundColor: 'var(--surface)',
-                transition:      'border-color 0.15s',
+                transition:      'all 0.2s ease',
               }}
+              className="hover:bg-[var(--surface-variant)] hover:scale-[1.01] active:scale-[0.99]"
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <div>

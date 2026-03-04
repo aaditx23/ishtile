@@ -84,7 +84,7 @@ export default function CartView() {
               title="Your cart is empty"
               description="Looks like you haven't added anything yet."
             />
-            <Button asChild size="lg" className="tracking-widest uppercase" style={{padding:'1rem'}}>
+            <Button asChild size="lg" className="tracking-widest uppercase" style={{ padding: '0 2rem' }}>
               <Link href="/products">
                 Browse Products
               </Link>

@@ -86,6 +86,7 @@ export default function AdminOrdersView() {
                 {orders.map((order, i) => (
                   <tr
                     key={order.id}
+                    className="hover:bg-[var(--surface-variant)] transition-colors"
                     style={{
                       borderBottom: i < orders.length - 1 ? '1px solid var(--border)' : 'none',
                     }}

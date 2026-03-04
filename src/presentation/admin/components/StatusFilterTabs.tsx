@@ -38,7 +38,7 @@ export default function StatusFilterTabs() {
               fontSize:        '0.75rem',
               fontWeight:      active ? 700 : 500,
               border:          active ? 'none' : '1px solid var(--border)',
-              backgroundColor: active ? 'var(--brand-dark)' : 'transparent',
+              backgroundColor: active ? 'var(--primary)' : 'transparent',
               color:           active ? 'var(--on-primary)' : 'var(--on-surface)',
               cursor:          'pointer',
             }}
