@@ -15,43 +15,54 @@ interface ProductsPageViewProps {
   currentPage: number;
 }
 
-function FiltersLoading() {
+function SidebarLoading() {
   return (
-    <div style={{ padding: '1.5rem 3rem', display: 'flex', gap: '0.5rem' }}>
-      {[120, 80, 90, 70, 100].map((w, i) => (
-        <Skeleton key={i} style={{ height: '2rem', width: `${w}px`, borderRadius: '9999px' }} />
+    <aside style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.25rem' }}>
+      {[140, 100, 120, 80, 90].map((w, i) => (
+        <Skeleton key={i} style={{ height: '1.25rem', width: `${w}px`, borderRadius: '0.375rem' }} />
       ))}
-    </div>
+    </aside>
   );
 }
 
-/**
- * Server component that composes the full products listing page.
- * ProductFilters is wrapped in Suspense because it uses useSearchParams.
- */
-export default function ProductsPageView({ products, categories, pagination, currentPage }: ProductsPageViewProps) {
+export default function ProductsPageView({ products, categories, pagination }: ProductsPageViewProps) {
   return (
     <ShopLayout>
-      <div style={{ paddingTop: '80px' }}> {/* offset for fixed header */}
+      <div style={{ paddingTop: '80px' }}>
 
-        <div style={{ padding: '2rem 3rem 0' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            All Products
+        {/* ── Page header ─────────────────────────────── */}
+        <div style={{ padding: '2rem 2rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Products
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)', marginTop: '0.25rem' }}>
-            {pagination.total} items
+          <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', marginTop: '0.2rem' }}>
+            {pagination.total} {pagination.total === 1 ? 'item' : 'items'}
           </p>
         </div>
 
-        <Suspense fallback={<FiltersLoading />}>
-          <ProductFilters categories={categories} />
-        </Suspense>
+        {/* ── Two-column layout ───────────────────────── */}
+        <div style={{ display: 'flex', gap: '2rem', padding: '2rem 2rem 0', alignItems: 'flex-start' }}>
 
-        <ProductGrid items={products} />
+          {/* Sidebar */}
+          <Suspense fallback={<SidebarLoading />}>
+            <ProductFilters categories={categories} />
+          </Suspense>
 
-        <Suspense fallback={null}>
-          <Pagination pagination={pagination} />
-        </Suspense>
+          {/* Main content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {products.length === 0 ? (
+              <div style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.9rem' }}>
+                No products found. Try adjusting your filters.
+              </div>
+            ) : (
+              <ProductGrid items={products} />
+            )}
+
+            <Suspense fallback={null}>
+              <Pagination pagination={pagination} />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </ShopLayout>
   );

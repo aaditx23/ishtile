@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
@@ -100,17 +100,49 @@ function MobileSectionLabel({ label }: { label: string }) {
 export default function SiteHeader() {
   const cartCount  = useCartCount();
   const auth       = useCurrentUser();
-  const [scrolled, setScrolled]   = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const router     = useRouter();
+  const pathname   = usePathname();
+  const searchParams = useSearchParams();
+
+  const [scrolled, setScrolled]       = useState(false);
+  const [mobileOpen, setMobileOpen]   = useState(false);
+  const [searchOpen, setSearchOpen]   = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const isAuth  = auth.status === 'authenticated';
   const isAdmin = isAuth && auth.user.role === 'admin';
+
+  // Keep search query in sync with URL param
+  useEffect(() => {
+    setSearchQuery(searchParams.get('search') ?? '');
+  }, [searchParams]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Focus input when search opens
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  // Close search on route change
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
+
+  const openSearch = () => setSearchOpen(true);
+  const closeSearch = () => { setSearchOpen(false); setSearchQuery(''); };
+
+  const submitSearch = () => {
+    const q = searchQuery.trim();
+    if (q) router.push(`/products?search=${encodeURIComponent(q)}`);
+    else router.push('/products');
+    setSearchOpen(false);
+  };
 
   const closeMobile = () => setMobileOpen(false);
 
@@ -173,50 +205,92 @@ export default function SiteHeader() {
         </div>
 
         {/* ── Logo ─────────────────────────────────────────────────────────── */}
-        <Link href="/" aria-label="Ishtile Home" className="flex-shrink-0">
-          <IshtileLogo />
-        </Link>
+        {!searchOpen && (
+          <Link href="/" aria-label="Ishtile Home" className="flex-shrink-0">
+            <IshtileLogo />
+          </Link>
+        )}
 
-        {/* ── Desktop Nav ───────────────────────────────────────────────────── */}
-        <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
-          {/* Shop links — always */}
-          {SHOP_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
-
-          {/* User links — when logged in */}
-          {isAuth && (
-            <>
-              <NavDivider />
-              {USER_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
-            </>
-          )}
-
-          {/* Admin links — admin only */}
-          {isAdmin && (
-            <>
-              <NavDivider />
-              {ADMIN_LINKS.map((l) => <NavLink key={l.href} {...l} gold={true} />)}
-            </>
-          )}
-        </nav>
-
-        {/* ── Right icons ───────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-1">
-          <Button asChild variant="ghost" size="icon" aria-label="Search" className="text-white hover:bg-white/10">
-            <Link href="/search"><SearchIcon /></Link>
-          </Button>
-
-          <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10">
-            <Link href="/cart">
-              <BagIcon />
-              {cartCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
-                  {cartCount > 99 ? '99+' : cartCount}
-                </Badge>
+        {/* ── Search overlay (expands full width) ──────────────────────────── */}
+        {searchOpen ? (
+          <div className="flex flex-1 items-center gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none">
+                <SearchIcon />
+              </span>
+              <input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') submitSearch();
+                  if (e.key === 'Escape') closeSearch();
+                }}
+                placeholder="Search products…"
+                className="w-full h-9 bg-white/10 border border-white/20 rounded-lg pl-9 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--brand-gold)] focus:bg-white/15 transition-all"
+              />
+            </div>
+            <Button
+              onClick={submitSearch}
+              size="sm"
+              className="bg-[var(--brand-gold)] text-black hover:bg-[var(--brand-gold-hover)] font-semibold text-xs uppercase tracking-wider px-4 shrink-0"
+            >
+              Search
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={closeSearch}
+              className="text-white/60 hover:text-white hover:bg-white/10 text-xs shrink-0"
+              aria-label="Cancel search"
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <>
+            {/* ── Desktop Nav ─────────────────────────────────────────────── */}
+            <nav className="hidden lg:flex items-center gap-6" aria-label="Main navigation">
+              {SHOP_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
+              {isAuth && (
+                <>
+                  <NavDivider />
+                  {USER_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
+                </>
               )}
-            </Link>
-          </Button>
-        </div>
+              {isAdmin && (
+                <>
+                  <NavDivider />
+                  {ADMIN_LINKS.map((l) => <NavLink key={l.href} {...l} gold={true} />)}
+                </>
+              )}
+            </nav>
 
+            {/* ── Right icons ─────────────────────────────────────────────── */}
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Search"
+                onClick={openSearch}
+                className="text-white hover:bg-white/10"
+              >
+                <SearchIcon />
+              </Button>
+
+              <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10">
+                <Link href="/cart">
+                  <BagIcon />
+                  {cartCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
+                      {cartCount > 99 ? '99+' : cartCount}
+                    </Badge>
+                  )}
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </header>
   );

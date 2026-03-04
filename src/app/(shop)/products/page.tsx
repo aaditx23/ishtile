@@ -6,15 +6,18 @@ import { toProductCardData } from '@/presentation/home/utils/productCard.utils';
 export const revalidate = 60;
 
 interface SearchParams {
-  category?: string;
-  sub?: string;
-  search?: string;
-  page?: string;
+  category?:   string;
+  sub?:        string;
+  search?:     string;
+  brand?:      string;
+  featured?:   string; // '1' = true
+  activeOnly?: string; // '0' = false (default true)
+  page?:       string;
 }
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
-  const page = Number(params.page ?? '1');
+  const page   = Math.max(1, Number(params.page ?? '1'));
 
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
   let cardProducts: ReturnType<typeof toProductCardData>[]  = [];
@@ -23,16 +26,20 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   try {
     categories = await getCategories({ activeOnly: true, includeSubcategories: true });
 
-    const matchedCategory = params.category
-      ? categories.find((c) => c.slug === params.category)
+    const matchedCategory    = params.category ? categories.find((c) => c.slug === params.category) : undefined;
+    const matchedSubcategory = (matchedCategory && params.sub)
+      ? matchedCategory.subcategories?.find((s) => s.slug === params.sub)
       : undefined;
 
     const { items, pagination: pg } = await getProducts({
       page,
-      pageSize:   24,
-      categoryId: matchedCategory?.id,
-      search:     params.search,
-      activeOnly: true,
+      pageSize:      24,
+      categoryId:    matchedCategory?.id,
+      subcategoryId: matchedSubcategory?.id,
+      brand:         params.brand        || undefined,
+      search:        params.search       || undefined,
+      isFeatured:    params.featured === '1' ? true : undefined,
+      activeOnly:    params.activeOnly === '0' ? false : true,
     });
 
     cardProducts = items.map((p) => toProductCardData(p, categories));

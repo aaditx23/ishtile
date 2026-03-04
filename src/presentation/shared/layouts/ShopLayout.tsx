@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import AnnouncementBar from '@/presentation/home/components/AnnouncementBar';
 import SiteHeader from '@/presentation/home/components/SiteHeader';
 import SiteFooter from '@/presentation/home/components/SiteFooter';
@@ -16,7 +17,7 @@ export default function ShopLayout({ children, announcement }: ShopLayoutProps) 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AnnouncementBar text={announcement} />
-      <SiteHeader />
+      <Suspense><SiteHeader /></Suspense>
       <main style={{ flex: 1, paddingTop: '4rem' }}>
         {children}
       </main>
