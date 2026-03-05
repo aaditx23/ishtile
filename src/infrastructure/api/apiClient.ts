@@ -198,4 +198,43 @@ export const apiClient = {
   delete<T extends AnyApiResponse>(url: string, opts?: RequestOptions): Promise<T> {
     return request<T>('DELETE', url, undefined, opts);
   },
+
+  /**
+   * POST with a raw FormData body — does NOT JSON-serialize or set Content-Type
+   * (the browser sets multipart/form-data with the correct boundary automatically).
+   */
+  async postFormData<T extends AnyApiResponse>(url: string, formData: FormData, opts: RequestOptions = {}): Promise<T> {
+    if (!opts.token && !tokenStore.getAccess() && tokenStore.getRefresh()) {
+      await tryRefreshTokens();
+    }
+    const token = getToken(opts.token);
+    const headers: Record<string, string> = { 'X-Requested-With': 'XMLHttpRequest' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const timeoutMs = opts.timeout ?? 30_000; // larger default for uploads
+    const timeoutController = timeoutMs > 0 ? new AbortController() : null;
+    const timeoutId = timeoutController ? setTimeout(() => timeoutController.abort(), timeoutMs) : null;
+    const signals = [timeoutController?.signal, opts.signal].filter(Boolean) as AbortSignal[];
+    const signal = signals.length > 1 ? AbortSignal.any(signals) : signals[0];
+
+    try {
+      const res = await fetch(url, { method: 'POST', headers, body: formData, signal });
+
+      if ((res.status === 401 || res.status === 403)) {
+        const refreshed = await tryRefreshTokens();
+        if (refreshed) return this.postFormData<T>(url, formData, { ...opts, token: tokenStore.getAccess() ?? undefined });
+        tokenStore.clearAll();
+      }
+
+      const json = toCamelCase(await res.json()) as T & { data?: { errors?: string[] } };
+      if (!res.ok || !json.success) {
+        const errBody = json as unknown as { data?: { errors?: string[] }; message: string };
+        const userMessage = res.status >= 500 ? 'Something went wrong. Please try again later.' : (errBody.message ?? 'Request failed.');
+        throw new ApiError(res.status, userMessage, errBody.data?.errors);
+      }
+      return json as T;
+    } finally {
+      if (timeoutId !== null) clearTimeout(timeoutId);
+    }
+  },
 };
