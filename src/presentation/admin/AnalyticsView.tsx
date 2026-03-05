@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import AdminLayout from './AdminLayout';
+import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
+import { AdminSidebarNav } from './AdminLayout';
+import MobileAdminAnalyticsView from './MobileAdminAnalyticsView';
 import { getDailySales } from '@/application/analytics/getDailySales';
 import { getProductSales } from '@/application/analytics/getProductSales';
 import { getPromoSales } from '@/application/analytics/getPromoSales';
@@ -102,99 +104,124 @@ export default function AnalyticsView() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || !data) {
-    return (
-      <AdminLayout activeHref="/admin/analytics">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            {[1,2].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)}
-          </div>
-          <Skeleton style={{ height: '10rem', borderRadius: '0.75rem' }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {[1,2].map((i) => <Skeleton key={i} style={{ height: '14rem', borderRadius: '0.75rem' }} />)}
-          </div>
-        </div>
-      </AdminLayout>
-    );
-  }
+  const totalRevenue = (data?.dailySales ?? []).reduce((s, d) => s + d.totalRevenue, 0);
+  const totalOrders  = (data?.dailySales ?? []).reduce((s, d) => s + d.totalOrders, 0);
 
-  const { dailySales, productSales, promoSales } = data;
-  const totalRevenue = dailySales.reduce((s, d) => s + d.totalRevenue, 0);
-  const totalOrders  = dailySales.reduce((s, d) => s + d.totalOrders, 0);
+  const { dailySales = [], productSales = [], promoSales = [] } = data ?? {};
 
   return (
-    <AdminLayout activeHref="/admin/analytics">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
-
-        {/* Summary row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
-          {[
-            { label: 'Total Revenue (30d)',  value: fmt(totalRevenue) },
-            { label: 'Total Orders (30d)',   value: totalOrders },
-          ].map(({ label, value }) => (
-            <div key={label} style={{ ...sectionStyle, padding: '1rem' }}>
-              <p style={{ ...headingStyle, marginBottom: '0.375rem' }}>{label}</p>
-              <p style={{ fontSize: '1.5rem', fontWeight: 800 }}>{value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Daily revenue bar chart */}
-        <div style={sectionStyle}>
-          <p style={headingStyle}>Daily Revenue (last 30 days)</p>
-          <BarChart data={dailySales} />
-        </div>
-
-        {/* Top products + promo usage side-by-side */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
-          {/* Top products */}
-          <div style={sectionStyle}>
-            <p style={headingStyle}>Top Products</p>
-            {productSales.length === 0 ? (
-              <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>No data.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {productSales.map((p, i) => (
-                  <div key={`${p.productId}-${p.variantId}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-muted)', width: '1.25rem', flexShrink: 0 }}>{i + 1}</span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {p.productName}{p.variantSize ? ` (${p.variantSize})` : ''}
-                      </span>
-                    </div>
-                    <div style={{ flexShrink: 0, textAlign: 'right' }}>
-                      <p style={{ fontWeight: 700 }}>{fmt(p.totalRevenue)}</p>
-                      <p style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{p.totalQuantitySold} sold</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Promo usage */}
-          <div style={sectionStyle}>
-            <p style={headingStyle}>Promo Usage</p>
-            {promoSales.length === 0 ? (
-              <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>No data.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {promoSales.map((p) => (
-                  <div key={p.promoId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}>
-                    <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.78rem' }}>{p.promoCode}</span>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontWeight: 700 }}>{p.totalUses} uses</p>
-                      <p style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>−{fmt(p.totalDiscountGiven)} given</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+    <ShopLayout>
+      {/* ── Mobile ─────────────────────────────────────────────────────────── */}
+      <div className="block lg:hidden">
+        <MobileAdminAnalyticsView
+          loading={loading}
+          totalRevenue={totalRevenue}
+          totalOrders={totalOrders}
+          dailySales={dailySales}
+          productSales={productSales}
+          promoSales={promoSales}
+        />
       </div>
-    </AdminLayout>
+
+      {/* ── Desktop ─────────────────────────────────────────────────────────── */}
+      <div
+        className="hidden lg:grid"
+        style={{
+          maxWidth:            '84rem',
+          margin:              '0 auto',
+          padding:             '2rem 1.25rem',
+          gridTemplateColumns: '13rem 1fr',
+          gap:                 '2rem',
+          alignItems:          'start',
+        }}
+      >
+        <AdminSidebarNav activeHref="/admin/analytics" />
+
+        <main>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
+
+            {loading ? (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)}
+                </div>
+                <Skeleton style={{ height: '10rem', borderRadius: '0.75rem' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '14rem', borderRadius: '0.75rem' }} />)}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Summary row */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
+                  {[
+                    { label: 'Total Revenue (30d)', value: fmt(totalRevenue) },
+                    { label: 'Total Orders (30d)',  value: totalOrders },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{ ...sectionStyle, padding: '1rem' }}>
+                      <p style={{ ...headingStyle, marginBottom: '0.375rem' }}>{label}</p>
+                      <p style={{ fontSize: '1.5rem', fontWeight: 800 }}>{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Daily revenue bar chart */}
+                <div style={sectionStyle}>
+                  <p style={headingStyle}>Daily Revenue (last 30 days)</p>
+                  <BarChart data={dailySales} />
+                </div>
+
+                {/* Top products + promo usage side-by-side */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
+                  <div style={sectionStyle}>
+                    <p style={headingStyle}>Top Products</p>
+                    {productSales.length === 0 ? (
+                      <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>No data.</p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {productSales.map((p, i) => (
+                          <div key={`${p.productId}-${p.variantId}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--on-surface-muted)', width: '1.25rem', flexShrink: 0 }}>{i + 1}</span>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {p.productName}{p.variantSize ? ` (${p.variantSize})` : ''}
+                              </span>
+                            </div>
+                            <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                              <p style={{ fontWeight: 700 }}>{fmt(p.totalRevenue)}</p>
+                              <p style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{p.totalQuantitySold} sold</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={sectionStyle}>
+                    <p style={headingStyle}>Promo Usage</p>
+                    {promoSales.length === 0 ? (
+                      <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>No data.</p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {promoSales.map((p) => (
+                          <div key={p.promoId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}>
+                            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.78rem' }}>{p.promoCode}</span>
+                            <div style={{ textAlign: 'right' }}>
+                              <p style={{ fontWeight: 700 }}>{p.totalUses} uses</p>
+                              <p style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>−{fmt(p.totalDiscountGiven)} given</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </main>
+      </div>
+    </ShopLayout>
   );
 }
