@@ -20,7 +20,10 @@ const EMPTY_FIELDS: ShippingFields = {
   name:       '',
   phone:      '',
   address:    '',
-  city:       '',
+  cityName:   '',
+  cityId:     null,
+  zoneId:     null,
+  areaId:     null,
   postalCode: '',
   notes:      '',
 };
@@ -66,7 +69,9 @@ export default function CheckoutView() {
     fields.name.trim() &&
     fields.phone.trim() &&
     fields.address.trim() &&
-    fields.city.trim() &&
+    fields.cityId != null &&
+    fields.zoneId != null &&
+    fields.areaId != null &&
     codConfirmed &&
     !submitting;
 
@@ -76,12 +81,16 @@ export default function CheckoutView() {
     setSubmitting(true);
     try {
       const order = await createOrder({
-        shippingName:    fields.name.trim(),
-        shippingPhone:   fields.phone.trim(),
-        shippingAddress: fields.address.trim(),
-        shippingCity:    fields.city.trim(),
+        shippingName:        fields.name.trim(),
+        shippingPhone:       fields.phone.trim(),
+        shippingAddress:     fields.address.trim(),
+        shippingAddressLine: fields.address.trim(),
+        shippingCity:        fields.cityName,
+        shippingCityId:      fields.cityId!,
+        shippingZoneId:      fields.zoneId!,
+        shippingAreaId:      fields.areaId!,
         ...(fields.postalCode.trim() ? { shippingPostalCode: fields.postalCode.trim() } : {}),
-        paymentMethod:   'cod',
+        paymentMethod:       'cod',
         ...(promoCode ? { promoCode } : {}),
         ...(fields.notes.trim() ? { customerNotes: fields.notes.trim() } : {}),
       });

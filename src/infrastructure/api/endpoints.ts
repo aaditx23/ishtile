@@ -62,6 +62,13 @@ export const ENDPOINTS = {
     info: `${API_BASE}/payments/info`,
   },
 
+  // ─── Locations ──────────────────────────────────────────────────────────────
+  locations: {
+    cities:          `${API_BASE}/locations/cities`,
+    zones:  (cityId: number) => `${API_BASE}/locations/zones/${cityId}`,
+    areas:  (zoneId: number) => `${API_BASE}/locations/areas/${zoneId}`,
+  },
+
   // ─── Admin ────────────────────────────────────────────────────────────────
   admin: {
     analytics: {

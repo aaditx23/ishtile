@@ -342,6 +342,23 @@ export interface MemoDto {
   updatedAt: string;
 }
 
+// ─── Locations (Pathao) ───────────────────────────────────────────────────────
+
+export interface PathaoCityDto {
+  cityId:   number;
+  cityName: string;
+}
+
+export interface PathaoZoneDto {
+  zoneId:   number;
+  zoneName: string;
+}
+
+export interface PathaoAreaDto {
+  areaId:   number;
+  areaName: string;
+}
+
 // ─── Error ────────────────────────────────────────────────────────────────────
 
 export interface ErrorResponseBody {
@@ -386,3 +403,7 @@ export type ValidatePromoResponse = DataResponse<PromoValidationDto>;
 export type ListFavouritesResponse = PaginatedResponse<FavouriteDto>;
 export type AddFavouriteResponse = ActionResponse;
 export type RemoveFavouriteResponse = ActionResponse;
+
+export type GetCitiesResponse  = ApiResponse & { data: null; listData: PathaoCityDto[] };
+export type GetZonesResponse   = ApiResponse & { data: null; listData: PathaoZoneDto[] };
+export type GetAreasResponse   = ApiResponse & { data: null; listData: PathaoAreaDto[] };

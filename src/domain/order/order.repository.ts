@@ -7,8 +7,7 @@ export interface CreateOrderPayload {
   shippingAddress:     string;
   shippingCity:        string;
   shippingPostalCode?: string;
-  /** Pathao fields — optional for Phase 1 (plain text addresses) */
-  shippingAddressLine?: string;
+  shippingAddressLine: string;
   shippingCityId?:     number;
   shippingZoneId?:     number;
   shippingAreaId?:     number;

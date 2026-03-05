@@ -30,7 +30,6 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'pand.co' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'ishtile-backend.onrender.com' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },

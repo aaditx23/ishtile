@@ -47,7 +47,7 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
       aria-pressed={selected}
       aria-label={`Filter by ${label}`}
     >
-      {image && (
+      {image && (() => { try { new URL(image); return true; } catch { return false; } })() && (
         <Image
           src={image}
           alt={label}

@@ -20,18 +20,23 @@ export interface ProductCardData {
   images: string[];
 }
 
+function isValidUrl(src: string) {
+  try { new URL(src); return true; } catch { return false; }
+}
+
 export default function ProductCard({ product }: { product: ProductCardData }) {
+  const validImages = product.images.filter(isValidUrl);
   const [wishlisted, setWishlisted] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
-  const hasMany = product.images.length > 1;
+  const hasMany = validImages.length > 1;
 
   const prev = (e: React.MouseEvent) => {
     e.preventDefault();
-    setImgIndex((i) => (i - 1 + product.images.length) % product.images.length);
+    setImgIndex((i) => (i - 1 + validImages.length) % validImages.length);
   };
   const next = (e: React.MouseEvent) => {
     e.preventDefault();
-    setImgIndex((i) => (i + 1) % product.images.length);
+    setImgIndex((i) => (i + 1) % validImages.length);
   };
 
   const formattedPrice = `৳${Number(product.price || 0).toFixed(2)}`;
@@ -45,10 +50,10 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           {/* Sliding strip */}
           <div
             className="flex h-full transition-transform duration-300 ease-in-out"
-            style={{ width: `${product.images.length * 100}%`, transform: `translateX(-${(imgIndex / product.images.length) * 100}%)` }}
+            style={{ width: `${validImages.length * 100}%`, transform: `translateX(-${(imgIndex / validImages.length) * 100}%)` }}
           >
-            {product.images.map((src, i) => (
-              <div key={i} className="relative h-full flex-shrink-0 overflow-hidden" style={{ width: `${100 / product.images.length}%` }}>
+            {validImages.map((src, i) => (
+              <div key={i} className="relative h-full flex-shrink-0 overflow-hidden" style={{ width: `${100 / validImages.length}%` }}>
                 <Image
                   src={src}
                   alt={`${product.name} ${i + 1}`}
