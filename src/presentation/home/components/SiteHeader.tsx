@@ -70,8 +70,7 @@ export default function SiteHeader() {
   
   const handleLogout = () => {
     tokenStore.clearAll();
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   };
 
   return (
