@@ -11,7 +11,7 @@ import type { ProductCardData } from '@/presentation/home/components/ProductCard
 interface ProductsPageViewProps {
   products: ProductCardData[];
   categories: Category[];
-  pagination: PaginationMeta;
+  pagination?: PaginationMeta | null;
   currentPage: number;
 }
 
@@ -36,7 +36,7 @@ export default function ProductsPageView({ products, categories, pagination }: P
             Products
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', marginTop: '0.2rem' }}>
-            {pagination.total} {pagination.total === 1 ? 'item' : 'items'}
+            {pagination?.total ?? 0} {(pagination?.total ?? 0) === 1 ? 'item' : 'items'}
           </p>
         </div>
 
@@ -59,7 +59,7 @@ export default function ProductsPageView({ products, categories, pagination }: P
             )}
 
             <Suspense fallback={null}>
-              <Pagination pagination={pagination} />
+              {pagination && <Pagination pagination={pagination} />}
             </Suspense>
           </div>
         </div>

@@ -74,7 +74,7 @@ export function SearchBar({ variant = 'desktop' }: SearchBarProps) {
   return (
     <>
       {searchOpen ? (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <div className="relative w-48 sm:w-64">
             <Input
               ref={inputRef}
@@ -82,7 +82,7 @@ export function SearchBar({ variant = 'desktop' }: SearchBarProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); if (e.key === 'Escape') closeSearch(); }}
               placeholder="Search products…"
-              className="h-8 w-full bg-white/10 border-white/20 pl-9 pr-3 text-sm text-white placeholder:text-white/50"
+              
             />
           </div>
           <Button
@@ -90,6 +90,7 @@ export function SearchBar({ variant = 'desktop' }: SearchBarProps) {
             size="sm"
             onClick={closeSearch}
             className="text-white/50 hover:text-white/70 text-xs hidden sm:flex"
+            style={{padding:'1rem'}}
           >
             Cancel
           </Button>

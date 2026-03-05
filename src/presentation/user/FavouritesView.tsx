@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import UserLayout from './UserLayout';
+import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
+import MobileFavouritesView from './MobileFavouritesView';
 import { getFavourites } from '@/application/favourite/getFavourites';
 import { removeFavourite } from '@/application/favourite/removeFavourite';
 import type { FavouriteDto } from '@/shared/types/api.types';
@@ -43,70 +44,78 @@ export default function FavouritesView() {
   };
 
   return (
-    <UserLayout activeHref="/favourites">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Favourites</h1>
-
-        {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
-            {[1,2,3,4,5,6].map((i) => (
-              <Skeleton key={i} style={{ height: '220px', borderRadius: '0.75rem' }} />
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.9rem' }}>
-            No saved items yet.
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
-            {items.map((fav) => (
-              <div
-                key={fav.id}
-                style={{
-                  border:          '1px solid var(--border)',
-                  borderRadius:    '0.75rem',
-                  overflow:        'hidden',
-                  backgroundColor: 'var(--surface)',
-                  display:         'flex',
-                  flexDirection:   'column',
-                }}
-              >
-                <Link href={`/products/${fav.productSlug}`} style={{ display: 'block', textDecoration: 'none' }}>
-                  <div style={{ aspectRatio: '3/4', backgroundColor: 'var(--surface-muted)', overflow: 'hidden' }}>
-                    {fav.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={fav.imageUrl} alt={fav.productName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%' }} />
-                    )}
-                  </div>
-                </Link>
-                <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
-                  <Link href={`/products/${fav.productSlug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <p style={{ fontSize: '0.8rem', fontWeight: 600, lineHeight: 1.3 }}>{fav.productName}</p>
-                  </Link>
-                  <p style={{ fontSize: '0.8rem', fontWeight: 700 }}>{fmt(fav.basePrice)}</p>
-                  <button
-                    onClick={() => handleRemove(fav.id)}
-                    style={{
-                      marginTop:    'auto',
-                      background:   'none',
-                      border:       '1px solid var(--border)',
-                      borderRadius: '0.375rem',
-                      padding:      '0.3rem 0.5rem',
-                      fontSize:     '0.7rem',
-                      cursor:       'pointer',
-                      color:        'var(--destructive)',
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+    <ShopLayout>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MobileFavouritesView items={items} loading={loading} onRemove={handleRemove} />
       </div>
-    </UserLayout>
+
+      {/* Desktop */}
+      <div className="hidden lg:block" style={{ maxWidth: '56rem', margin: '0 auto', padding: '2rem 1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Favourites</h1>
+
+          {loading ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
+              {[1,2,3,4,5,6].map((i) => (
+                <Skeleton key={i} style={{ height: '220px', borderRadius: '0.75rem' }} />
+              ))}
+            </div>
+          ) : items.length === 0 ? (
+            <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.9rem' }}>
+              No saved items yet.
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
+              {items.map((fav) => (
+                <div
+                  key={fav.id}
+                  style={{
+                    border:          '1px solid var(--border)',
+                    borderRadius:    '0.75rem',
+                    overflow:        'hidden',
+                    backgroundColor: 'var(--surface)',
+                    display:         'flex',
+                    flexDirection:   'column',
+                  }}
+                >
+                  <Link href={`/products/${fav.productSlug}`} style={{ display: 'block', textDecoration: 'none' }}>
+                    <div style={{ aspectRatio: '3/4', backgroundColor: 'var(--surface-muted)', overflow: 'hidden' }}>
+                      {fav.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={fav.imageUrl} alt={fav.productName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%' }} />
+                      )}
+                    </div>
+                  </Link>
+                  <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
+                    <Link href={`/products/${fav.productSlug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 600, lineHeight: 1.3 }}>{fav.productName}</p>
+                    </Link>
+                    <p style={{ fontSize: '0.8rem', fontWeight: 700 }}>{fmt(fav.basePrice)}</p>
+                    <button
+                      onClick={() => handleRemove(fav.id)}
+                      style={{
+                        marginTop:    'auto',
+                        background:   'none',
+                        border:       '1px solid var(--border)',
+                        borderRadius: '0.375rem',
+                        padding:      '0.3rem 0.5rem',
+                        fontSize:     '0.7rem',
+                        cursor:       'pointer',
+                        color:        'var(--destructive)',
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </ShopLayout>
   );
 }
