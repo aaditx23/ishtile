@@ -79,7 +79,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
 
   return (
     <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Field label="Name">
           <Input value={form.name ?? ''} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
         </Field>

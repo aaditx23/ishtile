@@ -219,8 +219,8 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Existing variants */}
       {variants.length > 0 && (
-        <div style={{ border: '1px solid var(--border)', borderRadius: '0.5rem', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+        <div style={{ border: '1px solid var(--border)', borderRadius: '0.5rem', overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: '36rem', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
                 {['Size', 'Color', 'SKU', 'Price', 'Inventory', ''].map((h) => (

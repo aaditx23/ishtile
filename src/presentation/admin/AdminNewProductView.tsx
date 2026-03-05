@@ -7,7 +7,9 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import AdminLayout from './AdminLayout';
+import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
+import { AdminSidebarNav } from './AdminLayout';
+import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { createProduct } from '@/application/product/adminProduct';
 import { getCategories } from '@/application/category/getCategories';
 import type { Category } from '@/domain/category/category.entity';
@@ -134,18 +136,31 @@ export default function AdminNewProductView() {
   };
 
   return (
-    <AdminLayout activeHref="/admin/products">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
-            <Link href="/admin/products">← Products</Link>
-          </Button>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>New Product</h1>
-        </div>
+    <ShopLayout>
+      {/* Mobile-only nav */}
+      <div className="lg:hidden" style={{ padding: '1.25rem 1rem 0' }}>
+        <AdminMobileNavStrip activeHref="/admin/products" />
+      </div>
 
-        <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', padding: '1.5rem', backgroundColor: 'var(--surface)' }}>
+      <div style={{ maxWidth: '84rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'start' }}>
+          {/* Sidebar — desktop only */}
+          <div className="hidden lg:block" style={{ width: '13rem', flexShrink: 0 }}>
+            <AdminSidebarNav activeHref="/admin/products" />
+          </div>
+
+          {/* Main content */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
+                <Link href="/admin/products">← Products</Link>
+              </Button>
+              <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>New Product</h1>
+            </div>
+
+            <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', padding: '1.5rem', backgroundColor: 'var(--surface)' }}>
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Field label="Name">
                 <Input value={form.name} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
               </Field>
@@ -214,7 +229,11 @@ export default function AdminNewProductView() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {variants.map((v, i) => (
-                  <div key={v.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(4rem, 1fr) minmax(5rem, 1fr) minmax(6rem, 2fr) minmax(4rem, 1fr) minmax(4rem, 1fr) minmax(4rem, 1fr) auto', gap: '0.5rem', alignItems: 'end' }}>
+                  <div
+                    key={v.id}
+                    className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,2fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2"
+                    style={{ borderTop: i > 0 ? '1px dashed var(--border)' : undefined, paddingTop: i > 0 ? '1rem' : undefined }}
+                  >
                     <Field label="Size">
                       <select
                         value={v.size}
@@ -232,9 +251,12 @@ export default function AdminNewProductView() {
                     <Field label="Color">
                       <Input value={v.color} onChange={(e) => setV(v.id, 'color', e.target.value)} required disabled={saving} placeholder="Red" />
                     </Field>
-                    <Field label="SKU">
-                      <Input value={v.sku} onChange={(e) => setV(v.id, 'sku', e.target.value)} required disabled={saving} placeholder="SKU-001-M" />
-                    </Field>
+                    {/* SKU spans full width on mobile, 1 col on desktop */}
+                    <div className="col-span-2 lg:col-span-1">
+                      <Field label="SKU">
+                        <Input value={v.sku} onChange={(e) => setV(v.id, 'sku', e.target.value)} required disabled={saving} placeholder="SKU-001-M" />
+                      </Field>
+                    </div>
                     <Field label="Price">
                       <Input type="number" value={v.price} onChange={(e) => setV(v.id, 'price', e.target.value)} required disabled={saving} placeholder="৳" />
                     </Field>
@@ -244,14 +266,17 @@ export default function AdminNewProductView() {
                     <Field label="Qty">
                       <Input type="number" value={v.quantity} onChange={(e) => setV(v.id, 'quantity', e.target.value)} required disabled={saving} min="0" />
                     </Field>
-                    <button
-                      type="button"
-                      onClick={() => removeV(v.id)}
-                      disabled={saving || variants.length === 1}
-                      style={{ height: '40px', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
-                    >
-                      Remove
-                    </button>
+                    {/* Remove: sits next to Qty on mobile, last col on desktop */}
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => removeV(v.id)}
+                        disabled={saving || variants.length === 1}
+                        style={{ height: '40px', width: '100%', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -260,8 +285,10 @@ export default function AdminNewProductView() {
               {saving ? 'Creating…' : 'Create Product'}
             </Button>
           </form>
+            </div>
+          </div>
         </div>
       </div>
-    </AdminLayout>
+    </ShopLayout>
   );
 }

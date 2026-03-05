@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { ADMIN_NAV_ITEMS } from './AdminLayout';
 import {
   CategoryRow,
   CategoryModal,
@@ -10,6 +8,7 @@ import {
   type Modal,
   type CategoriesHandlers,
 } from './components/AdminCategoryParts';
+import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import type { Category, Subcategory } from '@/domain/category/category.entity';
 
 interface MobileAdminCategoriesViewProps extends CategoriesHandlers {
@@ -31,42 +30,7 @@ export default function MobileAdminCategoriesView({
   return (
     <div style={{ padding: '1.25rem 1rem' }}>
 
-      {/* Admin nav strip */}
-      <div
-        style={{
-          display:        'flex',
-          gap:            '0.4rem',
-          overflowX:      'auto',
-          paddingBottom:  '0.25rem',
-          marginBottom:   '1.25rem',
-          scrollbarWidth: 'none',
-        }}
-      >
-        {ADMIN_NAV_ITEMS.map(({ href, label, Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            style={{
-              display:         'inline-flex',
-              alignItems:      'center',
-              gap:             '0.3rem',
-              padding:         '0.4rem 0.75rem',
-              border:          '1px solid var(--border)',
-              borderRadius:    '0.5rem',
-              fontSize:        '0.75rem',
-              fontWeight:      href === '/admin/categories' ? 700 : 500,
-              textDecoration:  'none',
-              whiteSpace:      'nowrap',
-              color:           href === '/admin/categories' ? 'var(--on-primary)' : 'var(--on-surface)',
-              backgroundColor: href === '/admin/categories' ? 'var(--primary)' : 'var(--surface)',
-              flexShrink:      0,
-            }}
-          >
-            <Icon size={12} />
-            {label}
-          </Link>
-        ))}
-      </div>
+      <AdminMobileNavStrip activeHref="/admin/categories" />
 
       {/* Page header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
