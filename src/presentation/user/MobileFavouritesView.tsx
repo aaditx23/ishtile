@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import UserMobileNavStrip from './components/UserMobileNavStrip';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { FavouriteDto } from '@/shared/types/api.types';
 
@@ -12,11 +12,6 @@ interface MobileFavouritesViewProps {
 }
 
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
-
-const navLinks = [
-  { label: 'Profile', href: '/profile' },
-  { label: 'Orders',  href: '/orders' },
-];
 
 export default function MobileFavouritesView({
   items,
@@ -31,14 +26,7 @@ export default function MobileFavouritesView({
         Favourites
       </h1>
 
-      {/* Quick nav links */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {navLinks.map((link) => (
-          <Button key={link.href} asChild variant="outline" size="sm" className="flex-1">
-            <Link href={link.href}>{link.label}</Link>
-          </Button>
-        ))}
-      </div>
+      <UserMobileNavStrip activeHref="/favourites" />
 
       {/* Favourites grid */}
       {loading ? (

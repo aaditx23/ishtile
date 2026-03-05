@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import UserMobileNavStrip from './components/UserMobileNavStrip';
 import ProfileFormFields from './components/ProfileFormFields';
 import type { User } from '@/domain/user/user.entity';
 import type { UpdateUserPayload } from '@/domain/user/user.repository';
@@ -14,11 +13,6 @@ interface MobileProfileViewProps {
   patch:    (key: keyof UpdateUserPayload) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
-
-const navLinks = [
-  { label: 'Orders',     href: '/orders' },
-  { label: 'Favourites', href: '/favourites' },
-];
 
 export default function MobileProfileView({
   user,
@@ -36,14 +30,7 @@ export default function MobileProfileView({
         My Profile
       </h1>
 
-      {/* Quick nav links */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {navLinks.map((link) => (
-          <Button key={link.href} asChild variant="outline" size="sm" className="flex-1">
-            <Link href={link.href}>{link.label}</Link>
-          </Button>
-        ))}
-      </div>
+      <UserMobileNavStrip activeHref="/profile" />
 
       {/* Profile form card */}
       <div

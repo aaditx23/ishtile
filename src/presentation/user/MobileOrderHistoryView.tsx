@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import UserMobileNavStrip from './components/UserMobileNavStrip';
 import { Skeleton } from '@/components/ui/skeleton';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
@@ -17,11 +17,6 @@ interface MobileOrderHistoryViewProps {
 
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
-const navLinks = [
-  { label: 'Profile',     href: '/profile' },
-  { label: 'Favourites',  href: '/favourites' },
-];
-
 export default function MobileOrderHistoryView({
   orders,
   loading,
@@ -35,14 +30,7 @@ export default function MobileOrderHistoryView({
         My Orders
       </h1>
 
-      {/* Quick nav links */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {navLinks.map((link) => (
-          <Button key={link.href} asChild variant="outline" size="sm" className="flex-1">
-            <Link href={link.href}>{link.label}</Link>
-          </Button>
-        ))}
-      </div>
+      <UserMobileNavStrip activeHref="/orders" />
 
       {/* Orders list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
