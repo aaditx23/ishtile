@@ -5,10 +5,18 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from '@/components/ui/navigation-menu';
 import { SearchIcon, BagIcon, HamburgerIcon } from '@/components/icons';
 import { useCartCount } from '@/presentation/shared/hooks/useCartCount';
 import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
+import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
 /* ─── Link data ────────────────────────────────────────────────────────────── */
 
@@ -23,77 +31,6 @@ const USER_LINKS = [
   { label: 'My Orders',  href: '/orders' },
   { label: 'Favourites', href: '/favourites' },
 ];
-
-/* ─── Sub-components ───────────────────────────────────────────────────────── */
-
-function NavLink({ href, label, gold }: { href: string; label: string; gold?: boolean }) {
-  const pathname = usePathname();
-  const base = href.split('?')[0];
-  const active = pathname === base || pathname.startsWith(base + '/');
-
-  return (
-    <Link
-      href={href}
-      style={{
-        fontSize: '0.7rem',
-        fontWeight: 600,
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em',
-        whiteSpace: 'nowrap',
-        textDecoration: 'none',
-        borderBottom: active ? '1px solid #fff' : 'none',
-        paddingBottom: active ? '1px' : 0,
-        color: active ? '#fff' : gold ? 'var(--brand-gold)' : '#d4d4d4',
-        transition: 'color 150ms',
-      }}
-    >
-      {label}
-    </Link>
-  );
-}
-
-function NavDivider() {
-  return <span style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />;
-}
-
-function MobileNavItem({ href, label, onClick }: { href: string; label: string; onClick: () => void }) {
-  const pathname = usePathname();
-  const base = href.split('?')[0];
-  const active = pathname === base || pathname.startsWith(base + '/');
-
-  return (
-    <li>
-      <Link
-        href={href}
-        onClick={onClick}
-        style={{
-          display: 'block',
-          padding: '0.6rem 0.75rem',
-          fontSize: '0.85rem',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          borderRadius: '0.5rem',
-          textDecoration: 'none',
-          color: active ? '#fff' : '#d4d4d4',
-          background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
-        }}
-      >
-        {label}
-      </Link>
-    </li>
-  );
-}
-
-function MobileSectionLabel({ label }: { label: string }) {
-  return (
-    <li style={{ paddingTop: '1rem', paddingBottom: '0.25rem', marginTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-      <span style={{ paddingLeft: '0.75rem', fontSize: '0.6rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#737373' }}>
-        {label}
-      </span>
-    </li>
-  );
-}
 
 /* ─── SiteHeader ───────────────────────────────────────────────────────────── */
 
@@ -130,6 +67,12 @@ export default function SiteHeader() {
     setSearchOpen(false);
   };
   const closeMobile = () => setMobileOpen(false);
+  
+  const handleLogout = () => {
+    tokenStore.clearAll();
+    router.push('/');
+    router.refresh();
+  };
 
   return (
     <header
@@ -148,133 +91,261 @@ export default function SiteHeader() {
     >
       <div
         style={{
-          maxWidth: '80rem',
-          margin: '0 auto',
           height: '100%',
-          padding: '0 2rem',
-          display: 'flex',
-          alignItems: 'center',
+          padding: '2rem',
+          
         }}
       >
-        {/* ── LEFT ────────────────────────────── */}
-        <div style={{ flex: '1 1 0%', display: 'flex', alignItems: 'center', minWidth: 0 }}>
+        {/* ── ROW 1: LEFT (Start alignment) ────────────────────────────── */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pointerEvents: 'none', paddingLeft:'1rem', paddingRight:'1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', pointerEvents: 'auto' }}>
+            {/* Mobile hamburger — hidden on ≥1024px */}
+            <div className="flex items-center lg:!hidden">
+              <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Open menu" className="text-white hover:bg-white/10">
+                    <HamburgerIcon />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="bg-[var(--brand-dark)] text-white border-r border-white/10 w-72 overflow-y-auto">
+                  <SheetTitle className="text-white tracking-widest text-sm uppercase font-black mb-6 text-center pt-4">
+                    Ishtile
+                  </SheetTitle>
+                  
+                  <div className="flex flex-col gap-1">
+                    {/* Shop Section */}
+                    <div className="pt-4 pb-1 mt-2 border-t border-white/10">
+                      <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
+                        Shop
+                      </span>
+                    </div>
+                    <NavigationMenu orientation="vertical" viewport={false}>
+                      <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
+                        {SHOP_LINKS.map((link) => (
+                          <NavigationMenuItem key={link.href} className="w-full">
+                            <Link href={link.href} legacyBehavior passHref>
+                              <NavigationMenuLink
+                                active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                                onClick={closeMobile}
+                                className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                              >
+                                {link.label}
+                              </NavigationMenuLink>
+                            </Link>
+                          </NavigationMenuItem>
+                        ))}
+                      </NavigationMenuList>
+                    </NavigationMenu>
 
-          {/* Mobile hamburger — hidden on ≥1024px */}
-          <div style={{ display: 'flex', alignItems: 'center' }} className="lg:!hidden">
-            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Open menu" className="text-white hover:bg-white/10" style={{marginRight:'1rem'}} >
-                  <HamburgerIcon />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="bg-[var(--brand-dark)] text-white border-r border-white/10 w-72 overflow-y-auto">
-                <SheetTitle className="text-white tracking-widest text-sm uppercase font-black mb-6 text-center" style={{paddingTop:'1rem'}}>Ishtile</SheetTitle>
-                <nav>
-                  <ul style={{ display: 'flex', flexDirection: 'column', gap: '2px', listStyle: 'none', padding: 0, margin: 0 }}>
-                    <MobileSectionLabel label="Shop" />
-                    {SHOP_LINKS.map((l) => <MobileNavItem key={l.href} {...l} onClick={closeMobile} />)}
+                    {/* My Account Section */}
                     {isAuth && (
                       <>
-                        <MobileSectionLabel label="My Account" />
-                        {USER_LINKS.map((l) => <MobileNavItem key={l.href} {...l} onClick={closeMobile} />)}
+                        <div className="pt-4 pb-1 mt-2 border-t border-white/10">
+                          <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
+                            My Account
+                          </span>
+                        </div>
+                        <NavigationMenu orientation="vertical" viewport={false}>
+                          <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
+                            {USER_LINKS.map((link) => (
+                              <NavigationMenuItem key={link.href} className="w-full">
+                                <Link href={link.href} legacyBehavior passHref>
+                                  <NavigationMenuLink
+                                    active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                                    onClick={closeMobile}
+                                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                                  >
+                                    {link.label}
+                                  </NavigationMenuLink>
+                                </Link>
+                              </NavigationMenuItem>
+                            ))}
+                          </NavigationMenuList>
+                        </NavigationMenu>
                       </>
                     )}
+
+                    {/* Admin Section */}
                     {isAdmin && (
                       <>
-                        <MobileSectionLabel label="Admin" />
-                        <MobileNavItem href="/admin" label="Dashboard" onClick={closeMobile} />
+                        <div className="pt-4 pb-1 mt-2 border-t border-white/10">
+                          <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
+                            Admin
+                          </span>
+                        </div>
+                        <NavigationMenu orientation="vertical" viewport={false}>
+                          <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
+                            <NavigationMenuItem className="w-full">
+                              <Link href="/admin" legacyBehavior passHref>
+                                <NavigationMenuLink
+                                  active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                                  onClick={closeMobile}
+                                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                                >
+                                  Dashboard
+                                </NavigationMenuLink>
+                              </Link>
+                            </NavigationMenuItem>
+                          </NavigationMenuList>
+                        </NavigationMenu>
                       </>
                     )}
-                    <MobileSectionLabel label="" />
-                    {isAuth
-                      ? <MobileNavItem href="/profile" label="Sign Out" onClick={closeMobile} />
-                      : <MobileNavItem href="/login" label="Sign In" onClick={closeMobile} />
-                    }
-                  </ul>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
 
-          {/* Desktop nav (hidden below lg) */}
-          <nav className="hidden lg:flex" style={{ alignItems: 'center', gap: '1.25rem' }}>
-            {SHOP_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
-            {isAuth && (
-              <>
-                <NavDivider />
-                {USER_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
-              </>
-            )}
-            {isAdmin && (
-              <>
-                <NavDivider />
-                <NavLink href="/admin" label="Dashboard" gold />
-              </>
-            )}
-          </nav>
-        </div>
-
-        {/* ── CENTER: Logo ────────────────────── */}
-        <div style={{ flex: '0 0 auto', padding: '0 1.5rem' }}>
-          <Link href="/" aria-label="Ishtile Home" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.125rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#fff', userSelect: 'none' }}>
-              Ishtile
-            </span>
-          </Link>
-        </div>
-
-        {/* ── RIGHT ───────────────────────────── */}
-        <div style={{ flex: '1 1 0%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem', minWidth: 0 }}>
-
-          {searchOpen ? (
-            <div style={{ display: 'flex', flex: '1 1 0%', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ position: 'relative', flex: '1 1 0%' }}>
-                <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)', pointerEvents: 'none', display: 'flex' }}>
-                  <SearchIcon />
-                </span>
-                <input
-                  ref={inputRef}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); if (e.key === 'Escape') closeSearch(); }}
-                  placeholder="Search products…"
-                  style={{
-                    width: '100%',
-                    height: '2rem',
-                    borderRadius: '0.375rem',
-                    background: 'rgba(255,255,255,0.1)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    paddingLeft: '2.25rem',
-                    paddingRight: '0.75rem',
-                    fontSize: '0.85rem',
-                    color: '#fff',
-                    outline: 'none',
-                  }}
-                />
-              </div>
-              <button
-                onClick={closeSearch}
-                style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, padding: '0 0.25rem' }}
-              >
-                Cancel
-              </button>
+                    {/* Auth Section */}
+                    <div className="pt-4 pb-1 mt-2 border-t border-white/10" />
+                    <NavigationMenu orientation="vertical" viewport={false}>
+                      <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
+                        <NavigationMenuItem className="w-full">
+                          <Link href={isAuth ? "/profile" : "/login"} legacyBehavior passHref>
+                            <NavigationMenuLink
+                              onClick={closeMobile}
+                              className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg hover:bg-white/5 text-neutral-300"
+                            >
+                              {isAuth ? "Sign Out" : "Sign In"}
+                            </NavigationMenuLink>
+                          </Link>
+                        </NavigationMenuItem>
+                      </NavigationMenuList>
+                    </NavigationMenu>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
-          ) : (
-            <Button variant="ghost" size="icon" aria-label="Search" onClick={openSearch} className="text-white hover:bg-white/10">
-              <SearchIcon />
-            </Button>
-          )}
 
-          <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10" style={{ flexShrink: 0 }}>
-            <Link href="/cart">
-              <BagIcon />
-              {cartCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
-                  {cartCount > 99 ? '99+' : cartCount}
-                </Badge>
-              )}
+            {/* Desktop nav (hidden below lg) */}
+            <NavigationMenu className="hidden lg:flex" viewport={false}>
+              <NavigationMenuList className="gap-2">
+                {SHOP_LINKS.map((link) => (
+                  <NavigationMenuItem key={link.href}>
+                    <Link href={link.href} legacyBehavior passHref>
+                      <NavigationMenuLink
+                        active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                        style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
+                      >
+                        {link.label}
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                ))}
+                
+                {isAuth && (
+                  <>
+                    <div className="w-px h-4 bg-white/20 mx-3" />
+                    {USER_LINKS.map((link) => (
+                      <NavigationMenuItem key={link.href}>
+                        <Link href={link.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                            active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                            style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}  
+                          >
+                            {link.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    ))}
+                  </>
+                )}
+                
+                {isAdmin && (
+                  <>
+                    <div className="w-px h-4 bg-white/20 mx-3" />
+                    <NavigationMenuItem>
+                      <Link href="/admin" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
+                        >
+                          Dashboard
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </>
+                )}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+        </div>
+
+        {/* ── ROW 2: CENTER (Center alignment) ────────────────────────────── */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto' }}>
+            <Link href="/" aria-label="Ishtile Home" style={{ textDecoration: 'none' }}>
+              <span style={{ fontSize: '1.125rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#fff', userSelect: 'none' }}>
+                Ishtile
+              </span>
             </Link>
-          </Button>
+          </div>
+        </div>
+
+        {/* ── ROW 3: RIGHT (End alignment) ────────────────────────────── */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingLeft:'1rem', paddingRight:'1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', pointerEvents: 'auto' }}>
+            {searchOpen ? (
+              <div className="flex items-center gap-2">
+                <div className="relative w-64">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none flex">
+                    <SearchIcon />
+                  </span>
+                  <Input
+                    ref={inputRef}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); if (e.key === 'Escape') closeSearch(); }}
+                    placeholder="Search products…"
+                    className="h-8 w-full bg-white/10 border-white/20 pl-9 pr-3 text-sm text-white placeholder:text-white/50"
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeSearch}
+                  className="text-white/50 hover:text-white/70 text-xs"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="icon" aria-label="Search" onClick={openSearch} className="text-white hover:bg-white/10">
+                <SearchIcon />
+              </Button>
+            )}
+
+            <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10" style={{ flexShrink: 0 }}>
+              <Link href="/cart">
+                <BagIcon />
+                {cartCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </Badge>
+                )}
+              </Link>
+            </Button>
+
+            {/* Auth buttons */}
+            {isAuth ? (
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/10"
+                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding:'1rem'  }}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/10"
+                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding:'1rem' }}
+              >
+                <Link href="/login">Login</Link>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </header>
