@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import AdminLayout from './AdminLayout';
+import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
+import { AdminSidebarNav } from './AdminLayout';
+import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
 import OrderStatusSelector from './components/OrderStatusSelector';
 import { Button } from '@/components/ui/button';
@@ -44,31 +46,46 @@ export default function AdminOrderDetailView() {
   }, [params.id]);
 
   return (
-    <AdminLayout activeHref="/admin/orders">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
-            <Link href="/admin/orders">← Orders</Link>
-          </Button>
-          {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Order #{order.orderNumber}</h1>}
-        </div>
-
-        {loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {[1,2].map((i) => <Skeleton key={i} style={{ height: '12rem', borderRadius: '0.75rem' }} />)}
-          </div>
-        )}
-        {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Order not found.</p>}
-        {order && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
-            <OrderSummaryCard order={order} />
-            <div style={sectionStyle}>
-              <p style={headingStyle}>Update Status</p>
-              <OrderStatusSelector orderId={order.id} currentStatus={order.status} />
-            </div>
-          </div>
-        )}
+    <ShopLayout>
+      {/* Mobile-only nav */}
+      <div className="lg:hidden" style={{ padding: '1.25rem 1rem 0' }}>
+        <AdminMobileNavStrip activeHref="/admin/orders" />
       </div>
-    </AdminLayout>
+
+      <div style={{ maxWidth: '84rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'start' }}>
+          {/* Sidebar — desktop only */}
+          <div className="hidden lg:block" style={{ width: '13rem', flexShrink: 0 }}>
+            <AdminSidebarNav activeHref="/admin/orders" />
+          </div>
+
+          {/* Main content */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
+                <Link href="/admin/orders">← Orders</Link>
+              </Button>
+              {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Order #{order.orderNumber}</h1>}
+            </div>
+
+            {loading && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {[1, 2].map((i) => <Skeleton key={i} style={{ height: '12rem', borderRadius: '0.75rem' }} />)}
+              </div>
+            )}
+            {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Order not found.</p>}
+            {order && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <OrderSummaryCard order={order} />
+                <div style={sectionStyle}>
+                  <p style={headingStyle}>Update Status</p>
+                  <OrderStatusSelector orderId={order.id} currentStatus={order.status} />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </ShopLayout>
   );
 }
