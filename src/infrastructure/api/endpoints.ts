@@ -5,8 +5,6 @@ export const API_BASE = `${BASE}/api/v1`;
 export const ENDPOINTS = {
   // ─── Auth ─────────────────────────────────────────────────────────────────
   auth: {
-    requestOtp: `${API_BASE}/auth/request-otp`,
-    verifyOtp: `${API_BASE}/auth/verify-otp`,
     login: `${API_BASE}/auth/login`,
     register: `${API_BASE}/auth/register`,
     refresh: `${API_BASE}/auth/refresh`,

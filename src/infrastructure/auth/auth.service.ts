@@ -2,8 +2,6 @@ import { apiClient } from '@/infrastructure/api/apiClient';
 import { ENDPOINTS } from '@/infrastructure/api/endpoints';
 import { tokenStore } from './tokenStore';
 import type {
-  RequestOtpResponse,
-  VerifyOtpResponse,
   PasswordLoginResponse,
   RegisterResponse,
   UserDto,
@@ -11,7 +9,12 @@ import type {
 
 // ─── Validation helpers ───────────────────────────────────────────────────────
 
-/** BD mobile: 01[3-9]XXXXXXXX (11 digits). Strips spaces/dashes first. */
+function validateEmail(email: string): void {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Enter a valid email address.');
+  }
+}
+
 function validatePhone(phone: string): void {
   const normalised = phone.replace(/[\s\-]/g, '');
   if (!/^01[3-9]\d{8}$/.test(normalised)) {
@@ -19,83 +22,50 @@ function validatePhone(phone: string): void {
   }
 }
 
-function validateOtp(otp: string): void {
-  if (!/^\d{4,8}$/.test(otp.trim())) {
-    throw new Error('OTP must be 4–8 digits.');
-  }
-}
-
-function validateEmail(email: string): void {
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error('Enter a valid email address.');
-  }
-}
-
 // ─── Request payloads ─────────────────────────────────────────────────────────
 
 export interface RegisterPayload {
   phone: string;
-  otpCode: string;
-  username?: string;
-  fullName?: string;
-  email?: string;
-  password?: string;
+  email: string;
+  username: string;
+  fullName: string;
+  password: string;
 }
 
 // ─── Auth service ─────────────────────────────────────────────────────────────
 
 export const authService = {
   /**
-   * Request a one-time password to be sent to the given phone number.
-   * `purpose` is either "login" or "register".
-   */
-  async requestOtp(phone: string, purpose: 'login' | 'register'): Promise<void> {
-    validatePhone(phone);
-    await apiClient.post<RequestOtpResponse>(ENDPOINTS.auth.requestOtp, {
-      phone: phone.replace(/[\s\-]/g, ''),
-      purpose,
-    });
-  },
-
-  /**
-   * Verify OTP — on success the access + refresh tokens are saved automatically.
-   */
-  async verifyOtp(phone: string, otpCode: string): Promise<void> {
-    validatePhone(phone);
-    validateOtp(otpCode);
-    const res = await apiClient.post<VerifyOtpResponse>(ENDPOINTS.auth.verifyOtp, {
-      phone: phone.replace(/[\s\-]/g, ''),
-      otpCode: otpCode.trim(),
-    });
-    tokenStore.setTokens(res.token, res.data.refreshToken);
-  },
-
-  /**
-   * Password login — saves tokens on success.
+   * Login with phone or email and password — saves tokens on success.
    */
   async login(phoneOrEmail: string, password: string): Promise<void> {
     if (!phoneOrEmail.trim()) throw new Error('Phone or email is required.');
     if (!password) throw new Error('Password is required.');
+
     const res = await apiClient.post<PasswordLoginResponse>(ENDPOINTS.auth.login, {
-      phoneOrEmail: phoneOrEmail.trim(),
+      phone_or_email: phoneOrEmail.trim(),
       password,
     });
     tokenStore.setTokens(res.token, res.data.refreshToken);
   },
 
   /**
-   * Register a new buyer account — saves tokens on success and returns the
-   * created user.
+   * Register a new account with email/password — saves tokens on success.
    */
   async register(payload: RegisterPayload): Promise<UserDto> {
     validatePhone(payload.phone);
-    validateOtp(payload.otpCode);
-    if (payload.email) validateEmail(payload.email);
+    validateEmail(payload.email);
+
+    if (!payload.username.trim()) throw new Error('Username is required.');
+    if (!payload.fullName.trim()) throw new Error('Full name is required.');
+    if (!payload.password) throw new Error('Password is required.');
 
     const res = await apiClient.post<RegisterResponse>(ENDPOINTS.auth.register, {
-      ...payload,
       phone: payload.phone.replace(/[\s\-]/g, ''),
-      otpCode: payload.otpCode.trim(),
+      email: payload.email.trim(),
+      username: payload.username.trim(),
+      full_name: payload.fullName.trim(),
+      password: payload.password,
     });
     tokenStore.setTokens(res.token, res.data.refreshToken);
     return res.data.user;

@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { authService } from '@/infrastructure/auth/auth.service';
-
-type Step = 'phone' | 'otp' | 'profile';
+import { ApiError } from '@/infrastructure/api/apiClient';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -21,58 +20,16 @@ const labelStyle: React.CSSProperties = {
   marginBottom:  '0.4rem',
 };
 
-const stepLabel = (n: 1|2|3, cur: number) => (
-  <span style={{
-    display:         'inline-flex',
-    alignItems:      'center',
-    justifyContent:  'center',
-    width:           '1.5rem',
-    height:          '1.5rem',
-    borderRadius:    '50%',
-    fontSize:        '0.7rem',
-    fontWeight:      700,
-    backgroundColor: cur === n ? 'var(--brand-gold)' : cur > n ? 'var(--brand-dark)' : 'var(--surface-variant)',
-    color:           cur >= n ? 'white' : 'var(--on-surface-muted)',
-    flexShrink:      0,
-  }}>{n}</span>
-);
-
 function RegisterForm() {
   const router = useRouter();
 
-  const [step, setStep]     = useState<Step>('phone');
-  const [phone, setPhone]   = useState('');
-  const [otp, setOtp]       = useState('');
-  const [fullName, setFullName]   = useState('');
+  const [phone, setPhone]         = useState('');
   const [email, setEmail]         = useState('');
+  const [username, setUsername]   = useState('');
+  const [fullName, setFullName]   = useState('');
   const [password, setPassword]   = useState('');
   const [showPwd, setShowPwd]     = useState(false);
   const [loading, setLoading]     = useState(false);
-
-  const curStep = step === 'phone' ? 1 : step === 'otp' ? 2 : 3;
-
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await authService.requestOtp(phone, 'register');
-      toast.success('OTP sent!');
-      setStep('otp');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to send OTP.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp.trim().length < 4) {
-      toast.error('Enter the OTP you received.');
-      return;
-    }
-    setStep('profile');
-  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,90 +37,97 @@ function RegisterForm() {
     try {
       await authService.register({
         phone,
-        otpCode:  otp,
-        fullName:  fullName || undefined,
-        email:     email    || undefined,
-        password:  password || undefined,
+        email,
+        username,
+        fullName,
+        password,
       });
       toast.success('Account created! Welcome to Ishtile.');
       router.push('/');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      if (err instanceof ApiError && err.errors && err.errors.length > 0) {
+        err.errors.forEach(error => toast.error(error));
+      } else {
+        toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Step indicators */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
-        {stepLabel(1, curStep)} <span style={{ height: '1px', width: '2rem', backgroundColor: 'var(--border)' }} />
-        {stepLabel(2, curStep)} <span style={{ height: '1px', width: '2rem', backgroundColor: 'var(--border)' }} />
-        {stepLabel(3, curStep)}
+    <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div>
+        <label style={labelStyle}>Phone Number</label>
+        <Input
+          type="tel"
+          placeholder="01XXXXXXXXX"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+          autoFocus
+        />
       </div>
 
-      {step === 'phone' && (
-        <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={labelStyle}>Phone Number</label>
-            <Input type="tel" placeholder="01XXXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required autoFocus />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Sending…' : 'Send OTP'}
-          </Button>
-        </form>
-      )}
+      <div>
+        <label style={labelStyle}>Email</label>
+        <Input
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
 
-      {step === 'otp' && (
-        <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)', textAlign: 'center' }}>
-            OTP sent to <strong>{phone}</strong>.
-          </p>
-          <div>
-            <label style={labelStyle}>Enter OTP</label>
-            <Input type="text" inputMode="numeric" placeholder="XXXXXX" value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={8} required autoFocus />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            Continue →
-          </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={() => { setOtp(''); setStep('phone'); }}>
-            ← Change number
-          </Button>
-        </form>
-      )}
+      <div>
+        <label style={labelStyle}>Username</label>
+        <Input
+          type="text"
+          placeholder="johndoe"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+      </div>
 
-      {step === 'profile' && (
-        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={labelStyle}>Full Name <span style={{ fontWeight: 400, letterSpacing: 0 }}>(optional)</span></label>
-            <Input placeholder="Your name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>Email <span style={{ fontWeight: 400, letterSpacing: 0 }}>(optional)</span></label>
-            <Input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>Password <span style={{ fontWeight: 400, letterSpacing: 0 }}>(optional)</span></label>
-            <div style={{ position: 'relative' }}>
-              <Input
-                type={showPwd ? 'text' : 'password'}
-                placeholder="Set a password for future logins"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingRight: '2.5rem' }}
-              />
-              <button type="button" onClick={() => setShowPwd((v) => !v)} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)' }} aria-label="Toggle password visibility">
-                {showPwd ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-              </button>
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account…' : 'Create Account'}
-          </Button>
-        </form>
-      )}
-    </div>
+      <div>
+        <label style={labelStyle}>Full Name</label>
+        <Input
+          type="text"
+          placeholder="John Doe"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+        />
+      </div>
+
+      <div>
+        <label style={labelStyle}>Password</label>
+        <div style={{ position: 'relative' }}>
+          <Input
+            type={showPwd ? 'text' : 'password'}
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPwd((v) => !v)}
+            style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)' }}
+            aria-label={showPwd ? 'Hide password' : 'Show password'}
+          >
+            {showPwd ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+          </button>
+        </div>
+      </div>
+
+      <Button type="submit" className="w-full tracking-widest uppercase" disabled={loading}>
+        {loading ? 'Creating account…' : 'Create Account'}
+      </Button>
+    </form>
   );
 }
 

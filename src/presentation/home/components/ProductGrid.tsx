@@ -60,7 +60,7 @@ export default function ProductGrid({ items }: ProductGridProps) {
   return (
     <div
       className="px-6 md:px-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 transition-opacity duration-300"
-      style={{ paddingTop: '2rem', paddingBottom: '2rem', columnGap: '1rem', rowGap: '2rem', opacity: visible ? 1 : 0 }}
+      style={{ padding: '2rem', columnGap: '1rem', rowGap: '2rem', opacity: visible ? 1 : 0 }}
     >
       {items.map((product) => (
         <ProductCard key={product.id} product={product} />

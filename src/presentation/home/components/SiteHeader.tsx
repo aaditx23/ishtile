@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import {
   NavigationMenu,
@@ -13,10 +11,12 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
-import { SearchIcon, BagIcon, HamburgerIcon } from '@/components/icons';
-import { useCartCount } from '@/presentation/shared/hooks/useCartCount';
+import { HamburgerIcon } from '@/components/icons';
 import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
+import { MobileNav } from './MobileNav';
+import { SearchBar } from './SearchBar';
+import { CartButton } from './CartButton';
 
 /* ─── Link data ────────────────────────────────────────────────────────────── */
 
@@ -35,37 +35,36 @@ const USER_LINKS = [
 /* ─── SiteHeader ───────────────────────────────────────────────────────────── */
 
 export default function SiteHeader() {
-  const cartCount    = useCartCount();
   const auth         = useCurrentUser();
-  const router       = useRouter();
   const pathname     = usePathname();
   const searchParams = useSearchParams();
 
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
-  const [searchOpen, setSearchOpen]   = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const isAuth  = auth.status === 'authenticated';
   const isAdmin = isAuth && auth.user.role === 'admin';
 
-  useEffect(() => { setSearchQuery(searchParams.get('search') ?? ''); }, [searchParams]);
+  // Helper to check if a link is active
+  const isLinkActive = (href: string) => {
+    const currentUrl = pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+    const linkBase = href.split('?')[0];
+    
+    // If link has query params, match exact URL
+    if (href.includes('?')) {
+      return currentUrl === href;
+    }
+    
+    // Otherwise use path-based matching
+    return pathname === linkBase || pathname.startsWith(linkBase + '/');
+  };
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
-  useEffect(() => { if (searchOpen) inputRef.current?.focus(); }, [searchOpen]);
-  useEffect(() => { setSearchOpen(false); }, [pathname]);
 
-  const openSearch  = () => setSearchOpen(true);
-  const closeSearch = () => { setSearchOpen(false); setSearchQuery(''); };
-  const submitSearch = () => {
-    const q = searchQuery.trim();
-    router.push(q ? `/products?search=${encodeURIComponent(q)}` : '/products');
-    setSearchOpen(false);
-  };
   const closeMobile = () => setMobileOpen(false);
   
   const handleLogout = () => {
@@ -90,13 +89,15 @@ export default function SiteHeader() {
     >
       <div
         style={{
+          maxWidth: '80rem',
+          margin: '0 auto',
           height: '100%',
           padding: '2rem',
           
         }}
       >
         {/* ── ROW 1: LEFT (Start alignment) ────────────────────────────── */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pointerEvents: 'none', paddingLeft:'1rem', paddingRight:'1rem' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pointerEvents: 'none', paddingLeft: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', pointerEvents: 'auto' }}>
             {/* Mobile hamburger — hidden on ≥1024px */}
             <div className="flex items-center lg:!hidden">
@@ -111,102 +112,13 @@ export default function SiteHeader() {
                     Ishtile
                   </SheetTitle>
                   
-                  <div className="flex flex-col gap-1">
-                    {/* Shop Section */}
-                    <div className="pt-4 pb-1 mt-2 border-t border-white/10">
-                      <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
-                        Shop
-                      </span>
-                    </div>
-                    <NavigationMenu orientation="vertical" viewport={false}>
-                      <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
-                        {SHOP_LINKS.map((link) => (
-                          <NavigationMenuItem key={link.href} className="w-full">
-                            <Link href={link.href} legacyBehavior passHref>
-                              <NavigationMenuLink
-                                active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
-                                onClick={closeMobile}
-                                className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                              >
-                                {link.label}
-                              </NavigationMenuLink>
-                            </Link>
-                          </NavigationMenuItem>
-                        ))}
-                      </NavigationMenuList>
-                    </NavigationMenu>
-
-                    {/* My Account Section */}
-                    {isAuth && (
-                      <>
-                        <div className="pt-4 pb-1 mt-2 border-t border-white/10">
-                          <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
-                            My Account
-                          </span>
-                        </div>
-                        <NavigationMenu orientation="vertical" viewport={false}>
-                          <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
-                            {USER_LINKS.map((link) => (
-                              <NavigationMenuItem key={link.href} className="w-full">
-                                <Link href={link.href} legacyBehavior passHref>
-                                  <NavigationMenuLink
-                                    active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
-                                    onClick={closeMobile}
-                                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                                  >
-                                    {link.label}
-                                  </NavigationMenuLink>
-                                </Link>
-                              </NavigationMenuItem>
-                            ))}
-                          </NavigationMenuList>
-                        </NavigationMenu>
-                      </>
-                    )}
-
-                    {/* Admin Section */}
-                    {isAdmin && (
-                      <>
-                        <div className="pt-4 pb-1 mt-2 border-t border-white/10">
-                          <span className="pl-3 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-neutral-500">
-                            Admin
-                          </span>
-                        </div>
-                        <NavigationMenu orientation="vertical" viewport={false}>
-                          <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
-                            <NavigationMenuItem className="w-full">
-                              <Link href="/admin" legacyBehavior passHref>
-                                <NavigationMenuLink
-                                  active={pathname === '/admin' || pathname.startsWith('/admin/')}
-                                  onClick={closeMobile}
-                                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                                >
-                                  Dashboard
-                                </NavigationMenuLink>
-                              </Link>
-                            </NavigationMenuItem>
-                          </NavigationMenuList>
-                        </NavigationMenu>
-                      </>
-                    )}
-
-                    {/* Auth Section */}
-                    <div className="pt-4 pb-1 mt-2 border-t border-white/10" />
-                    <NavigationMenu orientation="vertical" viewport={false}>
-                      <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
-                        <NavigationMenuItem className="w-full">
-                          <Link href={isAuth ? "/profile" : "/login"} legacyBehavior passHref>
-                            <NavigationMenuLink
-                              onClick={closeMobile}
-                              className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg hover:bg-white/5 text-neutral-300"
-                            >
-                              {isAuth ? "Sign Out" : "Sign In"}
-                            </NavigationMenuLink>
-                          </Link>
-                        </NavigationMenuItem>
-                      </NavigationMenuList>
-                    </NavigationMenu>
-                  </div>
+                  <MobileNav
+                    isAuth={isAuth}
+                    isAdmin={isAdmin}
+                    pathname={pathname}
+                    isLinkActive={isLinkActive}
+                    onClose={closeMobile}
+                  />
                 </SheetContent>
               </Sheet>
             </div>
@@ -218,7 +130,7 @@ export default function SiteHeader() {
                   <NavigationMenuItem key={link.href}>
                     <Link href={link.href} legacyBehavior passHref>
                       <NavigationMenuLink
-                        active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                        active={isLinkActive(link.href)}
                         className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
                         style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                       >
@@ -235,7 +147,7 @@ export default function SiteHeader() {
                       <NavigationMenuItem key={link.href}>
                         <Link href={link.href} legacyBehavior passHref>
                           <NavigationMenuLink
-                            active={pathname === link.href.split('?')[0] || pathname.startsWith(link.href.split('?')[0] + '/')}
+                            active={isLinkActive(link.href)}
                             className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
                             style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}  
                           >
@@ -254,6 +166,7 @@ export default function SiteHeader() {
                       <Link href="/admin" legacyBehavior passHref>
                         <NavigationMenuLink
                           active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                          style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
                         >
                           Dashboard
@@ -279,48 +192,11 @@ export default function SiteHeader() {
         </div>
 
         {/* ── ROW 3: RIGHT (End alignment) ────────────────────────────── */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingLeft:'1rem', paddingRight:'1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', pointerEvents: 'auto' }}>
-            {searchOpen ? (
-              <div className="flex items-center gap-2">
-                <div className="relative w-64">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none flex">
-                    <SearchIcon />
-                  </span>
-                  <Input
-                    ref={inputRef}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); if (e.key === 'Escape') closeSearch(); }}
-                    placeholder="Search products…"
-                    className="h-8 w-full bg-white/10 border-white/20 pl-9 pr-3 text-sm text-white placeholder:text-white/50"
-                  />
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={closeSearch}
-                  className="text-white/50 hover:text-white/70 text-xs"
-                >
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <Button variant="ghost" size="icon" aria-label="Search" onClick={openSearch} className="text-white hover:bg-white/10">
-                <SearchIcon />
-              </Button>
-            )}
-
-            <Button asChild variant="ghost" size="icon" aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ''}`} className="relative text-white hover:bg-white/10" style={{ flexShrink: 0 }}>
-              <Link href="/cart">
-                <BagIcon />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] leading-none flex items-center justify-center rounded-full bg-[var(--brand-gold)] text-black border-0">
-                    {cartCount > 99 ? '99+' : cartCount}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingRight:'2rem' }}>
+          <div style={{ alignItems: 'center', gap: '0.5rem', pointerEvents: 'auto' }} className="hidden lg:flex">
+            <SearchBar />
+            
+            <CartButton />
 
             {/* Auth buttons */}
             {isAuth ? (
@@ -329,7 +205,7 @@ export default function SiteHeader() {
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-white/10"
-                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding:'1rem'  }}
+                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0,padding: '0.5rem' }}
               >
                 Logout
               </Button>
@@ -339,7 +215,7 @@ export default function SiteHeader() {
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-white/10"
-                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding:'1rem' }}
+                style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding: '0.5rem' }}
               >
                 <Link href="/login">Login</Link>
               </Button>

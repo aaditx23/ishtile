@@ -353,8 +353,6 @@ export interface ErrorResponseBody {
 
 // ─── Endpoint-specific response aliases ──────────────────────────────────────
 
-export type RequestOtpResponse = ActionResponse;
-export type VerifyOtpResponse = AuthResponse<{ refreshToken: string }>;
 export type PasswordLoginResponse = AuthResponse<{ refreshToken: string }>;
 export type RegisterResponse = AuthResponse<{ user: UserDto; refreshToken: string }>;
 
