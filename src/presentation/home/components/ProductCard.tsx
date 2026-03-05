@@ -70,14 +70,14 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             <>
               <button
                 onClick={prev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-0 group-hover:opacity-100 z-10"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
                 <FiChevronLeft size={16} />
               </button>
               <button
                 onClick={next}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-0 group-hover:opacity-100 z-10"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
                 <FiChevronRight size={16} />
@@ -88,7 +88,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           {/* Dot indicators */}
           {hasMany && (
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-              {product.images.map((_, i) => (
+              {validImages.map((_, i) => (
                 <span
                   key={i}
                   style={{
@@ -107,7 +107,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
 
         {/* Wishlist */}
         <button
-          className="absolute top-6 right-6 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow transition-opacity opacity-0 group-hover:opacity-100 z-10"
+          className="absolute top-6 right-6 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
           onClick={() => setWishlisted((v) => !v)}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
@@ -116,31 +116,31 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
       </CardContent>
 
       {/* Info */}
-      <CardFooter className="flex flex-col items-start gap-1.5 px-4 pb-4 pt-0" style={{padding:'1rem'}}>
-        <div className="flex items-start justify-between w-full gap-2">
-          <Link href={`/products/${product.slug}`} className="flex-1">
-            <p className="text-sm font-semibold leading-snug hover:underline underline-offset-2">
-              {product.name}
-            </p>
-          </Link>
-          <Badge variant="secondary" className="shrink-0 text-xs px-2 py-0.5" style={{paddingLeft:'1rem',paddingRight:'1rem',paddingTop:'0.5rem',paddingBottom:'0.5rem'}}>
-            {product.category}
-          </Badge>
-        </div>
+      <CardFooter className="flex flex-col items-start gap-1 sm:gap-1.5 p-2 sm:p-4">
+        {/* Category badge — hidden on xs, shown on sm+ */}
+        <Badge variant="secondary" className="hidden sm:inline-flex text-xs px-2 py-0.5 self-start">
+          {product.category}
+        </Badge>
 
-        <div className="flex items-center gap-2">
+        <Link href={`/products/${product.slug}`} className="w-full">
+          <p className="text-xs sm:text-sm font-semibold leading-snug hover:underline underline-offset-2 line-clamp-2">
+            {product.name}
+          </p>
+        </Link>
+
+        <div className="flex items-center gap-1.5">
           {formattedSalePrice ? (
             <>
-              <span className="text-sm font-medium" style={{ color: 'var(--brand-gold)' }}>{formattedSalePrice}</span>
-              <span className="text-sm text-muted-foreground line-through">{formattedPrice}</span>
+              <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--brand-gold)' }}>{formattedSalePrice}</span>
+              <span className="text-xs text-muted-foreground line-through">{formattedPrice}</span>
             </>
           ) : (
-            <span className="text-sm font-medium">{formattedPrice}</span>
+            <span className="text-xs sm:text-sm font-medium">{formattedPrice}</span>
           )}
         </div>
 
-        <Button variant="outline" size="sm" className="w-full mt-1" asChild>
-          <Link href={`/products/${product.slug}`}>Add to Cart</Link>
+        <Button variant="outline" size="sm" className="w-full mt-1 text-xs sm:text-sm h-7 sm:h-9" asChild>
+          <Link href={`/products/${product.slug}`}>View</Link>
         </Button>
       </CardFooter>
     </Card>
