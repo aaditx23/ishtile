@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import AdminLayout from './AdminLayout';
+import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
+import { AdminSidebarNav } from './AdminLayout';
+import MobileAdminPromosView from './MobileAdminPromosView';
 import { getPromos, createPromo, updatePromo, deletePromo } from '@/application/promo/adminPromo';
 import type { PromoDto, CreatePromoPayload } from '@/domain/promo/promo.entity';
 
@@ -96,7 +98,7 @@ function PromoFormModal({
           {initial ? 'Edit Promo' : 'New Promo'}
         </h2>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[0.875rem]">
             <div>
               <label style={labelStyle}>Code</label>
               <Input value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))} required disabled={saving} />
@@ -202,81 +204,112 @@ export default function AdminPromosView() {
   const fmtDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : '—';
 
-  return (
-    <AdminLayout activeHref="/admin/promos">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Promos</h1>
-          <button
-            onClick={() => { setEditing(undefined); setModalOpen(true); }}
-            style={{
-              display:         'inline-flex',
-              alignItems:      'center',
-              gap:             '0.375rem',
-              padding:         '0.5rem 1rem',
-              borderRadius:    '0.5rem',
-              backgroundColor: 'var(--primary)',
-              color:           'var(--on-primary)',
-              border:          'none',
-              fontSize:        '0.8rem',
-              fontWeight:      700,
-              cursor:          'pointer',
-            }}
-          >
-            + New Promo
-          </button>
-        </div>
+  const openNew  = () => { setEditing(undefined); setModalOpen(true); };
+  const openEdit  = (p: PromoDto) => { setEditing(p); setModalOpen(true); };
 
-        <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
-          {loading ? (
-            <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>Loading…</p>
-          ) : promos.length === 0 ? (
-            <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>No promos yet.</p>
-          ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
-                  {['Code', 'Type', 'Value', 'Min Order', 'Uses', 'Expires', 'Status', ''].map((h) => (
-                    <th key={h} style={{ padding: '0.6rem 0.875rem', textAlign: 'left', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--on-surface-muted)', whiteSpace: 'nowrap' }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {promos.map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: i < promos.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                    <td style={{ padding: '0.6rem 0.875rem', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8rem' }}>{p.code}</td>
-                    <td style={{ padding: '0.6rem 0.875rem', textTransform: 'capitalize' }}>{p.discountType}</td>
-                    <td style={{ padding: '0.6rem 0.875rem', fontWeight: 700 }}>
-                      {p.discountType === 'percentage' ? `${p.discountValue}%` : `৳${p.discountValue}`}
-                    </td>
-                    <td style={{ padding: '0.6rem 0.875rem' }}>{p.minimumOrderValue ? `৳${p.minimumOrderValue}` : '—'}</td>
-                    <td style={{ padding: '0.6rem 0.875rem' }}>
-                      {p.currentUses}{p.maxTotalUses ? `/${p.maxTotalUses}` : ''}
-                    </td>
-                    <td style={{ padding: '0.6rem 0.875rem', whiteSpace: 'nowrap' }}>{fmtDate(p.expiresAt)}</td>
-                    <td style={{ padding: '0.6rem 0.875rem' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2', color: p.isActive ? '#065f46' : '#991b1b', textTransform: 'uppercase' }}>
-                        {p.isActive ? 'Active' : 'Off'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.6rem 0.875rem' }}>
-                      <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        <button onClick={() => { setEditing(p); setModalOpen(true); }} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(p.id, p.code)} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--destructive)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+  return (
+    <ShopLayout>
+      {/* ── Mobile ─────────────────────────────────────────────────────── */}
+      <div className="block lg:hidden">
+        <MobileAdminPromosView
+          promos={promos}
+          loading={loading}
+          onNew={openNew}
+          onEdit={openEdit}
+          onDelete={handleDelete}
+        />
+      </div>
+
+      {/* ── Desktop ────────────────────────────────────────────────────── */}
+      <div
+        className="hidden lg:grid"
+        style={{
+          maxWidth:            '84rem',
+          margin:              '0 auto',
+          padding:             '2rem 1.25rem',
+          gridTemplateColumns: '13rem 1fr',
+          gap:                 '2rem',
+          alignItems:          'start',
+        }}
+      >
+        <AdminSidebarNav activeHref="/admin/promos" />
+
+        <main>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Promos</h1>
+              <button
+                onClick={openNew}
+                style={{
+                  display:         'inline-flex',
+                  alignItems:      'center',
+                  gap:             '0.375rem',
+                  padding:         '0.5rem 1rem',
+                  borderRadius:    '0.5rem',
+                  backgroundColor: 'var(--primary)',
+                  color:           'var(--on-primary)',
+                  border:          'none',
+                  fontSize:        '0.8rem',
+                  fontWeight:      700,
+                  cursor:          'pointer',
+                }}
+              >
+                + New Promo
+              </button>
+            </div>
+
+            <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', overflowX: 'auto', backgroundColor: 'var(--surface)' }}>
+              {loading ? (
+                <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>Loading…</p>
+              ) : promos.length === 0 ? (
+                <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>No promos yet.</p>
+              ) : (
+                <table style={{ width: '100%', minWidth: '42rem', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
+                      {['Code', 'Type', 'Value', 'Min Order', 'Uses', 'Expires', 'Status', ''].map((h) => (
+                        <th key={h} style={{ padding: '0.6rem 0.875rem', textAlign: 'left', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--on-surface-muted)', whiteSpace: 'nowrap' }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {promos.map((p, i) => (
+                      <tr key={p.id} style={{ borderBottom: i < promos.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                        <td style={{ padding: '0.6rem 0.875rem', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8rem' }}>{p.code}</td>
+                        <td style={{ padding: '0.6rem 0.875rem', textTransform: 'capitalize' }}>{p.discountType}</td>
+                        <td style={{ padding: '0.6rem 0.875rem', fontWeight: 700 }}>
+                          {p.discountType === 'percentage' ? `${p.discountValue}%` : `৳${p.discountValue}`}
+                        </td>
+                        <td style={{ padding: '0.6rem 0.875rem' }}>{p.minimumOrderValue ? `৳${p.minimumOrderValue}` : '—'}</td>
+                        <td style={{ padding: '0.6rem 0.875rem' }}>
+                          {p.currentUses}{p.maxTotalUses ? `/${p.maxTotalUses}` : ''}
+                        </td>
+                        <td style={{ padding: '0.6rem 0.875rem', whiteSpace: 'nowrap' }}>{fmtDate(p.expiresAt)}</td>
+                        <td style={{ padding: '0.6rem 0.875rem' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2', color: p.isActive ? '#065f46' : '#991b1b', textTransform: 'uppercase' }}>
+                            {p.isActive ? 'Active' : 'Off'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.6rem 0.875rem' }}>
+                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button onClick={() => openEdit(p)} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                              Edit
+                            </button>
+                            <button onClick={() => handleDelete(p.id, p.code)} style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--destructive)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
 
       {modalOpen && (
@@ -286,6 +319,6 @@ export default function AdminPromosView() {
           onClose={() => { setModalOpen(false); setEditing(undefined); }}
         />
       )}
-    </AdminLayout>
+    </ShopLayout>
   );
 }
