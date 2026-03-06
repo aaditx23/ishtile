@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FiBookmark, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import FavouriteButton from '@/presentation/products/[slug]/components/FavouriteButton';
 
 export interface ProductCardData {
   id: string;
@@ -26,7 +27,6 @@ function isValidUrl(src: string) {
 
 export default function ProductCard({ product }: { product: ProductCardData }) {
   const validImages = product.images.filter(isValidUrl);
-  const [wishlisted, setWishlisted] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
   const hasMany = validImages.length > 1;
 
@@ -43,9 +43,9 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
-    <Card className="overflow-hidden group">
+    <Card className="overflow-hidden group" >
       {/* Image area */}
-      <CardContent className="p-4 relative">
+      <CardContent className="relative">
         <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-neutral-100">
           {/* Sliding strip */}
           <div
@@ -73,14 +73,14 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
-                <FiChevronLeft size={16} />
+                <ChevronLeft size={16} />
               </button>
               <button
                 onClick={next}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
-                <FiChevronRight size={16} />
+                <ChevronRight size={16} />
               </button>
             </>
           )}
@@ -105,28 +105,25 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </Link>
 
-        {/* Wishlist */}
-        <button
-          className="absolute top-6 right-6 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
-          onClick={() => setWishlisted((v) => !v)}
-          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        >
-          <FiBookmark size={16} fill={wishlisted ? 'currentColor' : 'none'} />
-        </button>
+        {/* Favourite */}
+        <div className="absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+          <FavouriteButton productId={Number(product.id)} compact />
+        </div>
       </CardContent>
 
       {/* Info */}
-      <CardFooter className="flex flex-col items-start gap-1 sm:gap-1.5 p-2 sm:p-4">
-        {/* Category badge — hidden on xs, shown on sm+ */}
-        <Badge variant="secondary" className="hidden sm:inline-flex text-xs px-2 py-0.5 self-start">
-          {product.category}
-        </Badge>
-
-        <Link href={`/products/${product.slug}`} className="w-full">
-          <p className="text-xs sm:text-sm font-semibold leading-snug hover:underline underline-offset-2 line-clamp-2">
-            {product.name}
-          </p>
-        </Link>
+      <CardFooter className="flex flex-col items-start gap-1 sm:gap-1.5 p-2 sm:p-4" style={{padding:'1rem'}}>
+        {/* Name + category badge in one row */}
+        <div className="flex items-start justify-between w-full gap-1.5" style={{alignContent:'center'}}>
+          <Link href={`/products/${product.slug}`} className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-semibold leading-snug hover:underline underline-offset-2 line-clamp-2">
+              {product.name}
+            </p>
+          </Link>
+          <Badge variant="secondary" className="hidden sm:inline-flex text-xs px-2 py-0.5 shrink-0" style={{padding:'0.25rem'}}>
+            {product.category}
+          </Badge>
+        </div>
 
         <div className="flex items-center gap-1.5">
           {formattedSalePrice ? (

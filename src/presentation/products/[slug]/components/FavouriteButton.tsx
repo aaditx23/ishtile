@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { FiBookmark } from 'react-icons/fi';
+import { Heart, Loader2 } from 'lucide-react';
 import { addFavourite } from '@/application/favourite/addFavourite';
 import { removeFavourite } from '@/application/favourite/removeFavourite';
 import { getFavourites } from '@/application/favourite/getFavourites';
@@ -11,9 +11,11 @@ interface FavouriteButtonProps {
   productId: number;
   /** Pass if known at render time (requires auth server-side check) */
   initialFavId?: number | null;
+  /** Compact style for use inside product cards */
+  compact?: boolean;
 }
 
-export default function FavouriteButton({ productId, initialFavId = null }: FavouriteButtonProps) {
+export default function FavouriteButton({ productId, initialFavId = null, compact = false }: FavouriteButtonProps) {
   const [favId, setFavId]   = useState<number | null>(initialFavId);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +48,20 @@ export default function FavouriteButton({ productId, initialFavId = null }: Favo
     <button
       onClick={handleToggle}
       disabled={loading}
-      style={{
+      style={compact ? {
+        width:           '2rem',
+        height:          '2rem',
+        borderRadius:    '50%',
+        border:          'none',
+        backgroundColor: isFav ? 'var(--brand-gold)' : 'rgba(60,60,60,0.7)',
+        color:           '#fff',
+        display:         'flex',
+        alignItems:      'center',
+        justifyContent:  'center',
+        cursor:          loading ? 'not-allowed' : 'pointer',
+        backdropFilter:  'blur(2px)',
+        flexShrink:      0,
+      } : {
         width:           '2.75rem',
         height:          '2.75rem',
         borderRadius:    '50%',
@@ -62,7 +77,8 @@ export default function FavouriteButton({ productId, initialFavId = null }: Favo
       }}
       aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
     >
-      <FiBookmark size={18} fill={isFav ? 'currentColor' : 'none'} />
+      <Heart size={compact ? 14 : 18} fill={isFav ? 'currentColor' : 'none'} className={loading ? 'hidden' : ''} />
+      {loading && <Loader2 size={compact ? 14 : 18} className="animate-spin" />}
     </button>
   );
 }
