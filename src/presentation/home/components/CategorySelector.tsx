@@ -36,8 +36,8 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
         overflow:        'hidden',
         cursor:          'pointer',
         flexShrink:      0,
-        width:           '220px',
-        minWidth:        '150px',
+        width:           'clamp(110px, 28vw, 220px)',
+        minWidth:        'unset',
         aspectRatio:     '3/4',
         backgroundColor: bg,
         outline:         selected ? '2px solid var(--brand-gold)' : '2px solid transparent',
@@ -65,8 +65,8 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
         }}
       />
 
-      <div style={{ position: 'absolute', bottom: '1rem', left: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <span style={{ color: 'white', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.125rem', lineHeight: 1 }}>
+      <div style={{ position: 'absolute', bottom: 'clamp(0.4rem, 2vw, 1rem)', left: 'clamp(0.4rem, 2vw, 1rem)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <span style={{ color: 'white', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 'clamp(0.6rem, 2.5vw, 1.125rem)', lineHeight: 1 }}>
           {label}
         </span>
         {selected && (
@@ -81,7 +81,7 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
 
 export default function CategorySelector({ categories, selected, onSelect }: CategorySelectorProps) {
   return (
-    <div style={{ overflowX: 'auto', padding: '2rem 3rem' }}>
+    <div style={{ overflowX: 'auto', padding: 'clamp(1rem, 4vw, 2rem) clamp(1rem, 5vw, 3rem)' }}>
       <div style={{ display: 'flex', gap: '1rem', width: 'max-content' }}>
         {categories.map((cat) => (
           <CategoryCard
