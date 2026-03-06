@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProductImagesProps {
   images: string[];
@@ -59,14 +59,14 @@ export default function ProductImages({ images, productName }: ProductImagesProp
               className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
               aria-label="Previous image"
             >
-              <FiChevronLeft size={20} />
+              <ChevronLeft size={20} className="text-gray-800" />
             </button>
             <button
               onClick={next}
               className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
               aria-label="Next image"
             >
-              <FiChevronRight size={20} />
+              <ChevronRight size={20} className="text-gray-800" />
             </button>
 
             {/* Dot indicators */}

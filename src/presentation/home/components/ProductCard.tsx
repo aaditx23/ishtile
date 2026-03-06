@@ -73,14 +73,14 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={16} className="text-gray-800" />
               </button>
               <button
                 onClick={next}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={16} className="text-gray-800" />
               </button>
             </>
           )}
