@@ -82,7 +82,7 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
 export default function CategorySelector({ categories, selected, onSelect }: CategorySelectorProps) {
   return (
     <div style={{ overflowX: 'auto', padding: 'clamp(1rem, 4vw, 2rem) clamp(1rem, 5vw, 3rem)' }}>
-      <div style={{ display: 'flex', gap: '1rem', width: 'max-content' }}>
+      <div style={{ display: 'flex', gap: 'clamp(0.4rem, 2vw, 1rem)', width: 'max-content' }}>
         {categories.map((cat) => (
           <CategoryCard
             key={String(cat.value)}
