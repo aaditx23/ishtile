@@ -12,19 +12,26 @@ import {
   primaryBtn,
   type Modal,
 } from './components/AdminCategoryParts';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getCategories, deleteCategory, deleteSubcategory } from '@/application/category/adminCategory';
+import { getProducts } from '@/application/product/getProducts';
 import type { Category, Subcategory } from '@/domain/category/category.entity';
 
 export default function AdminCategoriesView() {
-  const [cats, setCats]       = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [modal, setModal]     = useState<Modal | null>(null);
-  const initRef               = useRef(false);
+  const [cats, setCats]                     = useState<Category[]>([]);
+  const [loading, setLoading]               = useState(true);
+  const [modal, setModal]                   = useState<Modal | null>(null);
+  const [catIdsWithProducts, setCatIdsWithProducts] = useState<Set<number>>(new Set());
+  const initRef                             = useRef(false);
 
   const fetchCats = useCallback(async () => {
     try {
-      const res = await getCategories();
+      const [res, prodRes] = await Promise.all([
+        getCategories(),
+        getProducts({ pageSize: 100, activeOnly: false }),
+      ]);
       setCats(res);
+      setCatIdsWithProducts(new Set(prodRes.items.map(p => p.categoryId)));
     } catch { toast.error('Failed to load categories.'); }
     finally { setLoading(false); }
   }, []);
@@ -92,7 +99,7 @@ export default function AdminCategoriesView() {
     <ShopLayout>
       {/* ── Mobile ─────────────────────────────────────────────────────────── */}
       <div className="block lg:hidden">
-        <MobileAdminCategoriesView cats={cats} loading={loading} modal={modal} {...handlers} />
+        <MobileAdminCategoriesView cats={cats} loading={loading} modal={modal} catIdsWithProducts={catIdsWithProducts} {...handlers} />
       </div>
 
       {/* ── Desktop ─────────────────────────────────────────────────────────── */}
@@ -119,9 +126,9 @@ export default function AdminCategoriesView() {
             </div>
 
             {loading ? (
-              <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>
-                Loading…
-              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.625rem' }} />)}
+              </div>
             ) : cats.length === 0 ? (
               <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>
                 No categories yet. Create one to get started.
@@ -132,6 +139,7 @@ export default function AdminCategoriesView() {
                   <CategoryRow
                     key={cat.id}
                     cat={cat}
+                    deleteDisabled={catIdsWithProducts.has(cat.id)}
                     onEdit={c => setModal({ type: 'editCat', cat: c })}
                     onDelete={handleCatDelete}
                     onAddSub={c => setModal({ type: 'newSub', cat: c })}

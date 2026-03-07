@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   CategoryRow,
   CategoryModal,
@@ -12,15 +13,17 @@ import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import type { Category, Subcategory } from '@/domain/category/category.entity';
 
 interface MobileAdminCategoriesViewProps extends CategoriesHandlers {
-  cats:    Category[];
-  loading: boolean;
-  modal:   Modal | null;
+  cats:                Category[];
+  loading:             boolean;
+  modal:               Modal | null;
+  catIdsWithProducts:  Set<number>;
 }
 
 export default function MobileAdminCategoriesView({
   cats,
   loading,
   modal,
+  catIdsWithProducts,
   onCatSave,
   onCatDelete,
   onSubSave,
@@ -42,9 +45,9 @@ export default function MobileAdminCategoriesView({
 
       {/* Category list */}
       {loading ? (
-        <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>
-          Loading…
-        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.625rem' }} />)}
+        </div>
       ) : cats.length === 0 ? (
         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>
           No categories yet.
@@ -55,6 +58,7 @@ export default function MobileAdminCategoriesView({
             <CategoryRow
               key={cat.id}
               cat={cat}
+              deleteDisabled={catIdsWithProducts.has(cat.id)}
               onEdit={c => setModal({ type: 'editCat', cat: c })}
               onDelete={onCatDelete}
               onAddSub={c => setModal({ type: 'newSub', cat: c })}

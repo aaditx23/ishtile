@@ -15,6 +15,7 @@ interface MobileAdminProductsViewProps {
   pagination:     PaginationMeta | null;
   searchInput:    string;
   onSearch:       (v: string) => void;
+  onDeleted:      (id: number) => void;
 }
 
 const newProductBtn: React.CSSProperties = {
@@ -35,6 +36,7 @@ export default function MobileAdminProductsView({
   pagination,
   searchInput,
   onSearch,
+  onDeleted,
 }: MobileAdminProductsViewProps) {
   return (
     <div style={{ padding: '1.25rem 1rem' }}>
@@ -116,7 +118,11 @@ export default function MobileAdminProductsView({
                   >
                     Edit
                   </Link>
-                  <AdminProductsActions productId={product.id} productName={product.name} />
+                  <AdminProductsActions
+                    productId={product.id}
+                    productName={product.name}
+                    onDeleted={() => onDeleted(product.id)}
+                  />
                 </div>
               </div>
 

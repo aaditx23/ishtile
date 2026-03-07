@@ -70,15 +70,26 @@ export function Badge({ active }: { active: boolean }) {
 }
 
 export function ActionLinks({
-  onEdit, onDelete,
+  onEdit, onDelete, deleteDisabled,
 }: {
-  onEdit:   React.MouseEventHandler;
-  onDelete: React.MouseEventHandler;
+  onEdit:          React.MouseEventHandler;
+  onDelete:        React.MouseEventHandler;
+  deleteDisabled?: boolean;
 }) {
   return (
     <div style={{ display: 'flex', gap: '0.75rem' }}>
-      <button onClick={onEdit}   style={actionBtn('#A58C69')}>Edit</button>
-      <button onClick={onDelete} style={actionBtn('var(--destructive)')}>Delete</button>
+      <button onClick={onEdit} style={actionBtn('#A58C69')}>Edit</button>
+      <button
+        onClick={deleteDisabled ? undefined : onDelete}
+        title={deleteDisabled ? 'Cannot delete: category has products' : undefined}
+        style={{
+          ...actionBtn(deleteDisabled ? 'var(--on-surface-muted)' : 'var(--destructive)'),
+          cursor: deleteDisabled ? 'not-allowed' : 'pointer',
+          opacity: deleteDisabled ? 0.45 : 1,
+        }}
+      >
+        Delete
+      </button>
     </div>
   );
 }
@@ -105,18 +116,20 @@ export function Overlay({ children, onClose }: { children: React.ReactNode; onCl
 
 export function CategoryRow({
   cat,
+  deleteDisabled,
   onEdit,
   onDelete,
   onAddSub,
   onEditSub,
   onDeleteSub,
 }: {
-  cat:         Category;
-  onEdit:      (c: Category) => void;
-  onDelete:    (id: number) => void;
-  onAddSub:    (cat: Category) => void;
-  onEditSub:   (sub: Subcategory, cat: Category) => void;
-  onDeleteSub: (subId: number, catId: number) => void;
+  cat:              Category;
+  deleteDisabled?:  boolean;
+  onEdit:           (c: Category) => void;
+  onDelete:         (id: number) => void;
+  onAddSub:         (cat: Category) => void;
+  onEditSub:        (sub: Subcategory, cat: Category) => void;
+  onDeleteSub:      (subId: number, catId: number) => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -136,6 +149,7 @@ export function CategoryRow({
         <ActionLinks
           onEdit={e => { e.stopPropagation(); onEdit(cat); }}
           onDelete={e => { e.stopPropagation(); onDelete(cat.id); }}
+          deleteDisabled={deleteDisabled}
         />
       </div>
 

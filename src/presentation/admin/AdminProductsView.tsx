@@ -53,6 +53,7 @@ export default function AdminProductsView() {
           pagination={pagination}
           searchInput={searchInput}
           onSearch={handleSearch}
+          onDeleted={(id) => setProducts((prev) => prev.filter((p) => p.id !== id))}
         />
       </div>
 
@@ -213,7 +214,11 @@ export default function AdminProductsView() {
                               >
                                 Edit →
                               </Link>
-                              <AdminProductsActions productId={product.id} productName={product.name} />
+                              <AdminProductsActions
+                                productId={product.id}
+                                productName={product.name}
+                                onDeleted={() => setProducts((prev) => prev.filter((p) => p.id !== product.id))}
+                              />
                             </div>
                           </td>
                         </tr>

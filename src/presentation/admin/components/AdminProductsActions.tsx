@@ -1,18 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { deleteProduct } from '@/application/product/adminProduct';
 
 interface AdminProductsActionsProps {
   productId:   number;
   productName: string;
+  onDeleted:   () => void;
 }
 
-export default function AdminProductsActions({ productId, productName }: AdminProductsActionsProps) {
-  const router              = useRouter();
-  const [busy, setBusy]     = useState(false);
+export default function AdminProductsActions({ productId, productName, onDeleted }: AdminProductsActionsProps) {
+  const [busy, setBusy] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm(`Delete "${productName}"? This cannot be undone.`)) return;
@@ -20,7 +19,7 @@ export default function AdminProductsActions({ productId, productName }: AdminPr
     try {
       await deleteProduct(productId);
       toast.success('Product deleted.');
-      router.refresh();
+      onDeleted();
     } catch {
       toast.error('Failed to delete product.');
     } finally {
