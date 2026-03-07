@@ -54,7 +54,7 @@ export default function ProductDetailView({ product, categories }: ProductDetail
             {/* Header row: meta + favourite button */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
               <div style={{ flex: 1 }}>
-                <ProductMeta product={product} categoryName={category?.name} />
+                <ProductMeta product={product} categoryName={category?.name} hidePrice={!!product.variants?.length} />
               </div>
               <FavouriteButton productId={product.id} />
             </div>

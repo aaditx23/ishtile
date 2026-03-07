@@ -6,6 +6,7 @@ export interface ProductVariant {
   sku: string;
   price: number;
   compareAtPrice: number | null;
+  quantity: number;
   isActive: boolean;
 }
 

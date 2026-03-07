@@ -10,6 +10,7 @@ export function mapVariant(dto: ProductVariantDto): ProductVariant {
     sku:            dto.sku,
     price:          dto.price,
     compareAtPrice: dto.compareAtPrice,
+    quantity:       dto.quantity ?? 0,
     isActive:       dto.isActive,
   };
 }

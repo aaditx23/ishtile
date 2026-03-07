@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,6 @@ function InvCell({ variantId }: { variantId: number }) {
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    setInv(null);
     setBusy(true);
     try {
       const data = await getInventory(variantId);
@@ -35,6 +34,9 @@ function InvCell({ variantId }: { variantId: number }) {
     } catch { toast.error('Could not load inventory.'); }
     finally { setBusy(false); }
   };
+
+  // Auto-fetch on mount
+  useEffect(() => { void load(); }, [variantId]);
 
   const save = async () => {
     if (!inv) return;
@@ -50,13 +52,9 @@ function InvCell({ variantId }: { variantId: number }) {
 
   if (!inv) {
     return (
-      <button
-        onClick={load}
-        disabled={busy}
-        style={{ fontSize: '0.7rem', color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-      >
-        {busy ? '…' : 'Load inv'}
-      </button>
+      <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
+        {busy ? '…' : '—'}
+      </span>
     );
   }
 

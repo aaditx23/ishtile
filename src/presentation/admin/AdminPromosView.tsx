@@ -8,6 +8,7 @@ import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import { AdminSidebarNav } from './AdminLayout';
 import MobileAdminPromosView from './MobileAdminPromosView';
 import { getPromos, createPromo, updatePromo, deletePromo } from '@/application/promo/adminPromo';
+import { nowUtc } from '@/shared/utils/timezone';
 import type { PromoDto, CreatePromoPayload } from '@/domain/promo/promo.entity';
 
 const EMPTY_FORM: CreatePromoPayload = {
@@ -46,8 +47,6 @@ function PromoFormModal({
           maximumDiscount:   initial.maximumDiscount   ?? undefined,
           maxTotalUses:      initial.maxTotalUses       ?? undefined,
           maxUsesPerUser:    initial.maxUsesPerUser     ?? undefined,
-          startsAt:          initial.startsAt           ?? undefined,
-          expiresAt:         initial.expiresAt          ?? undefined,
           isActive:          initial.isActive,
         }
       : EMPTY_FORM,
@@ -58,9 +57,10 @@ function PromoFormModal({
     e.preventDefault();
     setSaving(true);
     try {
+      const payload: CreatePromoPayload = { ...form, startsAt: nowUtc().replace('Z', '') };
       const result = initial
-        ? await updatePromo(initial.id, form)
-        : await createPromo(form);
+        ? await updatePromo(initial.id, payload)
+        : await createPromo(payload);
       onSave(result);
       toast.success(initial ? 'Promo updated.' : 'Promo created.');
     } catch {
@@ -135,22 +135,14 @@ function PromoFormModal({
               <label style={labelStyle}>Max Uses / User</label>
               <Input type="number" value={form.maxUsesPerUser ?? ''} onChange={(e) => setForm((p) => ({ ...p, maxUsesPerUser: e.target.value ? Number(e.target.value) : undefined }))} disabled={saving} />
             </div>
-            <div>
-              <label style={labelStyle}>Starts At</label>
-              <Input type="datetime-local" value={form.startsAt?.slice(0, 16) ?? ''} onChange={(e) => setForm((p) => ({ ...p, startsAt: e.target.value || undefined }))} disabled={saving} />
-            </div>
-            <div>
-              <label style={labelStyle}>Expires At</label>
-              <Input type="datetime-local" value={form.expiresAt?.slice(0, 16) ?? ''} onChange={(e) => setForm((p) => ({ ...p, expiresAt: e.target.value || undefined }))} disabled={saving} />
-            </div>
           </div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
             <input type="checkbox" checked={form.isActive ?? true} onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))} disabled={saving} />
             Active
           </label>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-            <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
-            <Button type="submit" disabled={saving}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={saving} style={{ padding: '0.5rem 1rem' }}>Cancel</Button>
+            <Button type="submit" disabled={saving} style={{ padding: '0.5rem 1rem' }}>
               {saving ? 'Saving…' : 'Save'}
             </Button>
           </div>

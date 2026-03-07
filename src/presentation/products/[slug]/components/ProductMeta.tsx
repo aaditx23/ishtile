@@ -4,6 +4,8 @@ import type { Product } from '@/domain/product/product.entity';
 
 interface ProductMetaProps {
   product: Product;
+  /** When true, the price block is omitted (price is rendered by the interactive client component instead) */
+  hidePrice?: boolean;
   /** Resolved price from the selected variant (falls back to basePrice) */
   displayPrice?: number;
   /** Compare-at price for strike-through */
@@ -16,7 +18,7 @@ const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 /**
  * Static product information — server-renderable (no interactivity).
  */
-export default function ProductMeta({ product, displayPrice, compareAtPrice, categoryName }: ProductMetaProps) {
+export default function ProductMeta({ product, hidePrice, displayPrice, compareAtPrice, categoryName }: ProductMetaProps) {
   const price       = displayPrice ?? product.basePrice;
   const compareAt   = compareAtPrice ?? product.compareAtPrice;
   const hasSale     = compareAt !== null && compareAt > price;
@@ -36,21 +38,23 @@ export default function ProductMeta({ product, displayPrice, compareAtPrice, cat
       </h1>
 
       {/* Price */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <span style={{ fontSize: '1.375rem', fontWeight: 700, color: hasSale ? 'var(--brand-gold)' : 'var(--on-background)' }}>
-          {fmt(price)}
-        </span>
-        {hasSale && compareAt && (
-          <>
-            <span style={{ fontSize: '1rem', color: 'var(--on-surface-muted)', textDecoration: 'line-through' }}>
-              {fmt(compareAt)}
-            </span>
-            <Badge style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
-              {Math.round((1 - price / compareAt) * 100)}% OFF
-            </Badge>
-          </>
-        )}
-      </div>
+      {!hidePrice && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span style={{ fontSize: '1.375rem', fontWeight: 700, color: hasSale ? 'var(--brand-gold)' : 'var(--on-background)' }}>
+            {fmt(price)}
+          </span>
+          {hasSale && compareAt && (
+            <>
+              <span style={{ fontSize: '1rem', color: 'var(--on-surface-muted)', textDecoration: 'line-through' }}>
+                {fmt(compareAt)}
+              </span>
+              <Badge style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
+                {Math.round((1 - price / compareAt) * 100)}% OFF
+              </Badge>
+            </>
+          )}
+        </div>
+      )}
 
       <Separator />
 

@@ -114,6 +114,7 @@ export interface ProductVariantDto {
   price: number;
   compareAtPrice: number | null;
   weightGrams: number | null;
+  quantity: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
