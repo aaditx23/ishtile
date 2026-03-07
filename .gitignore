@@ -38,6 +38,10 @@ Thumbs.db
 
 # Editor
 .vscode/
+
+# Local dev notes
+NOTES.md
+PLAN.md
 .idea/
 *.swp
 *.swo
@@ -51,3 +55,7 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+
+
+api_response.md
+address-and-file-api.md
