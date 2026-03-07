@@ -408,3 +408,42 @@ export type RemoveFavouriteResponse = ActionResponse;
 export type GetCitiesResponse  = ApiResponse & { data: null; listData: PathaoCityDto[] };
 export type GetZonesResponse   = ApiResponse & { data: null; listData: PathaoZoneDto[] };
 export type GetAreasResponse   = ApiResponse & { data: null; listData: PathaoAreaDto[] };
+
+// ─── User Addresses ────────────────────────────────────────────────────────────────
+
+export interface UserAddressDto {
+  id:          number;
+  userId:      number;
+  name:        string | null;
+  phone:       string | null;
+  addressLine: string;
+  city:        string;
+  area:        string | null;
+  postalCode:  string | null;
+  cityId:      number | null;
+  zoneId:      number | null;
+  areaId:      number | null;
+  isDefault:   boolean;
+  createdAt:   string;
+  updatedAt:   string;
+}
+
+export interface CreateAddressInput {
+  addressLine: string;
+  city:        string;
+  name?:       string;
+  phone?:      string;
+  area?:       string;
+  postalCode?: string;
+  cityId?:     number;
+  zoneId?:     number;
+  areaId?:     number;
+  isDefault?:  boolean;
+}
+
+export type UpdateAddressInput = Partial<CreateAddressInput>;
+
+export type ListAddressesResponse   = ApiResponse & { data: null; listData: UserAddressDto[] };
+export type CreateAddressResponse   = DataResponse<UserAddressDto>;
+export type UpdateAddressResponse   = DataResponse<UserAddressDto>;
+export type DeleteAddressResponse   = ActionResponse;

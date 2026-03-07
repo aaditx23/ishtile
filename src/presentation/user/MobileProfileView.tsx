@@ -2,6 +2,7 @@
 
 import UserMobileNavStrip from './components/UserMobileNavStrip';
 import ProfileFormFields from './components/ProfileFormFields';
+import AddressManager from './components/AddressManager';
 import type { User } from '@/domain/user/user.entity';
 import type { UpdateUserPayload } from '@/domain/user/user.repository';
 
@@ -49,6 +50,18 @@ export default function MobileProfileView({
           patch={patch}
           onSubmit={onSubmit}
         />
+      </div>
+
+      <div
+        style={{
+          border:          '1px solid var(--border)',
+          borderRadius:    '0.75rem',
+          padding:         '1.25rem',
+          backgroundColor: 'var(--surface)',
+          marginTop:       '1.25rem',
+        }}
+      >
+        <AddressManager user={user} />
       </div>
     </div>
   );

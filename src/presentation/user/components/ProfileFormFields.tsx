@@ -57,16 +57,18 @@ export default function ProfileFormFields({
   return (
     <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Read-only info */}
-      <div style={{ padding: '0.75rem', borderRadius: '0.5rem', backgroundColor: 'var(--surface-muted)', fontSize: '0.875rem' }}>
-        <span style={{ color: 'var(--on-surface-muted)' }}>Phone: </span>
-        <strong>{user.phone}</strong>
-        {user.role === 'admin' && (
-          <span style={{ marginLeft: '1rem', fontSize: '0.75rem', color: 'var(--brand-gold)', fontWeight: 700 }}>ADMIN</span>
-        )}
-      </div>
+      {user.role === 'admin' && (
+        <div style={{ padding: '0.5rem 0.75rem', borderRadius: '0.5rem', backgroundColor: 'var(--surface-muted)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--brand-gold)' }}>
+          ADMIN
+        </div>
+      )}
 
       <Field label="Full Name">
         <Input value={form.fullName ?? ''} onChange={patch('fullName')} placeholder="Your name" disabled={saving} />
+      </Field>
+
+      <Field label="Phone Number">
+        <Input type="tel" value={form.phone ?? ''} onChange={patch('phone')} placeholder="01XXXXXXXXX" disabled={saving} />
       </Field>
 
       <Field label="Email">

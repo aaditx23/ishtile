@@ -8,6 +8,7 @@ import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import ShippingForm, { type ShippingFields } from './components/ShippingForm';
 import OrderReview from './components/OrderReview';
 import PromoInput from './components/PromoInput';
+import AddressPicker from './components/AddressPicker';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -38,6 +39,7 @@ export default function CheckoutView() {
   const [promoResult, setPromoResult]   = useState<PromoValidationDto | null>(null);
   const [submitting, setSubmitting]     = useState(false);
   const [codConfirmed, setCodConfirmed] = useState(false);
+  const [showNewForm, setShowNewForm]   = useState(false);
 
   const fetchCart = useCallback(async () => {
     setCartLoading(true);
@@ -61,6 +63,17 @@ export default function CheckoutView() {
   };
 
   const handlePromoRemove = () => { setPromoResult(null); setPromoCode(''); };
+
+  const handleAddressPick = (partial: Partial<ShippingFields> | null) => {
+    if (partial === null) {
+      // 'new address' selected
+      setShowNewForm(true);
+      setFields(EMPTY_FIELDS);
+    } else {
+      setShowNewForm(false);
+      setFields((prev) => ({ ...prev, ...partial }));
+    }
+  };
 
   const patchFields = (partial: Partial<ShippingFields>) =>
     setFields((prev) => ({ ...prev, ...partial }));
@@ -130,7 +143,10 @@ export default function CheckoutView() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
                 {/* Shipping */}
                 <Section title="Shipping Information">
-                  <ShippingForm values={fields} onChange={patchFields} disabled={submitting} />
+                  <AddressPicker onSelect={handleAddressPick} disabled={submitting} />
+                  {showNewForm && (
+                    <ShippingForm values={fields} onChange={patchFields} disabled={submitting} />
+                  )}
                 </Section>
 
                 {/* Promo */}

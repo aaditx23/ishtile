@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import MobileProfileView from './MobileProfileView';
 import ProfileFormFields from './components/ProfileFormFields';
+import AddressManager from './components/AddressManager';
 import { getProfile } from '@/application/user/getProfile';
 import { updateProfile } from '@/application/user/updateProfile';
 import type { User } from '@/domain/user/user.entity';
@@ -24,6 +25,7 @@ export default function ProfileView() {
       setForm({
         fullName:    u.fullName    ?? '',
         email:       u.email       ?? '',
+        phone:       u.phone       ?? '',
         addressLine: u.addressLine ?? '',
         city:        u.city        ?? '',
         postalCode:  u.postalCode  ?? '',
@@ -81,6 +83,17 @@ export default function ProfileView() {
           >
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem' }}>My Profile</h1>
             <ProfileFormFields {...formProps} />
+          </div>
+
+          <div
+            style={{
+              border:          '1px solid var(--border)',
+              borderRadius:    '0.75rem',
+              padding:         '1.5rem',
+              backgroundColor: 'var(--surface)',
+            }}
+          >
+            <AddressManager user={user} />
           </div>
         </div>
       </div>

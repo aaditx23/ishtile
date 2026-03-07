@@ -19,6 +19,7 @@ import { AdminProductApiRepository } from '@/infrastructure/api/adminProductApi.
 import { AdminPromoApiRepository } from '@/infrastructure/api/adminPromoApi.repository';
 import { AdminCategoryApiRepository } from '@/infrastructure/api/adminCategoryApi.repository';
 import { LocationApiRepository } from '@/infrastructure/api/locationApi.repository';
+import { UserAddressApiRepository } from '@/infrastructure/api/userAddressApi.repository';
 
 export const categoryRepository = new CategoryApiRepository();
 export const productRepository = new ProductApiRepository();
@@ -33,3 +34,4 @@ export const adminProductRepository = new AdminProductApiRepository();
 export const adminPromoRepository = new AdminPromoApiRepository();
 export const adminCategoryRepository = new AdminCategoryApiRepository();
 export const locationRepository = new LocationApiRepository();
+export const addressRepository = new UserAddressApiRepository();
