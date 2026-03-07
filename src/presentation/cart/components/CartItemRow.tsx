@@ -51,20 +51,20 @@ export default function CartItemRow({ item, onUpdate }: CartItemRowProps) {
   return (
     <div
       style={{
-        display:       'flex',
-        gap:           '1rem',
-        padding:       '1rem 0',
-        borderBottom:  '1px solid var(--border)',
-        alignItems:    'flex-start',
-        opacity:       loading ? 0.6 : 1,
-        transition:    'opacity 0.2s',
+        display:      'flex',
+        gap:          '0.875rem',
+        padding:      '1rem 0',
+        borderBottom: '1px solid var(--border)',
+        alignItems:   'flex-start',
+        opacity:      loading ? 0.6 : 1,
+        transition:   'opacity 0.2s',
       }}
     >
       {/* Image */}
       <Link href={`/products/${item.variantSku}`} style={{ flexShrink: 0 }}>
-        <div style={{ width: '80px', height: '107px', borderRadius: '0.5rem', overflow: 'hidden', backgroundColor: 'var(--surface-variant)', position: 'relative' }}>
+        <div style={{ width: '88px', height: '117px', borderRadius: '0.5rem', overflow: 'hidden', backgroundColor: 'var(--surface-variant)', position: 'relative' }}>
           {item.imageUrl ? (
-            <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="80px" />
+            <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="88px" />
           ) : (
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--on-surface-muted)', fontSize: '0.7rem' }}>
               No image
@@ -74,24 +74,28 @@ export default function CartItemRow({ item, onUpdate }: CartItemRowProps) {
       </Link>
 
       {/* Info */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem', minWidth: 0 }}>
-        <p style={{ fontWeight: 600, fontSize: '0.9rem', lineHeight: 1.3 }}>{item.productName}</p>
-        <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem', minWidth: 0 }}>
+        {/* Name + price row */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
+          <p style={{ fontWeight: 600, fontSize: '0.875rem', lineHeight: 1.3, flex: 1 }}>{item.productName}</p>
+          <p style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--brand-gold)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            {fmt(item.lineTotal)}
+          </p>
+        </div>
+        <p style={{ fontSize: '0.78rem', color: 'var(--on-surface-muted)' }}>
           {item.variantSize}{item.variantColor ? ` / ${item.variantColor}` : ''}
         </p>
-        <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', fontFamily: 'monospace' }}>
-          SKU: {item.variantSku}
-        </p>
-        <p style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--brand-gold)', marginTop: '0.25rem' }}>
-          {fmt(item.lineTotal)}
-        </p>
+        {item.unitPrice > 0 && (
+          <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)' }}>
+            {fmt(item.unitPrice)} each
+          </p>
+        )}
 
         {/* Qty + remove */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
           <Button variant="outline" size="sm" style={{ width: '2rem', height: '2rem', padding: 0 }} disabled={loading || qty <= 1} onClick={() => changeQty(qty - 1)}>−</Button>
           <span style={{ minWidth: '1.5rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: 600 }}>{qty}</span>
           <Button variant="outline" size="sm" style={{ width: '2rem', height: '2rem', padding: 0 }} disabled={loading || qty >= item.availableStock} onClick={() => changeQty(qty + 1)}>+</Button>
-          <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)' }}>{item.unitPrice > 0 ? fmt(item.unitPrice) + ' each' : ''}</span>
           <button onClick={handleRemove} disabled={loading} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', display: 'flex', alignItems: 'center', padding: '0.25rem' }} aria-label="Remove item">
             <FiTrash2 size={16} />
           </button>

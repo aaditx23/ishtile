@@ -28,6 +28,8 @@ interface ShippingFormProps {
   values:    ShippingFields;
   onChange:  (partial: Partial<ShippingFields>) => void;
   disabled?: boolean;
+  /** Force single-column layout (default: 2-column pairs) */
+  columns?:  1 | 2;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -65,7 +67,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
  * Shipping address form with cascading Pathao location dropdowns.
  * City → Zone → Area. Purely controlled — parent owns all field values.
  */
-export default function ShippingForm({ values, onChange, disabled }: ShippingFormProps) {
+export default function ShippingForm({ values, onChange, disabled, columns = 2 }: ShippingFormProps) {
   const [cities, setCities] = useState<PathaoCityDto[]>([]);
   const [zones,  setZones]  = useState<PathaoZoneDto[]>([]);
   const [areas,  setAreas]  = useState<PathaoAreaDto[]>([]);
@@ -126,7 +128,7 @@ export default function ShippingForm({ values, onChange, disabled }: ShippingFor
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
 
       {/* Name + Phone */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: columns === 1 ? '1fr' : '1fr 1fr', gap: '0.875rem' }}>
         <Field label="Full Name">
           <Input placeholder="Rahim Uddin" {...textField('name')} required />
         </Field>
@@ -199,7 +201,7 @@ export default function ShippingForm({ values, onChange, disabled }: ShippingFor
       )}
 
       {/* Postal code + Notes */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: columns === 1 ? '1fr' : '1fr 1fr', gap: '0.875rem' }}>
         <Field label="Postal Code (optional)">
           <Input placeholder="1212" {...textField('postalCode')} />
         </Field>

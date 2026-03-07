@@ -9,6 +9,7 @@ import ShippingForm, { type ShippingFields } from './components/ShippingForm';
 import OrderReview from './components/OrderReview';
 import PromoInput from './components/PromoInput';
 import AddressPicker from './components/AddressPicker';
+import MobileCheckoutView from './MobileCheckoutView';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -116,8 +117,33 @@ export default function CheckoutView() {
     }
   };
 
+  const mobileProps = {
+    cart,
+    cartLoading,
+    fields,
+    showNewForm,
+    promoCode,
+    promoResult,
+    submitting,
+    codConfirmed,
+    canSubmit: !!canSubmit,
+    patchFields,
+    handleAddressPick,
+    handlePromoApply,
+    handlePromoRemove,
+    setCodConfirmed,
+    onSubmit: handleSubmit,
+  };
+
   return (
     <ShopLayout>
+      {/* ── Mobile ──────────────────────────────────────────────── */}
+      <div className="block lg:hidden">
+        <MobileCheckoutView {...mobileProps} />
+      </div>
+
+      {/* ── Desktop ─────────────────────────────────────────────── */}
+      <div className="hidden lg:block">
       <div
         style={{
           maxWidth:   '64rem',
@@ -208,6 +234,7 @@ export default function CheckoutView() {
             </div>
           </form>
         ) : null}
+      </div>
       </div>
     </ShopLayout>
   );
