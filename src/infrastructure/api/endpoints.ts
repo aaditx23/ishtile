@@ -69,6 +69,11 @@ export const ENDPOINTS = {
     areas:  (zoneId: number) => `${API_BASE}/locations/areas/${zoneId}`,
   },
 
+  // ─── Files ────────────────────────────────────────────────────────────────
+  files: {
+    upload: (folder: string) => `${API_BASE}/files/upload?folder=${folder}`,
+  },
+
   // ─── Admin ────────────────────────────────────────────────────────────────
   admin: {
     analytics: {

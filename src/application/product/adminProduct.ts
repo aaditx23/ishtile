@@ -13,6 +13,10 @@ export async function createProduct(payload: CreateProductPayload): Promise<Prod
   return adminProductRepository.create(payload);
 }
 
+export async function uploadProductImages(files: File[]): Promise<string[]> {
+  return adminProductRepository.uploadImages(files);
+}
+
 export async function updateProduct(id: number, payload: UpdateProductPayload): Promise<Product> {
   return adminProductRepository.update(id, payload);
 }

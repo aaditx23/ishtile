@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { updateProduct } from '@/application/product/adminProduct';
+import { updateProduct, uploadProductImages } from '@/application/product/adminProduct';
 import type { Product } from '@/domain/product/product.entity';
 import type { Category } from '@/domain/category/category.entity';
 import type { UpdateProductPayload } from '@/domain/product/admin-product.repository';
@@ -54,6 +54,9 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     isFeatured:       product.isFeatured,
   });
   const [saving, setSaving] = useState(false);
+  const [savingMsg, setSavingMsg] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls ?? []);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
 
   const set = (key: keyof UpdateProductPayload, value: UpdateProductPayload[typeof key]) =>
     setForm((p) => ({ ...p, [key]: value }));
@@ -62,12 +65,22 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     e.preventDefault();
     setSaving(true);
     try {
+      let finalImageUrls = imageUrls;
+      if (newFiles.length > 0) {
+        setSavingMsg('Uploading images...');
+        const uploaded = await uploadProductImages(newFiles);
+        finalImageUrls = [...imageUrls, ...uploaded];
+        setImageUrls(finalImageUrls);
+        setNewFiles([]);
+      }
+      setSavingMsg('Saving...');
       await updateProduct(product.id, {
         ...form,
         brand:            form.brand    || undefined,
         material:         form.material || undefined,
         careInstructions: form.careInstructions || undefined,
         description:      form.description || undefined,
+        imageUrls:        finalImageUrls.length ? finalImageUrls : undefined,
       });
       toast.success('Product saved.');
       router.refresh();
@@ -75,6 +88,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
       toast.error('Failed to save product.');
     } finally {
       setSaving(false);
+      setSavingMsg('');
     }
   };
 
@@ -174,6 +188,65 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         <Input value={form.careInstructions ?? ''} onChange={(e) => set('careInstructions', e.target.value)} disabled={saving} />
       </Field>
 
+      {/* Images */}
+      <div>
+        <label style={labelStyle}>Images</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          {/* Existing image thumbnails */}
+          {imageUrls.map((url, i) => (
+            <div
+              key={url}
+              style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`Product image ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button
+                type="button"
+                onClick={() => setImageUrls((prev) => prev.filter((_, idx) => idx !== i))}
+                disabled={saving}
+                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                aria-label="Remove image"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          {/* Previews of newly selected files (dashed border = not yet uploaded) */}
+          {newFiles.map((file, i) => (
+            <div
+              key={`new-${i}`}
+              style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button
+                type="button"
+                onClick={() => setNewFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                disabled={saving}
+                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                aria-label="Remove new image"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          {/* Upload-more box */}
+          <label
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
+          >
+            +
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              disabled={saving}
+              style={{ display: 'none' }}
+              onChange={(e) => setNewFiles((prev) => [...prev, ...Array.from(e.target.files ?? [])])}
+            />
+          </label>
+        </div>
+      </div>
+
       <div style={{ display: 'flex', gap: '1.5rem' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
           <input type="checkbox" checked={form.isActive ?? true} onChange={(e) => set('isActive', e.target.checked)} disabled={saving} />
@@ -186,7 +259,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
       </div>
 
       <Button type="submit" disabled={saving} style={{ alignSelf: 'flex-start', minWidth: '8rem' }}>
-        {saving ? 'Saving…' : 'Save Product'}
+        {saving ? (savingMsg || 'Saving...') : 'Save Product'}
       </Button>
     </form>
   );

@@ -44,15 +44,23 @@ async function handler(
   });
 
   const hasBody = req.method !== 'GET' && req.method !== 'HEAD';
+  const body = hasBody ? await req.arrayBuffer() : undefined;
+
+  console.log('[proxy] -->', req.method, upstream);
+  console.log('[proxy] headers:', Object.fromEntries(forwardHeaders.entries()));
+  if (body && body.byteLength > 0) {
+    console.log('[proxy] body:', new TextDecoder().decode(body));
+  } else {
+    console.log('[proxy] body: EMPTY');
+  }
 
   const upstream_res = await fetch(upstream, {
     method:  req.method,
     headers: forwardHeaders,
-    body:    hasBody ? req.body : undefined,
-    // Required when streaming the request body
-    // @ts-expect-error — Node.js fetch supports this, types lag
-    duplex: hasBody ? 'half' : undefined,
+    body:    body && body.byteLength > 0 ? body : undefined,
   });
+
+  console.log('[proxy] <--', upstream_res.status);
 
   // Forward response headers, stripping hop-by-hop
   const resHeaders = new Headers();

@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { ENDPOINTS } from './endpoints';
+import type { ApiResponse } from '@/shared/types/api.types';
 import type {
     CategoryDto,
     SubcategoryDto,
@@ -30,6 +31,14 @@ export interface SubcategoryPayload {
 }
 
 export class AdminCategoryApiRepository {
+    async uploadImage(file: File): Promise<string> {
+        const fd = new FormData();
+        fd.append('files', file);
+        const res = await apiClient.postFormData<ApiResponse>(ENDPOINTS.files.upload('categories'), fd);
+        const urls = (res.listData ?? []) as string[];
+        return urls[0] ?? '';
+    }
+
     async create(payload: CategoryPayload): Promise<CategoryDto> {
         const res = await apiClient.post<CreateCategoryResponse>(
             ENDPOINTS.categories.create,

@@ -22,7 +22,6 @@ export interface CreateProductPayload {
   basePrice: number;
   compareAtPrice?: number;
   imageUrls?: string[];
-  images?: File[];
   material?: string;
   careInstructions?: string;
   brand?: string;

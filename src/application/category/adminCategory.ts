@@ -30,3 +30,7 @@ export async function updateSubcategory(subId: number, payload: Partial<Subcateg
 export async function deleteSubcategory(subId: number): Promise<void> {
     return adminCategoryRepository.deleteSubcategory(subId);
 }
+
+export async function uploadCategoryImage(file: File): Promise<string> {
+    return adminCategoryRepository.uploadImage(file);
+}

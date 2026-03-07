@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import { AdminSidebarNav } from './AdminLayout';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
-import { createProduct } from '@/application/product/adminProduct';
+import { createProduct, uploadProductImages } from '@/application/product/adminProduct';
 import { getCategories } from '@/application/category/getCategories';
 import type { Category } from '@/domain/category/category.entity';
 
@@ -65,6 +65,7 @@ export default function AdminNewProductView() {
   }]);
   const [images, setImages]   = useState<File[]>([]);
   const [saving, setSaving]   = useState(false);
+  const [savingMsg, setSavingMsg] = useState('');
 
   useEffect(() => {
     getCategories({ activeOnly: true })
@@ -102,6 +103,14 @@ export default function AdminNewProductView() {
 
     setSaving(true);
     try {
+      // Upload images first if any
+      let imageUrls: string[] | undefined;
+      if (images.length > 0) {
+        setSavingMsg('Uploading images…');
+        imageUrls = await uploadProductImages(images);
+      }
+      setSavingMsg('Creating product…');
+
       // API requires product-level prices, we'll derive them from variants
       const basePrice = Math.min(...variants.map(v => Number(v.price)));
       const maxCompare = Math.max(...variants.map(v => Number(v.compareAtPrice || 0)));
@@ -120,7 +129,7 @@ export default function AdminNewProductView() {
         description:    form.description || undefined,
         isActive:       form.isActive,
         isFeatured:     form.isFeatured,
-        images:         images.length ? images : undefined,
+        imageUrls,
         variants: variants.map(v => ({
           size:           v.size.trim(),
           color:          v.color.trim(),
@@ -136,6 +145,7 @@ export default function AdminNewProductView() {
     } catch {
       toast.error('Failed to create product.');
       setSaving(false);
+      setSavingMsg('');
     }
   };
 
@@ -393,7 +403,7 @@ export default function AdminNewProductView() {
               </div>
             </div>
             <Button type="submit" disabled={saving} style={{ alignSelf: 'flex-start', minWidth: '9rem' }}>
-              {saving ? 'Creating…' : 'Create Product'}
+              {saving ? (savingMsg || 'Creating…') : 'Create Product'}
             </Button>
           </form>
             </div>
