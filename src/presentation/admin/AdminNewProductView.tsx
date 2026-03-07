@@ -46,6 +46,7 @@ export default function AdminNewProductView() {
     slug:           '',
     sku:            '',
     categoryId:     0,
+    subcategoryId:  undefined as number | undefined,
     brand:          '',
     material:       '',
     description:    '',
@@ -113,6 +114,7 @@ export default function AdminNewProductView() {
         basePrice,
         compareAtPrice,
         categoryId:     form.categoryId,
+        subcategoryId:  form.subcategoryId,
         brand:          form.brand    || undefined,
         material:       form.material || undefined,
         description:    form.description || undefined,
@@ -175,7 +177,10 @@ export default function AdminNewProductView() {
               <Field label="Category">
                 <select
                   value={form.categoryId}
-                  onChange={(e) => set('categoryId', Number(e.target.value))}
+                  onChange={(e) => {
+                    set('categoryId', Number(e.target.value));
+                    set('subcategoryId', undefined);
+                  }}
                   disabled={saving || catsLoading}
                   style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                 >
@@ -187,6 +192,26 @@ export default function AdminNewProductView() {
                   }
                 </select>
               </Field>
+
+              {(() => {
+                const subcats = categories.find((c) => c.id === form.categoryId)?.subcategories ?? [];
+                if (subcats.length === 0) return null;
+                return (
+                  <Field label="Subcategory">
+                    <select
+                      value={form.subcategoryId ?? ''}
+                      onChange={(e) => set('subcategoryId', e.target.value ? Number(e.target.value) : undefined)}
+                      disabled={saving}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                    >
+                      <option value="">— None —</option>
+                      {subcats.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </Field>
+                );
+              })()}
               <Field label="Brand">
                 <Input value={form.brand} onChange={(e) => set('brand', e.target.value)} disabled={saving} />
               </Field>
