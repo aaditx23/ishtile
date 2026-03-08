@@ -9,7 +9,6 @@ import {
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 import { SearchBar } from './SearchBar';
-import { CartButton } from './CartButton';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
 /* ─── Link data ────────────────────────────────────────────────────────────── */
@@ -49,13 +48,8 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
         <SearchBar variant="mobile" />
       </div>
 
-      {/* Cart */}
-      <div className="pb-2">
-        <CartButton variant="mobile" onClose={onClose} />
-      </div>
-
       {/* Auth Button */}
-      <div className="px-3 pb-3">
+      <div className="pb-3">
         {isAuth ? (
           <Button
             onClick={handleLogout}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
@@ -151,7 +152,12 @@ export default function CheckoutView() {
           padding:    '2rem 1.25rem',
         }}
       >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.75rem' }}>Checkout</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/cart">← Cart</Link>
+          </Button>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Checkout</h1>
+        </div>
 
         {cartLoading ? (
           <CheckoutSkeleton />

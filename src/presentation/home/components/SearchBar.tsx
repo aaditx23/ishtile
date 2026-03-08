@@ -54,13 +54,13 @@ export function SearchBar({ variant = 'desktop' }: SearchBarProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); }}
               placeholder="Search products…"
-              className="h-10 w-full bg-white/10 border-white/20 pl-10 pr-3 text-sm text-white placeholder:text-white/50"
+              className="h-10 w-full bg-white/10 border-white/20 px-3 text-sm text-white placeholder:text-white/50"
             />
           </div>
           <Button
             onClick={submitSearch}
             variant="default"
-            size="default"
+            size="sm"
             className="h-10 px-6 bg-white/10 hover:bg-white/20 text-white border border-white/20"
             style={{padding:'0.5rem'}}
           >

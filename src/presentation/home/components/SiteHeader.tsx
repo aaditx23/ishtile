@@ -48,14 +48,17 @@ export default function SiteHeader() {
   // Helper to check if a link is active
   const isLinkActive = (href: string) => {
     const currentUrl = pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
-    const linkBase = href.split('?')[0];
-    
-    // If link has query params, match exact URL
+
+    // Exact match for query-param links (e.g. New In, Sale)
     if (href.includes('?')) {
       return currentUrl === href;
     }
-    
-    // Otherwise use path-based matching
+
+    // For plain path links: yield to any sibling query-param link that claims this URL
+    const siblingClaims = SHOP_LINKS.some((l) => l.href.includes('?') && currentUrl === l.href);
+    if (siblingClaims) return false;
+
+    const linkBase = href.split('?')[0];
     return pathname === linkBase || pathname.startsWith(linkBase + '/');
   };
 
@@ -193,6 +196,11 @@ export default function SiteHeader() {
 
         {/* ── ROW 3: RIGHT (End alignment) ────────────────────────────── */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingRight:'2rem' }}>
+          {/* Mobile: cart only */}
+          <div style={{ pointerEvents: 'auto' }} className="flex lg:hidden">
+            <CartButton />
+          </div>
+          {/* Desktop */}
           <div style={{ alignItems: 'center', gap: '0.5rem', pointerEvents: 'auto' }} className="hidden lg:flex">
             <SearchBar />
             

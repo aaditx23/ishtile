@@ -62,7 +62,7 @@ export default function AdminOrderDetailView() {
           {/* Main content */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
+              <Button asChild variant="ghost" style={{ padding: '0.5rem' }}>
                 <Link href="/admin/orders">← Orders</Link>
               </Button>
               {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Order #{order.orderNumber}</h1>}
