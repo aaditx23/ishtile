@@ -338,6 +338,7 @@ export interface MemoDto {
   orderId: number;
   memoNumber: string;
   pdfPath: string | null;
+  pdfUrl: string | null;
   isEdited: boolean;
   createdAt: string;
   updatedAt: string;

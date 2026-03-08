@@ -12,6 +12,7 @@ import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard'
 import OrderStatusSelector from './components/OrderStatusSelector';
 import { Button } from '@/components/ui/button';
 import { getOrder } from '@/application/order/getOrder';
+import { generateMemo } from '@/application/order/generateMemo';
 import type { Order } from '@/domain/order/order.entity';
 
 const sectionStyle: React.CSSProperties = {
@@ -32,9 +33,27 @@ const headingStyle: React.CSSProperties = {
 
 export default function AdminOrderDetailView() {
   const params                  = useParams<{ id: string }>();
-  const [order, setOrder]       = useState<Order | null>(null);
-  const [loading, setLoading]   = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [order, setOrder]         = useState<Order | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [notFound, setNotFound]   = useState(false);
+  const [memoLoading, setMemoLoading] = useState(false);
+
+  const handleGenerateMemo = async () => {
+    if (!order) return;
+    setMemoLoading(true);
+    try {
+      const memo = await generateMemo(order.id);
+      if (memo.pdfUrl) {
+        window.open(memo.pdfUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        toast.error('Memo generated but PDF not available yet.');
+      }
+    } catch {
+      toast.error('Failed to generate memo.');
+    } finally {
+      setMemoLoading(false);
+    }
+  };
 
   useEffect(() => {
     const orderId = Number(params.id);
@@ -66,6 +85,18 @@ export default function AdminOrderDetailView() {
                 <Link href="/admin/orders">← Orders</Link>
               </Button>
               {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Order #{order.orderNumber}</h1>}
+              {order && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hover:text-white"
+                  style={{ marginLeft: 'auto', fontSize: '0.75rem', gap: '0.35rem', padding: '0.5rem' }}
+                  onClick={handleGenerateMemo}
+                  disabled={memoLoading}
+                >
+                  {memoLoading ? 'Generating…' : '↓ Download Memo'}
+                </Button>
+              )}
             </div>
 
             {loading && (

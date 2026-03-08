@@ -9,7 +9,6 @@ import UserLayout from './UserLayout';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
 import { Button } from '@/components/ui/button';
 import { getOrder } from '@/application/order/getOrder';
-import { printOrderMemo } from '@/shared/utils/printOrderMemo';
 import type { Order } from '@/domain/order/order.entity';
 
 export default function OrderDetailView() {
@@ -35,17 +34,7 @@ export default function OrderDetailView() {
             <Link href="/orders">← Orders</Link>
           </Button>
           {order && <h1 style={{ fontSize: '1.1rem', fontWeight: 700, }}>Order #{order.orderNumber}</h1>}
-          {order && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="hover:text-white"
-              style={{ marginLeft: 'auto', fontSize: '0.75rem', gap: '0.35rem', padding: '0.5rem' }}
-              onClick={() => printOrderMemo(order)}
-            >
-              ↓ Download Memo
-            </Button>
-          )}
+
         </div>
 
         {loading && <Skeleton style={{ height: '12rem', borderRadius: '0.75rem' }} />}
