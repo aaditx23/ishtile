@@ -39,6 +39,7 @@ export default function OrderDetailView() {
             <Button
               variant="outline"
               size="sm"
+              className="hover:text-white"
               style={{ marginLeft: 'auto', fontSize: '0.75rem', gap: '0.35rem', padding: '0.5rem' }}
               onClick={() => printOrderMemo(order)}
             >
