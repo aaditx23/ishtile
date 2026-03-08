@@ -20,12 +20,16 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
     getAddresses()
       .then((list) => {
         setAddresses(list);
+        if (list.length === 0) {
+          // No saved addresses — go straight to the new-address form
+          setSelected('new');
+          onSelect(null);
+          return;
+        }
         // Auto-select default address if present
         const def = list.find(a => a.isDefault) ?? list[0];
-        if (def) {
-          setSelected(def.id);
-          onSelect(addressToFields(def));
-        }
+        setSelected(def.id);
+        onSelect(addressToFields(def));
       })
       .catch(() => toast.error('Could not load saved addresses.'))
       .finally(() => setLoading(false));
@@ -43,6 +47,7 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
   };
 
   if (loading) return <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>Loading saved addresses…</p>;
+  // No saved addresses — the parent shows the form directly, nothing to render here
   if (addresses.length === 0) return null;
 
   return (

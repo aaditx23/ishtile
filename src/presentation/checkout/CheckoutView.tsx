@@ -177,7 +177,9 @@ export default function CheckoutView() {
                 <Section title="Shipping Information">
                   <AddressPicker onSelect={handleAddressPick} disabled={submitting} />
                   {showNewForm && (
-                    <ShippingForm values={fields} onChange={patchFields} disabled={submitting} />
+                    <div style={{ marginTop: '0.875rem' }}>
+                      <ShippingForm values={fields} onChange={patchFields} disabled={submitting} />
+                    </div>
                   )}
                 </Section>
 

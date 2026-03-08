@@ -190,7 +190,7 @@ export default function MobileCheckoutView({
         <Section title="Delivery Address">
           <AddressPicker onSelect={handleAddressPick} disabled={submitting} />
           {showNewForm && (
-            <div style={{ marginTop: showNewForm ? '0.875rem' : 0 }}>
+            <div style={{ marginTop: '0.875rem' }}>
               <ShippingForm values={fields} onChange={patchFields} disabled={submitting} columns={1} />
             </div>
           )}
