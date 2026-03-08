@@ -72,7 +72,7 @@ export default function ProfileView() {
 
       {/* Desktop: centered card */}
       <div className="hidden lg:block">
-        <div style={{ maxWidth: '52rem', margin: '0 auto', padding: '2rem 1.25rem' }}>
+        <div style={{ maxWidth: '52rem', margin: '0 auto', padding: '2rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div
             style={{
               border:          '1px solid var(--border)',

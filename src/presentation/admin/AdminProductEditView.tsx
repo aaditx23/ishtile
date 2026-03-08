@@ -68,7 +68,7 @@ export default function AdminProductEditView() {
           {/* Main content */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Button asChild variant="ghost" style={{ paddingLeft: 0 }}>
+              <Button asChild variant="ghost" style={{ padding: '0.5rem' }}>
                 <Link href="/admin/products">← Products</Link>
               </Button>
               {product && <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{product.name}</h1>}

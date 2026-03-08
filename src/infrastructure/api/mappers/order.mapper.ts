@@ -33,6 +33,7 @@ export function mapOrder(dto: OrderDto | OrderDetailDto): Order {
     shippingCity:        dto.shippingCity,
     shippingPostalCode:  dto.shippingPostalCode,
     customerNotes:       dto.customerNotes,
+    adminNotes:          dto.adminNotes,
     isPaid:              dto.isPaid,
     paymentMethod:       dto.paymentMethod,
     createdAt:           dto.createdAt,

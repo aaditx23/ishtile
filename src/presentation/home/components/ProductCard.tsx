@@ -43,13 +43,13 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
-    <Card className="overflow-hidden group" >
+    <Card className="overflow-hidden group" style={{ gap: 0, padding: 0 }}>
       {/* Image area */}
-      <CardContent className="relative">
-        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-neutral-100">
+      <CardContent className="relative p-0" style={{ lineHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-neutral-100 leading-none">
           {/* Sliding strip */}
           <div
-            className="flex h-full transition-transform duration-300 ease-in-out"
+            className="absolute top-0 left-0 h-full flex transition-transform duration-300 ease-in-out"
             style={{ width: `${validImages.length * 100}%`, transform: `translateX(-${(imgIndex / validImages.length) * 100}%)` }}
           >
             {validImages.map((src, i) => (

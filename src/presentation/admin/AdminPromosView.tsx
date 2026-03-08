@@ -259,7 +259,7 @@ export default function AdminPromosView() {
                 <table style={{ width: '100%', minWidth: '42rem', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
-                      {['Code', 'Type', 'Value', 'Min Order', 'Uses', 'Expires', 'Status', ''].map((h) => (
+                      {['Code', 'Type', 'Value', 'Min Order', 'Uses', 'Status', ''].map((h) => (
                         <th key={h} style={{ padding: '0.6rem 0.875rem', textAlign: 'left', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--on-surface-muted)', whiteSpace: 'nowrap' }}>
                           {h}
                         </th>
@@ -278,7 +278,6 @@ export default function AdminPromosView() {
                         <td style={{ padding: '0.6rem 0.875rem' }}>
                           {p.currentUses}{p.maxTotalUses ? `/${p.maxTotalUses}` : ''}
                         </td>
-                        <td style={{ padding: '0.6rem 0.875rem', whiteSpace: 'nowrap' }}>{fmtDate(p.expiresAt)}</td>
                         <td style={{ padding: '0.6rem 0.875rem' }}>
                           <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2', color: p.isActive ? '#065f46' : '#991b1b', textTransform: 'uppercase' }}>
                             {p.isActive ? 'Active' : 'Off'}

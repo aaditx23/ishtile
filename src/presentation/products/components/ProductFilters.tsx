@@ -57,6 +57,7 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const brandRef     = useRef<HTMLInputElement>(null);
+  const searchRef    = useRef<HTMLInputElement>(null);
 
   const active = {
     search:     searchParams.get('search')     ?? '',
@@ -101,37 +102,48 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
       {/* ── Search ────────────────────────────────────────────────────── */}
       <section>
         <span style={SECTION_LABEL}>Search</span>
-        <div style={{ position: 'relative' }}>
-          <FiSearch
-            size={14}
-            style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)', pointerEvents: 'none' }}
-          />
-          <input
-            defaultValue={active.search}
-            placeholder="Search products…"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') push({ search: (e.target as HTMLInputElement).value });
-            }}
-            style={{
-              width:           '100%',
-              padding:         '0.45rem 0.65rem 0.45rem 2rem',
-              borderRadius:    '0.5rem',
-              border:          '1px solid var(--border)',
-              fontSize:        '0.8rem',
-              backgroundColor: 'var(--surface)',
-              color:           'inherit',
-              outline:         'none',
-            }}
-          />
-          {active.search && (
-            <button
-              onClick={() => push({ search: '' })}
-              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
-              aria-label="Clear search"
-            >
-              <FiX size={13} />
-            </button>
-          )}
+        <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div style={{ position: 'relative', flex: 1 }}>
+            <FiSearch
+              size={14}
+              style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)', pointerEvents: 'none' }}
+            />
+            <input
+              ref={searchRef}
+              key={active.search}
+              defaultValue={active.search}
+              placeholder="Search…"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') push({ search: (e.target as HTMLInputElement).value });
+              }}
+              style={{
+                width:           '100%',
+                padding:         '0.45rem 1.75rem 0.45rem 2rem',
+                borderRadius:    '0.5rem',
+                border:          '1px solid var(--border)',
+                fontSize:        '0.8rem',
+                backgroundColor: 'var(--surface)',
+                color:           'inherit',
+                outline:         'none',
+              }}
+            />
+            {active.search && (
+              <button
+                onClick={() => push({ search: '' })}
+                style={{ position: 'absolute', right: '0.4rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
+                aria-label="Clear search"
+              >
+                <FiX size={13} />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => push({ search: searchRef.current?.value ?? '' })}
+            style={{ padding: '0.45rem 0.65rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            aria-label="Search"
+          >
+            <FiSearch size={13} />
+          </button>
         </div>
       </section>
 

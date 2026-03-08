@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { updateOrderStatus } from '@/application/order/updateOrderStatus';
@@ -10,24 +9,28 @@ import type { OrderStatus } from '@/shared/types/api.types';
 const STATUSES: OrderStatus[] = ['new', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
 interface OrderStatusSelectorProps {
-  orderId:       number;
-  currentStatus: OrderStatus;
+  orderId:         number;
+  currentStatus:   OrderStatus;
+  onStatusChange?: (newStatus: OrderStatus, adminNotes: string | null) => void;
 }
 
-export default function OrderStatusSelector({ orderId, currentStatus }: OrderStatusSelectorProps) {
-  const router             = useRouter();
-  const [status, setStatus] = useState<OrderStatus>(currentStatus);
-  const [notes, setNotes]   = useState('');
-  const [saving, setSaving] = useState(false);
-  const isDirty             = status !== currentStatus;
+export default function OrderStatusSelector({ orderId, currentStatus, onStatusChange }: OrderStatusSelectorProps) {
+  const [status, setStatus]     = useState<OrderStatus>(currentStatus);
+  const [savedStatus, setSaved] = useState<OrderStatus>(currentStatus);
+  const [notes, setNotes]       = useState('');
+  const [saving, setSaving]     = useState(false);
+  const isDirty                 = status !== savedStatus;
 
   const handleSave = async () => {
     if (!isDirty) return;
     setSaving(true);
+    const trimmedNotes = notes.trim();
     try {
-      await updateOrderStatus(orderId, { status, adminNotes: notes || undefined });
-      toast.success(`Order status updated to ${status}`);
-      router.refresh();
+      const updated = await updateOrderStatus(orderId, { status, adminNotes: trimmedNotes || undefined });
+      setSaved(updated.status);
+      setNotes('');
+      toast.success(`Order status updated to ${updated.status}`);
+      onStatusChange?.(updated.status, trimmedNotes || null);
     } catch {
       toast.error('Failed to update status.');
     } finally {
