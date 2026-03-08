@@ -202,7 +202,7 @@ export default function SiteHeader() {
           </div>
           {/* Desktop */}
           <div style={{ alignItems: 'center', gap: '0.5rem', pointerEvents: 'auto' }} className="hidden lg:flex">
-            <SearchBar />
+            {!pathname.startsWith('/products') && <SearchBar />}
             
             <CartButton />
 

@@ -14,6 +14,7 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
   const router       = useRouter();
   const searchParams = useSearchParams();
   const brandRef     = useRef<HTMLInputElement>(null);
+  const searchRef    = useRef<HTMLInputElement>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const active = {
@@ -40,11 +41,12 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
   const selectedCategory = categories.find((c) => c.slug === active.category);
   const subcategories    = selectedCategory?.subcategories ?? [];
 
-  // count active extra filters (brand / featured / activeOnly-off)
+  // count active extra filters (brand / featured / activeOnly-off / category)
   const extraCount =
     (active.brand ? 1 : 0) +
     (active.featured ? 1 : 0) +
-    (!active.activeOnly ? 1 : 0);
+    (!active.activeOnly ? 1 : 0) +
+    (active.category ? 1 : 0);
 
   const hasAny = active.search || active.category || active.brand || active.featured || !active.activeOnly;
 
@@ -71,6 +73,8 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
             style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)', pointerEvents: 'none' }}
           />
           <input
+            ref={searchRef}
+            key={active.search}
             defaultValue={active.search}
             placeholder="Search products…"
             onKeyDown={(e) => {
@@ -90,12 +94,19 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
           {active.search && (
             <button
               onClick={() => push({ search: '' })}
-              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
+              style={{ position: 'absolute', right: '0.4rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
             >
               <FiX size={13} />
             </button>
           )}
         </div>
+        <button
+          onClick={() => push({ search: searchRef.current?.value ?? '' })}
+          style={{ padding: '0.5rem 0.65rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+          aria-label="Search"
+        >
+          <FiSearch size={14} />
+        </button>
 
         {/* Filters toggle */}
         <button
@@ -139,59 +150,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
         </button>
       </div>
 
-      {/* ── Category pills (horizontal scroll) ──────────────────── */}
-      <div
-        style={{
-          display:         'flex',
-          gap:             '0.4rem',
-          overflowX:       'auto',
-          scrollbarWidth:  'none',
-          paddingBottom:   '2px',
-        }}
-      >
-        {/* "All" pill */}
-        <Pill
-          label="All"
-          active={!active.category}
-          onClick={() => push({ category: '', sub: '' })}
-        />
-        {categories.map((cat) => (
-          <Pill
-            key={cat.id}
-            label={cat.name}
-            active={active.category === cat.slug}
-            onClick={() => push({ category: cat.slug, sub: '' })}
-          />
-        ))}
-      </div>
-
-      {/* ── Subcategory pills (when category is selected) ───────── */}
-      {subcategories.length > 0 && (
-        <div
-          style={{
-            display:        'flex',
-            gap:            '0.4rem',
-            overflowX:      'auto',
-            scrollbarWidth: 'none',
-            paddingBottom:  '2px',
-          }}
-        >
-          <Pill
-            label={`All ${selectedCategory!.name}`}
-            active={!active.sub}
-            onClick={() => push({ sub: '' })}
-          />
-          {subcategories.map((sc) => (
-            <Pill
-              key={sc.id}
-              label={sc.name}
-              active={active.sub === sc.slug}
-              onClick={() => push({ sub: sc.slug })}
-            />
-          ))}
-        </div>
-      )}
-
       {/* ── Extra filters (collapsible) ──────────────────────────── */}
       {filtersOpen && (
         <div
@@ -205,6 +163,29 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
             backgroundColor: 'var(--surface)',
           }}
         >
+          {/* Category */}
+          <div>
+            <label style={SECTION_LABEL}>Category</label>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              <Pill label="All" active={!active.category} onClick={() => push({ category: '', sub: '' })} />
+              {categories.map((cat) => (
+                <Pill key={cat.id} label={cat.name} active={active.category === cat.slug} onClick={() => push({ category: cat.slug, sub: '' })} />
+              ))}
+            </div>
+          </div>
+
+          {/* Subcategory */}
+          {subcategories.length > 0 && (
+            <div>
+              <label style={SECTION_LABEL}>{selectedCategory!.name}</label>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <Pill label={`All ${selectedCategory!.name}`} active={!active.sub} onClick={() => push({ sub: '' })} />
+                {subcategories.map((sc) => (
+                  <Pill key={sc.id} label={sc.name} active={active.sub === sc.slug} onClick={() => push({ sub: sc.slug })} />
+                ))}
+              </div>
+            </div>
+          )}
           {/* Brand */}
           <div>
             <label style={SECTION_LABEL}>Brand</label>
