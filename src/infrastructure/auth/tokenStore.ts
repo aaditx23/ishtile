@@ -35,8 +35,11 @@ function isBrowser(): boolean {
 function setSessionCookie(): void {
   // SameSite=Lax prevents the cookie from being sent on cross-site POSTs
   // (basic CSRF protection). Secure flag added automatically in production.
+  // Keep this in sync with refresh-token lifetime so middleware auth gates
+  // survive browser restarts.
   const secure = location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${KEYS.session}=1; path=/; SameSite=Lax${secure}`;
+  const maxAge = 60 * 60 * 24 * 30; // 30 days
+  document.cookie = `${KEYS.session}=1; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
 }
 
 function clearSessionCookie(): void {
@@ -57,6 +60,7 @@ export const tokenStore = {
 
   setAccess(token: string): void {
     _access = token;
+    if (isBrowser()) setSessionCookie();
   },
 
   clearAccess(): void {
@@ -84,7 +88,6 @@ export const tokenStore = {
   setTokens(accessToken: string, refreshToken: string): void {
     this.setAccess(accessToken);
     this.setRefresh(refreshToken);
-    if (isBrowser()) setSessionCookie();
   },
 
   /** Clear everything and remove the session cookie so middleware redirects. */
