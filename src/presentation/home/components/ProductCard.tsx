@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   return (
     <Card className="overflow-hidden group" style={{ gap: 0, padding: 0 }}>
       {/* Image area */}
-      <CardContent className="relative p-0">
+      <CardContent className="relative p-0" style={{ lineHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-neutral-100 leading-none">
           {/* Sliding strip */}
           <div

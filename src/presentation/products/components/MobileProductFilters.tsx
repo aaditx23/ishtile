@@ -58,11 +58,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
         <h1 style={{ fontSize: '1.1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Products
         </h1>
-        {total != null && (
-          <span style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)' }}>
-            {total} {total === 1 ? 'item' : 'items'}
-          </span>
-        )}
       </div>
 
       {/* ── Search row ────────────────────────────────────────────── */}
