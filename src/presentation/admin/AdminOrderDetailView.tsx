@@ -79,7 +79,11 @@ export default function AdminOrderDetailView() {
                 <OrderSummaryCard order={order} />
                 <div style={sectionStyle}>
                   <p style={headingStyle}>Update Status</p>
-                  <OrderStatusSelector orderId={order.id} currentStatus={order.status} />
+                  <OrderStatusSelector
+                    orderId={order.id}
+                    currentStatus={order.status}
+                    onStatusChange={(s, adminNotes) => setOrder((o) => o ? { ...o, status: s, ...(adminNotes !== null ? { adminNotes } : {}) } : o)}
+                  />
                 </div>
               </div>
             )}

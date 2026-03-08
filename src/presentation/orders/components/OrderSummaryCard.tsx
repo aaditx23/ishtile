@@ -93,6 +93,16 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
           )}
         </div>
       </div>
+
+      {/* Admin notes */}
+      {order.adminNotes && (
+        <div style={sectionStyle}>
+          <p style={headingStyle}>Admin Note</p>
+          <p style={{ fontSize: '0.875rem', lineHeight: 1.6, fontStyle: 'italic', color: 'var(--on-surface-muted)' }}>
+            {order.adminNotes}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

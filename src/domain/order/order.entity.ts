@@ -28,6 +28,7 @@ export interface Order {
   shippingCity: string;
   shippingPostalCode: string | null;
   customerNotes: string | null;
+  adminNotes: string | null;
   isPaid: boolean;
   paymentMethod: 'cod';
   createdAt: string;
