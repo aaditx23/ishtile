@@ -1,0 +1,135 @@
+/**
+ * Shipments — mutations
+ * Mirrors: POST /api/v1/shipments (admin create) + webhook status sync
+ *
+ * processWebhook — called from app/api/webhooks/pathao/route.ts after HMAC
+ *   verification. Uses idempotency key to prevent duplicate processing.
+ *
+ * createShipment — admin: manually create a shipment record for an order.
+ */
+import { mutation } from "../_generated/server";
+import { v } from "convex/values";
+
+// ─── Create shipment (admin) ──────────────────────────────────────────────────
+
+export const createShipment = mutation({
+  args: {
+    orderId: v.id("orders"),
+    recipientName: v.string(),
+    recipientPhone: v.string(),
+    recipientAddress: v.string(),
+    recipientCity: v.string(),
+    recipientZone: v.optional(v.string()),
+    itemValue: v.number(),
+    deliveryCharge: v.optional(v.number()),
+    itemWeight: v.optional(v.number()),
+    consignmentId: v.optional(v.string()),
+    invoiceNumber: v.optional(v.string()),
+    trackingCode: v.optional(v.string()),
+    merchantOrderId: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("pending"), v.literal("created"), v.literal("picked_up"), v.literal("in_transit"), v.literal("delivered"), v.literal("returned"), v.literal("cancelled"))),
+    createdInPathao: v.optional(v.boolean()),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { orderId, adminUserId, createdInPathao, ...rest }) => {
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+
+    const existing = await ctx.db
+      .query("shipments")
+      .withIndex("by_order", (q) => q.eq("orderId", orderId))
+      .first();
+
+    if (existing) throw new Error("Shipment already exists for this order");
+
+    const shipmentId = await ctx.db.insert("shipments", {
+      orderId,
+      status: rest.status ?? "pending",
+      createdInPathao: createdInPathao ?? false,
+      ...rest,
+    });
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "create",
+      entityType: "shipment",
+      entityId: shipmentId,
+      description: `Shipment created for order ${order.orderNumber}`,
+    });
+
+    return shipmentId;
+  },
+});
+
+// ─── Process Pathao webhook ───────────────────────────────────────────────────
+
+export const processWebhook = mutation({
+  args: {
+    consignmentId: v.string(),
+    status: v.string(),
+    statusUpdateTime: v.optional(v.string()),
+    merchantOrderId: v.optional(v.string()),
+    rawPayload: v.optional(v.string()),
+    idempotencyKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Idempotency check — skip duplicate webhooks
+    const dup = await ctx.db
+      .query("idempotencyKeys")
+      .withIndex("by_key", (q) => q.eq("key", args.idempotencyKey))
+      .first();
+
+    if (dup) {
+      return { success: true, skipped: true };
+    }
+
+    // Register idempotency key
+    await ctx.db.insert("idempotencyKeys", {
+      key: args.idempotencyKey,
+      source: "pathao_webhook",
+    });
+
+    // Find shipment by consignmentId
+    const shipment = await ctx.db
+      .query("shipments")
+      .filter((q) => q.eq(q.field("consignmentId"), args.consignmentId))
+      .first();
+
+    if (!shipment) {
+      // May arrive before shipment record created — silently ack
+      return { success: true, skipped: true };
+    }
+
+    type ShipmentStatus = "pending" | "created" | "picked_up" | "in_transit" | "delivered" | "returned" | "cancelled";
+    await ctx.db.patch(shipment._id, {
+      status: args.status as ShipmentStatus,
+    });
+
+    // Mirror order status based on Pathao event
+    const pathaoToOrderStatus: Record<string, string> = {
+      Delivered: "delivered",
+      "Partially Delivered": "delivered",
+      Returned: "cancelled",
+      "Return Initiated": "cancelled",
+    };
+
+    const orderStatus = pathaoToOrderStatus[args.status];
+    if (orderStatus) {
+      const order = await ctx.db.get(shipment.orderId);
+      if (
+        order &&
+        order.status !== "delivered" &&
+        order.status !== "cancelled"
+      ) {
+        type OrderStatus = "new" | "confirmed" | "shipped" | "delivered" | "cancelled";
+        await ctx.db.patch(order._id, {
+          status: orderStatus as OrderStatus,
+          ...(orderStatus === "delivered" && { deliveredAt: Date.now() }),
+          ...(orderStatus === "cancelled" && { cancelledAt: Date.now() }),
+        });
+      }
+    }
+
+    return { success: true, skipped: false };
+  },
+});
