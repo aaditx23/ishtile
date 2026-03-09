@@ -42,3 +42,23 @@ export const listFavourites = query({
     return { items, total, page, pageSize };
   },
 });
+
+// ─── Check if product is favourited ──────────────────────────────────────────
+
+export const getFavouriteByProduct = query({
+  args: {
+    userId: v.id("users"),
+    productId: v.id("products"),
+  },
+  handler: async (ctx, { userId, productId }) => {
+    const fav = await ctx.db
+      .query("favourites")
+      .withIndex("by_user_and_product", (q) =>
+        q.eq("userId", userId).eq("productId", productId),
+      )
+      .first();
+
+    if (!fav) return null;
+    return { id: fav._id };
+  },
+});

@@ -5,9 +5,9 @@
  * NOTE: JWT signing happens in lib/auth.ts (Next.js), not here.
  * These mutations return { userId, role } — Next.js signs the tokens.
  * 
- * NOTE: bcryptjs is pure JS and works in Convex V8 isolate.
+ * NOTE: bcryptjs synchronous functions work in Convex V8 isolate.
  * Password HASHING happens in Next.js (authConvex.service.ts) before calling register.
- * Password COMPARING (bcrypt.compare) happens here — it's pure JS, no randomness needed.
+ * Password COMPARING (bcrypt.compareSync) happens here — synchronous, no setTimeout.
  */
 import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
@@ -45,10 +45,10 @@ export const loginWithPassword = mutation({
       throw new Error("Account is inactive");
     }
 
-    // bcryptjs.compare is pure JS — works in Convex V8 isolate
+    // bcryptjs.compareSync is synchronous — works in Convex V8 isolate
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const bcrypt = require("bcryptjs") as typeof import("bcryptjs");
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    const valid = bcrypt.compareSync(password, user.passwordHash);
     if (!valid) {
       throw new Error("Invalid credentials");
     }
@@ -175,5 +175,48 @@ export const updateMe = mutation({
     if (!updated) return null;
     const { passwordHash: _pw, ...safeUser } = updated;
     return { ...safeUser, id: updated._id };
+  },
+});
+
+// ─── Create Admin (seed only) ─────────────────────────────────────────────────
+
+export const createAdmin = mutation({
+  args: {
+    phone: v.string(),
+    email: v.string(),
+    passwordHash: v.string(),
+    fullName: v.optional(v.string()),
+  },
+  handler: async (ctx, { phone, email, passwordHash, fullName }) => {
+    // Check if admin already exists
+    const existingByEmail = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+
+    if (existingByEmail) {
+      throw new Error("An account with this email already exists");
+    }
+
+    const existingByPhone = await ctx.db
+      .query("users")
+      .withIndex("by_phone", (q) => q.eq("phone", phone))
+      .first();
+
+    if (existingByPhone) {
+      throw new Error("An account with this phone already exists");
+    }
+
+    const userId = await ctx.db.insert("users", {
+      phone,
+      email,
+      fullName: fullName || "Admin",
+      passwordHash,
+      role: "admin",
+      isActive: true,
+      isVerified: true,
+    });
+
+    return { userId, role: "admin" };
   },
 });

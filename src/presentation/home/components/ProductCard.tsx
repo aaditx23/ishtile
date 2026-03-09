@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import FavouriteButton from '@/presentation/products/[slug]/components/FavouriteButton';
 
 export interface ProductCardData {
-  id: string;
+  id: number; // Domain ID type (Convex ID string at runtime)
   slug: string;
   name: string;
   category: string;
@@ -107,7 +107,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
 
         {/* Favourite */}
         <div className="absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-          <FavouriteButton productId={Number(product.id)} compact />
+          <FavouriteButton productId={product.id} compact />
         </div>
       </CardContent>
 

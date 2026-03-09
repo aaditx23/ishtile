@@ -256,6 +256,48 @@ export const updateVariant = mutation({
   },
 });
 
+// ─── Create standalone variant ────────────────────────────────────────────────
+
+export const createVariant = mutation({
+  args: {
+    productId: v.id("products"),
+    adminUserId: v.id("users"),
+    size: v.string(),
+    color: v.optional(v.string()),
+    sku: v.string(),
+    price: v.number(),
+    compareAtPrice: v.optional(v.number()),
+    weightGrams: v.optional(v.number()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, { productId, adminUserId, ...variantFields }) => {
+    const product = await ctx.db.get(productId);
+    if (!product) throw new Error("Product not found");
+
+    const variantId = await ctx.db.insert("productVariants", {
+      productId,
+      isActive: variantFields.isActive ?? true,
+      ...variantFields,
+    });
+
+    await ctx.db.insert("inventory", {
+      variantId,
+      quantity: 0,
+      reservedQuantity: 0,
+    });
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "create",
+      entityType: "productVariant",
+      entityId: variantId,
+      description: `Added variant "${variantFields.size}" to product ${productId}`,
+    });
+
+    return { id: variantId };
+  },
+});
+
 // ─── Adjust inventory quantity ────────────────────────────────────────────────
 
 export const adjustInventory = mutation({

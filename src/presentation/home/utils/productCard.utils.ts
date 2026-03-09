@@ -13,7 +13,7 @@ export function toProductCardData(
 ): ProductCardData {
   const matchedCategory = categories.find((c) => c.id === product.categoryId);
   return {
-    id:         String(product.id),
+    id:         product.id,
     slug:       product.slug,
     name:       product.name,
     category:   matchedCategory?.name ?? 'Product',

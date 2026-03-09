@@ -14,7 +14,7 @@ export const addFavourite = mutation({
     const product = await ctx.db.get(productId);
     if (!product) throw new Error("Product not found");
 
-    // Idempotent — check if already favourited
+    // Idempotent — return existing if already favourited
     const existing = await ctx.db
       .query("favourites")
       .withIndex("by_user_and_product", (q) =>
@@ -22,7 +22,7 @@ export const addFavourite = mutation({
       )
       .first();
 
-    if (existing) throw new Error("Product already in favourites");
+    if (existing) return { id: existing._id };
 
     const id = await ctx.db.insert("favourites", { userId, productId });
     return { id };
@@ -57,8 +57,38 @@ export const removeFavouriteByProduct = mutation({
       )
       .first();
 
-    if (!fav) throw new Error("Favourite not found");
+    if (!fav) return { success: false, message: "Not favourited" };
     await ctx.db.delete(fav._id);
     return { success: true };
+  },
+});
+
+// ─── Toggle favourite (add if not exists, remove if exists) ──────────────────
+
+export const toggleFavourite = mutation({
+  args: {
+    userId: v.id("users"),
+    productId: v.id("products"),
+  },
+  handler: async (ctx, { userId, productId }) => {
+    const product = await ctx.db.get(productId);
+    if (!product) throw new Error("Product not found");
+
+    const existing = await ctx.db
+      .query("favourites")
+      .withIndex("by_user_and_product", (q) =>
+        q.eq("userId", userId).eq("productId", productId),
+      )
+      .first();
+
+    if (existing) {
+      // Remove
+      await ctx.db.delete(existing._id);
+      return { action: "removed" as const, id: null };
+    } else {
+      // Add
+      const id = await ctx.db.insert("favourites", { userId, productId });
+      return { action: "added" as const, id };
+    }
   },
 });

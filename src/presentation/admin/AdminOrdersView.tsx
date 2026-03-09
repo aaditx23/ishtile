@@ -12,7 +12,7 @@ import MobileAdminOrdersView from './MobileAdminOrdersView';
 import StatusFilterTabs from './components/StatusFilterTabs';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
-import { getOrders } from '@/application/order/getOrders';
+import { getAdminOrders } from '@/application/order/getAdminOrders';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
@@ -28,7 +28,7 @@ export default function AdminOrdersView() {
 
   useEffect(() => {
     setLoading(true);
-    getOrders({ page, pageSize: 20, status: status ?? undefined })
+    getAdminOrders({ page, pageSize: 20, status: status ?? undefined })
       .then(({ items, pagination: pg }) => { setOrders(items); setPagination(pg); })
       .catch(() => toast.error('Failed to load orders.'))
       .finally(() => setLoading(false));

@@ -35,17 +35,24 @@ export const listProducts = query({
   ) => {
     let products;
 
-    // Use search index when a search term is provided
+    // Use search when provided - search name and SKU with case-insensitive substring matching
     if (search) {
-      products = await ctx.db
+      const searchLower = search.toLowerCase();
+      
+      // Fetch all products and filter in-memory for substring match
+      const allProducts = await ctx.db
         .query("products")
-        .withSearchIndex("search_products", (q) => {
-          let s = q.search("name", search);
-          if (activeOnly) s = s.eq("isActive", true);
-          if (categoryId) s = s.eq("categoryId", categoryId);
-          return s;
-        })
+        .filter((q) =>
+          activeOnly ? q.eq(q.field("isActive"), true) : q.neq(q.field("isActive"), null),
+        )
         .collect();
+      
+      products = allProducts.filter((p) => {
+        const nameMatch = p.name.toLowerCase().includes(searchLower);
+        const skuMatch = p.sku.toLowerCase().includes(searchLower);
+        const categoryMatch = categoryId ? p.categoryId === categoryId : true;
+        return (nameMatch || skuMatch) && categoryMatch;
+      });
     } else {
       // Index-based filter: prefer the most selective index
       if (categoryId) {

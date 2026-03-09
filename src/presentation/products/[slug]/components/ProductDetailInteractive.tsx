@@ -30,7 +30,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
   const price      = selectedVariant?.price ?? product.basePrice;
   const compareAt  = selectedVariant?.compareAtPrice ?? product.compareAtPrice;
   const hasSale    = compareAt !== null && compareAt > price;
-  const stock      = selectedVariant?.quantity ?? 0;
+  const stock      = selectedVariant?.stock ?? 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

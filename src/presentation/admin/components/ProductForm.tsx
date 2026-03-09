@@ -109,7 +109,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           <select
             value={form.categoryId ?? ''}
             onChange={(e) => {
-              set('categoryId', Number(e.target.value));
+              set('categoryId', e.target.value as unknown as number);
               set('subcategoryId', undefined);
             }}
             disabled={saving}
@@ -136,7 +136,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
             <Field label="Subcategory">
               <select
                 value={form.subcategoryId ?? ''}
-                onChange={(e) => set('subcategoryId', e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) => set('subcategoryId', e.target.value ? (e.target.value as unknown as number) : undefined)}
                 disabled={saving}
                 style={{
                   width:        '100%',

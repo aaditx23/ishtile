@@ -7,8 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { authService } from '@/infrastructure/auth/auth.service';
-import { ApiError } from '@/infrastructure/api/apiClient';
+import { authConvexService } from '@/infrastructure/auth/authConvex.service';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -35,7 +34,7 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      await authService.register({
+      await authConvexService.register({
         phone,
         email,
         username,
@@ -45,11 +44,7 @@ function RegisterForm() {
       toast.success('Account created! Welcome to Ishtile.');
       router.push('/');
     } catch (err) {
-      if (err instanceof ApiError && err.errors && err.errors.length > 0) {
-        err.errors.forEach(error => toast.error(error));
-      } else {
-        toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
-      }
+      toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -7,8 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { authService } from '@/infrastructure/auth/auth.service';
-import { ApiError } from '@/infrastructure/api/apiClient';
+import { authConvexService } from '@/infrastructure/auth/authConvex.service';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -34,15 +33,13 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      await authService.login(email, password);
+      await authConvexService.login(email, password);
       toast.success('Welcome back!');
       router.push(next);
     } catch (err) {
-      if (err instanceof ApiError && err.errors && err.errors.length > 0) {
-        err.errors.forEach(error => toast.error(error));
-      } else {
-        toast.error(err instanceof Error ? err.message : 'Login failed. Check your credentials.');
-      }
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Check your credentials.';
+      console.error('Login error:', err);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

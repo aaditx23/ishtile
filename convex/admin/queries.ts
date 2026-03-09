@@ -90,6 +90,26 @@ export const getPendingOrders = query({
   },
 });
 
+// ─── Get inventory by variant ─────────────────────────────────────────────────
+
+export const getInventory = query({
+  args: { variantId: v.id("productVariants") },
+  handler: async (ctx, { variantId }) => {
+    const inv = await ctx.db
+      .query("inventory")
+      .withIndex("by_variant", (q) => q.eq("variantId", variantId))
+      .first();
+    
+    if (!inv) return null;
+    
+    return {
+      ...inv,
+      id: inv._id,
+      availableQuantity: inv.quantity - inv.reservedQuantity,
+    };
+  },
+});
+
 // ─── Low stock report ─────────────────────────────────────────────────────────
 
 export const getLowStockReport = query({

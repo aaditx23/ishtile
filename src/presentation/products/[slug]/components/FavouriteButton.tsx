@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Heart, Loader2 } from 'lucide-react';
-import { addFavourite } from '@/application/favourite/addFavourite';
-import { removeFavourite } from '@/application/favourite/removeFavourite';
-import { getFavourites } from '@/application/favourite/getFavourites';
+import { toggleFavourite } from '@/application/favourite/toggleFavourite';
+import { checkFavourite } from '@/application/favourite/checkFavourite';
 
 interface FavouriteButtonProps {
   productId: number;
@@ -16,27 +15,28 @@ interface FavouriteButtonProps {
 }
 
 export default function FavouriteButton({ productId, initialFavId = null, compact = false }: FavouriteButtonProps) {
-  const [favId, setFavId]   = useState<number | null>(initialFavId);
-  const [loading, setLoading] = useState(false);
+  const [favId, setFavId]       = useState<number | null>(initialFavId);
+  const [loading, setLoading]   = useState(false);
+  const [checking, setChecking] = useState(initialFavId === null);
+
+  // Check favorite status on mount if not provided
+  useEffect(() => {
+    if (initialFavId === null) {
+      checkFavourite(productId)
+        .then(setFavId)
+        .catch(() => setFavId(null))
+        .finally(() => setChecking(false));
+    }
+  }, [productId, initialFavId]);
 
   const isFav = favId !== null;
 
   const handleToggle = async () => {
     setLoading(true);
     try {
-      if (isFav) {
-        // We already have the favId stored from a previous add
-        await removeFavourite(favId);
-        setFavId(null);
-        toast.success('Removed from favourites.');
-      } else {
-        // Add to favourites — then look it up to get the new favId
-        await addFavourite(productId);
-        const favs = await getFavourites(1);
-        const match = favs.items.find((f) => f.productId === productId);
-        setFavId(match?.id ?? -1); // -1 signals "added but id unknown"
-        toast.success('Added to favourites!');
-      }
+      const result = await toggleFavourite(productId);
+      setFavId(result.favouriteId);
+      toast.success(result.added ? 'Added to favourites!' : 'Removed from favourites.');
     } catch {
       toast.error('Could not update favourites. Are you logged in?');
     } finally {
@@ -47,7 +47,7 @@ export default function FavouriteButton({ productId, initialFavId = null, compac
   return (
     <button
       onClick={handleToggle}
-      disabled={loading}
+      disabled={loading || checking}
       style={compact ? {
         width:           '2rem',
         height:          '2rem',
@@ -58,9 +58,10 @@ export default function FavouriteButton({ productId, initialFavId = null, compac
         display:         'flex',
         alignItems:      'center',
         justifyContent:  'center',
-        cursor:          loading ? 'not-allowed' : 'pointer',
+        cursor:          loading || checking ? 'not-allowed' : 'pointer',
         backdropFilter:  'blur(2px)',
         flexShrink:      0,
+        opacity:         checking ? 0.5 : 1,
       } : {
         width:           '2.75rem',
         height:          '2.75rem',
@@ -71,14 +72,15 @@ export default function FavouriteButton({ productId, initialFavId = null, compac
         display:         'flex',
         alignItems:      'center',
         justifyContent:  'center',
-        cursor:          loading ? 'not-allowed' : 'pointer',
+        cursor:          loading || checking ? 'not-allowed' : 'pointer',
         transition:      'all 0.2s ease',
         flexShrink:       0,
+        opacity:         checking ? 0.5 : 1,
       }}
       aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
     >
-      <Heart size={compact ? 14 : 18} fill={isFav ? 'currentColor' : 'none'} className={loading ? 'hidden' : ''} />
-      {loading && <Loader2 size={compact ? 14 : 18} className="animate-spin" />}
+      <Heart size={compact ? 14 : 18} fill={isFav ? 'currentColor' : 'none'} className={(loading || checking) ? 'hidden' : ''} />
+      {(loading || checking) && <Loader2 size={compact ? 14 : 18} className="animate-spin" />}
     </button>
   );
 }

@@ -188,7 +188,7 @@ export default function AdminNewProductView() {
                 <select
                   value={form.categoryId}
                   onChange={(e) => {
-                    set('categoryId', Number(e.target.value));
+                    set('categoryId', e.target.value as unknown as number);
                     set('subcategoryId', undefined);
                   }}
                   disabled={saving || catsLoading}
@@ -210,7 +210,7 @@ export default function AdminNewProductView() {
                   <Field label="Subcategory">
                     <select
                       value={form.subcategoryId ?? ''}
-                      onChange={(e) => set('subcategoryId', e.target.value ? Number(e.target.value) : undefined)}
+                      onChange={(e) => set('subcategoryId', e.target.value ? (e.target.value as unknown as number) : undefined)}
                       disabled={saving}
                       style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                     >

@@ -18,8 +18,9 @@ export default function OrderDetailView() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const orderId = Number(params.id);
-    if (isNaN(orderId)) { setNotFound(true); setLoading(false); return; }
+    // Note: params.id is a Convex ID string, but domain expects number type.
+    const orderId = params.id as unknown as number;
+    if (!orderId) { setNotFound(true); setLoading(false); return; }
     getOrder(orderId)
       .then((o) => { if (!o) { setNotFound(true); } else { setOrder(o); } })
       .catch(() => toast.error('Failed to load order.'))

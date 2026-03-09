@@ -8,6 +8,7 @@ export interface ProductVariant {
   compareAtPrice: number | null;
   quantity: number;
   isActive: boolean;
+  stock?: number; // Available stock from inventory (populated when includeVariants)
 }
 
 export interface Product {
