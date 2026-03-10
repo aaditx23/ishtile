@@ -18,7 +18,9 @@ import {
   revertPromoHelper,
 } from "../_internal/promoEngine";
 
-const FIXED_SHIPPING_COST = 50; // BDT — same as Python backend default
+// Shipping cost defaults (used as fallback if admin settings not found)
+const DEFAULT_INSIDE_DHAKA_SHIPPING = 60;
+const DEFAULT_OUTSIDE_DHAKA_SHIPPING = 120;
 
 function generateOrderNumber(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -27,6 +29,29 @@ function generateOrderNumber(): string {
     () => chars[Math.floor(Math.random() * chars.length)],
   ).join("");
   return `ORD-${suffix}`;
+}
+
+/**
+ * Calculate shipping cost based on city and admin settings
+ * 
+ * @param ctx - Convex query context
+ * @param city - Shipping city name
+ * @returns Shipping cost in BDT
+ */
+async function calculateShippingCost(
+  ctx: any,
+  city: string
+): Promise<number> {
+  // Get admin settings
+  const settings = await ctx.db.query("adminSettings").first();
+  
+  const insideDhakaCost = settings?.insideDhakaShippingCost ?? DEFAULT_INSIDE_DHAKA_SHIPPING;
+  const outsideDhakaCost = settings?.outsideDhakaShippingCost ?? DEFAULT_OUTSIDE_DHAKA_SHIPPING;
+  
+  // Check if city is Dhaka (case-insensitive)
+  const isDhaka = city.toLowerCase().trim() === "dhaka";
+  
+  return isDhaka ? insideDhakaCost : outsideDhakaCost;
 }
 
 // ─── Create order ─────────────────────────────────────────────────────────────
@@ -137,7 +162,7 @@ export const createOrder = mutation({
     }
 
     // ── 6. Calculate total ───────────────────────────────────────────────────
-    const shippingCost = FIXED_SHIPPING_COST;
+    const shippingCost = await calculateShippingCost(ctx, shippingFields.shippingCity);
     const total = subtotal - promoDiscount + shippingCost;
 
     // ── 7. Create order ──────────────────────────────────────────────────────

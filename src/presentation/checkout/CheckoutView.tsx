@@ -16,8 +16,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { getCart } from '@/application/cart/getCart';
 import { createOrder } from '@/application/checkout/createOrder';
+import { getAdminSettings } from '@/application/adminSettings/adminSettings';
 import type { Cart } from '@/domain/cart/cart.entity';
 import type { PromoValidationDto } from '@/shared/types/api.types';
+import type { AdminSettings } from '@/domain/adminSettings/adminSettings.entity';
 
 const EMPTY_FIELDS: ShippingFields = {
   name:       '',
@@ -42,6 +44,40 @@ export default function CheckoutView() {
   const [submitting, setSubmitting]     = useState(false);
   const [codConfirmed, setCodConfirmed] = useState(false);
   const [showNewForm, setShowNewForm]   = useState(false);
+  const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
+  const [shippingCost, setShippingCost] = useState(0);
+
+  // Fetch admin settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await getAdminSettings();
+        setAdminSettings(settings);
+      } catch {
+        // Use defaults if fetch fails
+        setAdminSettings({
+          insideDhakaShippingCost: 60,
+          outsideDhakaShippingCost: 120,
+        });
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // Calculate shipping cost whenever city changes
+  useEffect(() => {
+    if (!adminSettings || !fields.cityName) {
+      setShippingCost(0);
+      return;
+    }
+    
+    const isDhaka = fields.cityName.toLowerCase().trim() === 'dhaka';
+    const cost = isDhaka 
+      ? adminSettings.insideDhakaShippingCost 
+      : adminSettings.outsideDhakaShippingCost;
+    
+    setShippingCost(cost);
+  }, [fields.cityName, adminSettings]);
 
   const fetchCart = useCallback(async () => {
     setCartLoading(true);
@@ -128,6 +164,7 @@ export default function CheckoutView() {
     submitting,
     codConfirmed,
     canSubmit: !!canSubmit,
+    shippingCost,
     patchFields,
     handleAddressPick,
     handlePromoApply,
@@ -201,6 +238,7 @@ export default function CheckoutView() {
                   <OrderReview
                     cart={cart}
                     promoDiscount={promoResult?.discountAmount ?? 0}
+                    shippingCost={shippingCost}
                   />
                 </Section>
 
