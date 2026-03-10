@@ -5,6 +5,7 @@ export const productTables = {
   products: defineTable({
     categoryId:       v.id('categories'),
     subcategoryId:    v.optional(v.id('subcategories')),
+    brandId:          v.optional(v.id('brands')),
     name:             v.string(),
     slug:             v.string(),
     sku:              v.string(),
@@ -14,7 +15,6 @@ export const productTables = {
     imageUrls:        v.array(v.string()),    // max 10
     material:         v.optional(v.string()),
     careInstructions: v.optional(v.string()),
-    brand:            v.optional(v.string()),
     isActive:         v.boolean(),
     isFeatured:       v.boolean(),
     metaTitle:        v.optional(v.string()),
@@ -23,11 +23,11 @@ export const productTables = {
     .index('by_slug',        ['slug'])
     .index('by_sku',         ['sku'])
     .index('by_category',    ['categoryId'])
-    .index('by_brand',       ['brand'])
+    .index('by_brand',       ['brandId'])
     .index('by_isFeatured',  ['isFeatured'])
     .searchIndex('search_products', {
       searchField: 'name',
-      filterFields: ['categoryId', 'isActive', 'brand'],
+      filterFields: ['categoryId', 'isActive', 'brandId'],
     }),
 
   productVariants: defineTable({

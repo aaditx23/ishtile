@@ -36,7 +36,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       pageSize:      24,
       categoryId:    matchedCategory?.id,
       subcategoryId: matchedSubcategory?.id,
-      brand:         params.brand        || undefined,
+      brandId:       params.brand ? parseInt(params.brand) : undefined,
       search:        params.search       || undefined,
       isFeatured:    params.featured === '1' ? true : undefined,
       activeOnly:    params.activeOnly === '0' ? false : true,

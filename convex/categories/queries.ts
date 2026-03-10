@@ -87,6 +87,7 @@ export const getCategoryById = query({
       .withIndex("by_category", (q) => q.eq("categoryId", id))
       .collect();
 
+
     subcategories.sort(
       (a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name),
     );

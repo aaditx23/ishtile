@@ -31,7 +31,7 @@ function mapProduct(p: any): Product {
     basePrice:        p.basePrice,
     compareAtPrice:   p.compareAtPrice ?? null,
     imageUrls:        p.imageUrls ?? [],
-    brand:            p.brand ?? null,
+    brandId:          p.brandId ? asId(p.brandId) : null,
     material:         p.material ?? null,
     careInstructions: p.careInstructions ?? null,
     categoryId:       asId(p.categoryId),
@@ -51,7 +51,8 @@ export class ProductConvexRepository implements ProductRepository {
       categoryId:      params?.categoryId ? fromId(params.categoryId) as any : undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subcategoryId:   params?.subcategoryId ? fromId(params.subcategoryId) as any : undefined,
-      brand:           params?.brand,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      brandId:         params?.brandId ? fromId(params.brandId) as any : undefined,
       search:          params?.search,
       isFeatured:      params?.isFeatured,
       activeOnly:      params?.activeOnly ?? true,

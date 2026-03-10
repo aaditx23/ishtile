@@ -11,7 +11,9 @@ import MobileAdminProductsView from './MobileAdminProductsView';
 import Pagination from '@/presentation/shared/components/Pagination';
 import AdminProductsActions from './components/AdminProductsActions';
 import { getProducts } from '@/application/product/getProducts';
+import { getBrands } from '@/application/brand/getBrands';
 import type { Product } from '@/domain/product/product.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
 
 export default function AdminProductsView() {
@@ -20,10 +22,17 @@ export default function AdminProductsView() {
   const page                          = Math.max(1, Number(searchParams.get('page')) || 1);
   const search                        = searchParams.get('search') ?? undefined;
   const [products, setProducts]       = useState<Product[]>([]);
+  const [brands, setBrands]           = useState<Brand[]>([]);
   const [pagination, setPagination]   = useState<PaginationMeta | null>(null);
   const [loading, setLoading]         = useState(true);
   const [searchInput, setSearchInput] = useState(search ?? '');
   const debounceRef                   = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const getBrandName = (brandId: number | null) => {
+    if (!brandId) return '—';
+    const brand = brands.find(b => b.id === brandId);
+    return brand?.name ?? '—';
+  };
 
   const handleSearch = (value: string) => {
     setSearchInput(value);
@@ -37,8 +46,15 @@ export default function AdminProductsView() {
 
   useEffect(() => {
     setLoading(true);
-    getProducts({ page, pageSize: 25, search })
-      .then(({ items, pagination: pg }) => { setProducts(items); setPagination(pg); })
+    Promise.all([
+      getProducts({ page, pageSize: 25, search }),
+      getBrands({ activeOnly: false, pageSize: 500 }),
+    ])
+      .then(([{ items, pagination: pg }, brandList]) => {
+        setProducts(items);
+        setPagination(pg);
+        setBrands(brandList);
+      })
       .catch(() => toast.error('Failed to load products.'))
       .finally(() => setLoading(false));
   }, [page, search]);
@@ -49,6 +65,7 @@ export default function AdminProductsView() {
       <div className="block lg:hidden">
         <MobileAdminProductsView
           products={products}
+          brands={brands}
           loading={loading}
           pagination={pagination}
           searchInput={searchInput}
@@ -155,7 +172,7 @@ export default function AdminProductsView() {
                   <table style={{ width: '100%', minWidth: '42rem', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
-                        {['Product', 'SKU', 'Price', 'Status', ''].map((h) => (
+                        {['Product', 'SKU', 'Brand', 'Price', 'Status', ''].map((h) => (
                           <th
                             key={h}
                             style={{
@@ -186,6 +203,9 @@ export default function AdminProductsView() {
                           </td>
                           <td style={{ padding: '0.75rem 1rem', fontFamily: 'monospace', fontSize: '0.75rem' }}>
                             {product.sku}
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem', fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
+                            {getBrandName(product.brandId)}
                           </td>
                           <td style={{ padding: '0.75rem 1rem', fontWeight: 700 }}>
                             ৳{Number(product.basePrice || 0).toFixed(0)}

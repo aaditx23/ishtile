@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { updateProduct, uploadProductImages } from '@/application/product/adminProduct';
+import { getBrands } from '@/application/brand/getBrands';
 import type { Product } from '@/domain/product/product.entity';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 import type { UpdateProductPayload } from '@/domain/product/admin-product.repository';
 
 function slugify(s: string) {
@@ -40,12 +42,13 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function ProductForm({ product, categories }: ProductFormProps) {
   const router = useRouter();
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [form, setForm] = useState<UpdateProductPayload>({
     name:             product.name,
     slug:             product.slug,
     sku:              product.sku,
     description:      product.description ?? '',
-    brand:            product.brand ?? '',
+    brandId:          product.brandId ?? undefined,
     material:         product.material ?? '',
     careInstructions: product.careInstructions ?? '',
     categoryId:       product.categoryId,
@@ -57,6 +60,10 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
   const [savingMsg, setSavingMsg] = useState('');
   const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls ?? []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    getBrands({ activeOnly: false }).then(setBrands).catch(() => toast.error('Failed to load brands'));
+  }, []);
 
   const set = (key: keyof UpdateProductPayload, value: UpdateProductPayload[typeof key]) =>
     setForm((p) => ({ ...p, [key]: value }));
@@ -76,7 +83,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
       setSavingMsg('Saving...');
       await updateProduct(product.id, {
         ...form,
-        brand:            form.brand    || undefined,
         material:         form.material || undefined,
         careInstructions: form.careInstructions || undefined,
         description:      form.description || undefined,
@@ -99,7 +105,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           <Input value={form.name ?? ''} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
         </Field>
         <Field label="Slug">
-          <Input value={form.slug ?? ''} onChange={(e) => set('slug', e.target.value)} required disabled={saving} />
+          <Input value={form.slug ?? ''} onChange={(e) => set('slug', e.target.value)} required disabled={saving} readOnly />
         </Field>
         <Field label="SKU">
           <Input value={form.sku ?? ''} onChange={(e) => set('sku', e.target.value)} required disabled={saving} />
@@ -156,9 +162,29 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
             </Field>
           );
         })()}
+        
         <Field label="Brand">
-          <Input value={form.brand ?? ''} onChange={(e) => set('brand', e.target.value)} disabled={saving} />
+          <select
+            value={form.brandId ?? ''}
+            onChange={(e) => set('brandId', e.target.value ? (e.target.value as unknown as number) : undefined)}
+            disabled={saving}
+            style={{
+              width:        '100%',
+              padding:      '0.5rem 0.75rem',
+              borderRadius: '0.5rem',
+              border:       '1px solid var(--border)',
+              fontSize:     '0.875rem',
+              backgroundColor: 'var(--surface)',
+              color:        'inherit',
+            }}
+          >
+            <option value="">— None —</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </select>
         </Field>
+        
         <Field label="Material">
           <Input value={form.material ?? ''} onChange={(e) => set('material', e.target.value)} disabled={saving} />
         </Field>

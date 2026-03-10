@@ -7,10 +7,12 @@ import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import Pagination from '@/presentation/shared/components/Pagination';
 import AdminProductsActions from './components/AdminProductsActions';
 import type { Product } from '@/domain/product/product.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
 
 interface MobileAdminProductsViewProps {
   products:       Product[];
+  brands:         Brand[];
   loading:        boolean;
   pagination:     PaginationMeta | null;
   searchInput:    string;
@@ -32,12 +34,19 @@ const newProductBtn: React.CSSProperties = {
 
 export default function MobileAdminProductsView({
   products,
+  brands,
   loading,
   pagination,
   searchInput,
   onSearch,
   onDeleted,
 }: MobileAdminProductsViewProps) {
+  const getBrandName = (brandId: number | null) => {
+    if (!brandId) return null;
+    const brand = brands.find(b => b.id === brandId);
+    return brand?.name ?? null;
+  };
+
   return (
     <div style={{ padding: '1.25rem 1rem' }}>
       <AdminMobileNavStrip activeHref="/admin/products" />
@@ -125,6 +134,15 @@ export default function MobileAdminProductsView({
                   />
                 </div>
               </div>
+
+              {/* Row 1.5: brand (if exists) */}
+              {getBrandName(product.brandId) && (
+                <div style={{ marginBottom: '0.3rem' }}>
+                  <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.7rem' }}>
+                    {getBrandName(product.brandId)}
+                  </p>
+                </div>
+              )}
 
               {/* Row 2: sku + price + badge */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

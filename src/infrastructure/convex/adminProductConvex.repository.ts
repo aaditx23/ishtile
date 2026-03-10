@@ -30,7 +30,7 @@ function mapProduct(p: any): Product {
     id: asId(p._id ?? p.id), slug: p.slug, name: p.name, sku: p.sku,
     description: p.description ?? null, basePrice: p.basePrice,
     compareAtPrice: p.compareAtPrice ?? null, imageUrls: p.imageUrls ?? [],
-    brand: p.brand ?? null, material: p.material ?? null,
+    brandId: p.brandId ? asId(p.brandId) : null, material: p.material ?? null,
     careInstructions: p.careInstructions ?? null,
     categoryId: asId(p.categoryId), subcategoryId: p.subcategoryId ? asId(p.subcategoryId) : null,
     isFeatured: p.isFeatured, isActive: p.isActive,
@@ -63,7 +63,8 @@ export class AdminProductConvexRepository {
       imageUrls:       payload.imageUrls ?? [],
       material:        payload.material,
       careInstructions: payload.careInstructions,
-      brand:           payload.brand,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      brandId:         payload.brandId ? fromId(payload.brandId) as any : undefined,
       isActive:        payload.isActive,
       isFeatured:      payload.isFeatured,
       metaTitle:       payload.metaTitle,
@@ -102,7 +103,8 @@ export class AdminProductConvexRepository {
       imageUrls:       payload.imageUrls,
       material:        payload.material,
       careInstructions: payload.careInstructions,
-      brand:           payload.brand,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      brandId:         payload.brandId ? fromId(payload.brandId) as any : undefined,
       isActive:        payload.isActive,
       isFeatured:      payload.isFeatured,
       basePrice:       payload.basePrice,

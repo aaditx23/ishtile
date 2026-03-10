@@ -15,6 +15,8 @@ import type * as admin_queries from "../admin/queries.js";
 import type * as analytics_queries from "../analytics/queries.js";
 import type * as auth_otps from "../auth/otps.js";
 import type * as auth_users from "../auth/users.js";
+import type * as brands_mutations from "../brands/mutations.js";
+import type * as brands_queries from "../brands/queries.js";
 import type * as cart_mutations from "../cart/mutations.js";
 import type * as cart_queries from "../cart/queries.js";
 import type * as categories_mutations from "../categories/mutations.js";
@@ -46,6 +48,8 @@ declare const fullApi: ApiFromModules<{
   "analytics/queries": typeof analytics_queries;
   "auth/otps": typeof auth_otps;
   "auth/users": typeof auth_users;
+  "brands/mutations": typeof brands_mutations;
+  "brands/queries": typeof brands_queries;
   "cart/mutations": typeof cart_mutations;
   "cart/queries": typeof cart_queries;
   "categories/mutations": typeof categories_mutations;

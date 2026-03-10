@@ -12,7 +12,9 @@ import { AdminSidebarNav } from './AdminLayout';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { createProduct, uploadProductImages } from '@/application/product/adminProduct';
 import { getCategories } from '@/application/category/getCategories';
+import { getBrands } from '@/application/brand/getBrands';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -40,6 +42,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function AdminNewProductView() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [catsLoading, setCatsLoading] = useState(true);
   const [form, setForm] = useState({
     name:           '',
@@ -47,7 +50,7 @@ export default function AdminNewProductView() {
     sku:            '',
     categoryId:     0,
     subcategoryId:  undefined as number | undefined,
-    brand:          '',
+    brandId:        undefined as number | undefined,
     material:       '',
     description:    '',
     isActive:       true,
@@ -68,13 +71,17 @@ export default function AdminNewProductView() {
   const [savingMsg, setSavingMsg] = useState('');
 
   useEffect(() => {
-    getCategories({ activeOnly: true })
-      .then((cats) => {
+    Promise.all([
+      getCategories({ activeOnly: true }),
+      getBrands({ activeOnly: false }),
+    ])
+      .then(([cats, brds]) => {
         setCategories(cats);
+        setBrands(brds);
         // Set categoryId to the first loaded category
         if (cats.length > 0) setForm(p => ({ ...p, categoryId: cats[0].id }));
       })
-      .catch(() => toast.error('Failed to load categories.'))
+      .catch(() => toast.error('Failed to load data.'))
       .finally(() => setCatsLoading(false));
   }, []);
 
@@ -124,7 +131,7 @@ export default function AdminNewProductView() {
         compareAtPrice,
         categoryId:     form.categoryId,
         subcategoryId:  form.subcategoryId,
-        brand:          form.brand    || undefined,
+        brandId:        form.brandId,
         material:       form.material || undefined,
         description:    form.description || undefined,
         isActive:       form.isActive,
@@ -179,7 +186,7 @@ export default function AdminNewProductView() {
                 <Input value={form.name} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
               </Field>
               <Field label="Slug">
-                <Input value={form.slug} onChange={(e) => set('slug', e.target.value)} required disabled={saving} />
+                <Input value={form.slug} onChange={(e) => set('slug', e.target.value)} required disabled={saving} readOnly />
               </Field>
               <Field label="SKU">
                 <Input value={form.sku} onChange={(e) => set('sku', e.target.value)} required disabled={saving} />
@@ -222,9 +229,21 @@ export default function AdminNewProductView() {
                   </Field>
                 );
               })()}
+              
               <Field label="Brand">
-                <Input value={form.brand} onChange={(e) => set('brand', e.target.value)} disabled={saving} />
+                <select
+                  value={form.brandId ?? ''}
+                  onChange={(e) => set('brandId', e.target.value ? (e.target.value as unknown as number) : undefined)}
+                  disabled={saving || catsLoading}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                >
+                  <option value="">— None —</option>
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
               </Field>
+              
               <Field label="Material">
                 <Input value={form.material} onChange={(e) => set('material', e.target.value)} disabled={saving} />
               </Field>

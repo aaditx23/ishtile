@@ -13,7 +13,7 @@ export class ProductApiRepository implements ProductRepository {
         pageSize:        params?.pageSize,
         categoryId:      params?.categoryId,
         subcategoryId:   params?.subcategoryId,
-        brand:           params?.brand,
+        brandId:         params?.brandId,
         search:          params?.search,
         isFeatured:      params?.isFeatured,
         activeOnly:      params?.activeOnly,

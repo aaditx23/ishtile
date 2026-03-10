@@ -13,7 +13,7 @@ export const listProducts = query({
     pageSize: v.optional(v.number()),
     categoryId: v.optional(v.id("categories")),
     subcategoryId: v.optional(v.id("subcategories")),
-    brand: v.optional(v.string()),
+    brandId: v.optional(v.id("brands")),
     search: v.optional(v.string()),
     isFeatured: v.optional(v.boolean()),
     activeOnly: v.optional(v.boolean()),
@@ -26,7 +26,7 @@ export const listProducts = query({
       pageSize = 20,
       categoryId,
       subcategoryId,
-      brand,
+      brandId,
       search,
       isFeatured,
       activeOnly = true,
@@ -63,10 +63,10 @@ export const listProducts = query({
             activeOnly ? q.eq(q.field("isActive"), true) : q.neq(q.field("isActive"), null),
           )
           .collect();
-      } else if (brand) {
+      } else if (brandId) {
         products = await ctx.db
           .query("products")
-          .withIndex("by_brand", (q) => q.eq("brand", brand))
+          .withIndex("by_brand", (q) => q.eq("brandId", brandId))
           .filter((q) =>
             activeOnly ? q.eq(q.field("isActive"), true) : q.neq(q.field("isActive"), null),
           )
@@ -93,10 +93,10 @@ export const listProducts = query({
     if (subcategoryId) {
       products = products.filter((p) => p.subcategoryId === subcategoryId);
     }
-    if (brand && !search) {
-      products = products.filter((p) => p.brand === brand);
+    if (brandId && !search) {
+      products = products.filter((p) => p.brandId === brandId);
     }
-    if (isFeatured !== undefined && !brand && !categoryId) {
+    if (isFeatured !== undefined && !brandId && !categoryId) {
       products = products.filter((p) => p.isFeatured === isFeatured);
     }
 

@@ -253,7 +253,7 @@ export function CategoryModal({
           </div>
           <div>
             <label style={labelStyle}>Slug</label>
-            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} />
+            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} readOnly />
           </div>
           <div>
             <label style={labelStyle}>Display Order</label>
@@ -357,7 +357,7 @@ export function SubcategoryModal({
           </div>
           <div>
             <label style={labelStyle}>Slug</label>
-            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} />
+            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} readOnly />
           </div>
           <div>
             <label style={labelStyle}>Display Order</label>
