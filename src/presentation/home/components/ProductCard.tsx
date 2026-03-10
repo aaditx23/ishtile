@@ -130,8 +130,8 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         <div className="flex items-center gap-1.5">
           {formattedSalePrice ? (
             <>
-              <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--brand-gold)' }}>{formattedSalePrice}</span>
-              <span className="text-xs text-muted-foreground line-through">{formattedPrice}</span>
+              <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--brand-gold)' }}>{formattedPrice}</span>
+              <span className="text-xs text-muted-foreground line-through">{formattedSalePrice}</span>
             </>
           ) : (
             <span className="text-xs sm:text-sm font-medium">{formattedPrice}</span>

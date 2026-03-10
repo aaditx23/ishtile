@@ -259,88 +259,44 @@ export default function AdminNewProductView() {
             </Field>
 
             {/* Images upload */}
-            <Field label="Images (optional)">
-              <label
-                style={{
-                  display:         'flex',
-                  flexDirection:   'column',
-                  alignItems:      'center',
-                  justifyContent:  'center',
-                  gap:             '0.375rem',
-                  padding:         '1.25rem',
-                  border:          '2px dashed var(--border)',
-                  borderRadius:    '0.5rem',
-                  cursor:          saving ? 'not-allowed' : 'pointer',
-                  backgroundColor: 'var(--surface-muted)',
-                  fontSize:        '0.8rem',
-                  color:           'var(--on-surface-muted)',
-                }}
-              >
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V19a1 1 0 001 1h16a1 1 0 001-1v-2.5M16 8l-4-4-4 4M12 4v12" />
-                </svg>
-                {images.length === 0
-                  ? 'Click to upload images'
-                  : `${images.length} file${images.length > 1 ? 's' : ''} selected`}
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  disabled={saving}
-                  style={{ display: 'none' }}
-                  onChange={(e) => setImages(Array.from(e.target.files ?? []))}
-                />
-              </label>
-              {images.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  {images.map((file, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        position:        'relative',
-                        width:           '4rem',
-                        height:          '4rem',
-                        borderRadius:    '0.375rem',
-                        overflow:        'hidden',
-                        border:          '1px solid var(--border)',
-                        backgroundColor: 'var(--surface-muted)',
-                      }}
+            <div>
+              <label style={labelStyle}>Images (optional)</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {/* Preview thumbnails of selected files */}
+                {images.map((file, i) => (
+                  <div
+                    key={i}
+                    style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button
+                      type="button"
+                      onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                      disabled={saving}
+                      style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      aria-label="Remove image"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
-                        style={{
-                          position:        'absolute',
-                          top:             '2px',
-                          right:           '2px',
-                          width:           '1.1rem',
-                          height:          '1.1rem',
-                          borderRadius:    '9999px',
-                          backgroundColor: 'rgba(0,0,0,0.55)',
-                          color:           '#fff',
-                          border:          'none',
-                          cursor:          'pointer',
-                          fontSize:        '0.65rem',
-                          lineHeight:      1,
-                          display:         'flex',
-                          alignItems:      'center',
-                          justifyContent:  'center',
-                        }}
-                        aria-label="Remove image"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Field>
+                      &times;
+                    </button>
+                  </div>
+                ))}
+                {/* Upload-more box */}
+                <label
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
+                >
+                  +
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={saving}
+                    style={{ display: 'none' }}
+                    onChange={(e) => setImages((prev) => [...prev, ...Array.from(e.target.files ?? [])])}
+                  />
+                </label>
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: '1.5rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
                 <input type="checkbox" checked={form.isActive} onChange={(e) => set('isActive', e.target.checked)} disabled={saving} />
