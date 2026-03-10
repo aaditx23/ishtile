@@ -18,6 +18,7 @@ export function toProductCardData(
     name:       product.name,
     category:   matchedCategory?.name ?? 'Product',
     categoryId: product.categoryId,
+    brandId:    product.brandId,
     price:      product.basePrice,
     salePrice:  product.compareAtPrice ?? undefined,
     images:     product.imageUrls.length > 0 ? product.imageUrls : [],

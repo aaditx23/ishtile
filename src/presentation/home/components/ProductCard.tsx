@@ -16,6 +16,8 @@ export interface ProductCardData {
   category: string;
   /** Domain category ID — used for client-side filtering */
   categoryId?: number;
+  /** Domain brand ID — used for client-side filtering */
+  brandId?: number | null;
   price: number;
   salePrice?: number;
   images: string[];
