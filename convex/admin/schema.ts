@@ -2,6 +2,14 @@ import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 export const adminTables = {
+  adminSettings: defineTable({
+    insideDhakaShippingCost:  v.number(),
+    outsideDhakaShippingCost: v.number(),
+    // Future settings can be added here:
+    // taxRate: v.optional(v.number()),
+    // minOrderAmount: v.optional(v.number()),
+  }),
+
   memos: defineTable({
     orderId:     v.id('orders'),
     memoNumber:  v.string(),

@@ -173,3 +173,27 @@ export const getStockHistory = query({
     return { items, total, page, pageSize };
   },
 });
+
+// ─── Get admin settings ───────────────────────────────────────────────────────
+
+export const getAdminSettings = query({
+  args: {},
+  handler: async (ctx) => {
+    // There should only be one settings record
+    const settings = await ctx.db.query("adminSettings").first();
+    
+    // Return defaults if no settings exist yet
+    if (!settings) {
+      return {
+        insideDhakaShippingCost: 60,
+        outsideDhakaShippingCost: 120,
+      };
+    }
+    
+    return {
+      id: settings._id,
+      insideDhakaShippingCost: settings.insideDhakaShippingCost,
+      outsideDhakaShippingCost: settings.outsideDhakaShippingCost,
+    };
+  },
+});

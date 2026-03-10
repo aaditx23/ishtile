@@ -170,3 +170,37 @@ export const setUserActive = mutation({
     return { success: true };
   },
 });
+
+// ─── Update admin settings ────────────────────────────────────────────────────
+
+export const updateAdminSettings = mutation({
+  args: {
+    insideDhakaShippingCost: v.optional(v.number()),
+    outsideDhakaShippingCost: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Get existing settings or create new one
+    const existing = await ctx.db.query("adminSettings").first();
+    
+    if (existing) {
+      // Update existing settings
+      const updates: Record<string, number> = {};
+      if (args.insideDhakaShippingCost !== undefined) {
+        updates.insideDhakaShippingCost = args.insideDhakaShippingCost;
+      }
+      if (args.outsideDhakaShippingCost !== undefined) {
+        updates.outsideDhakaShippingCost = args.outsideDhakaShippingCost;
+      }
+      
+      await ctx.db.patch(existing._id, updates);
+      return { id: existing._id };
+    } else {
+      // Create new settings with defaults
+      const id = await ctx.db.insert("adminSettings", {
+        insideDhakaShippingCost: args.insideDhakaShippingCost ?? 60,
+        outsideDhakaShippingCost: args.outsideDhakaShippingCost ?? 120,
+      });
+      return { id };
+    }
+  },
+});
