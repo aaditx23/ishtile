@@ -327,7 +327,7 @@ export default function AdminNewProductView() {
                 {variants.map((v, i) => (
                   <div
                     key={v.id}
-                    className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,2fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2"
+                    className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2"
                     style={{ borderTop: i > 0 ? '1px dashed var(--border)' : undefined, paddingTop: i > 0 ? '1rem' : undefined }}
                   >
                     <Field label="Size">

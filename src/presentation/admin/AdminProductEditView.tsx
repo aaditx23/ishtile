@@ -60,7 +60,7 @@ export default function AdminProductEditView() {
         <AdminMobileNavStrip activeHref="/admin/products" />
       </div>
 
-      <div style={{ maxWidth: '84rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
+      <div style={{ maxWidth: '96rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'start' }}>
           {/* Sidebar — desktop only */}
           <div className="hidden lg:block" style={{ width: '13rem', flexShrink: 0 }}>
