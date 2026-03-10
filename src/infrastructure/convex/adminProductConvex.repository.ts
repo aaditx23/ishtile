@@ -180,6 +180,16 @@ export class AdminProductConvexRepository {
       quantity: 0, isActive: payload.isActive ?? true };
   }
 
+  async deleteVariant(variantId: number): Promise<void> {
+    const adminUserId = requireConvexUserId();
+    await convex.mutation(api.products.mutations.deleteVariant, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      id: fromId(variantId) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      adminUserId: adminUserId as any,
+    });
+  }
+
   // ── Inventory ───────────────────────────────────────────────────────────────
 
   async getInventory(variantId: number): Promise<InventoryDto> {

@@ -40,6 +40,10 @@ export async function updateVariant(
   return adminProductRepository.updateVariant(variantId, payload);
 }
 
+export async function deleteVariant(variantId: number): Promise<void> {
+  return adminProductRepository.deleteVariant(variantId);
+}
+
 export async function getInventory(variantId: number): Promise<InventoryDto> {
   return adminProductRepository.getInventory(variantId);
 }

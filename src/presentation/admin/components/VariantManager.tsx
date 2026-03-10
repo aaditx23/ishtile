@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   updateVariant,
   createVariant,
+  deleteVariant,
   getInventory,
   updateInventory,
 } from '@/application/product/adminProduct';
@@ -99,10 +100,14 @@ function InvCell({ variantId }: { variantId: number }) {
 function VariantRow({
   variant,
   onSaved,
+  onDelete,
+  canDelete,
   disabled,
 }: {
   variant:  ProductVariant;
   onSaved:  (v: ProductVariant) => void;
+  onDelete?: () => void;
+  canDelete?: boolean;
   disabled?: boolean;
 }) {
   const [form, setForm] = useState({
@@ -148,7 +153,7 @@ function VariantRow({
     form.isActive !== variant.isActive;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(5rem,1fr)_auto] items-end gap-2">
+    <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(5rem,1fr)_auto_auto] items-end gap-2">
       <Field label="Size">
         <select
           value={form.size}
@@ -210,6 +215,18 @@ function VariantRow({
           {busy ? '…' : 'Save'}
         </Button>
       </div>
+      {onDelete && (
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={!canDelete || busy || disabled}
+            style={{ height: '40px', width: '100%', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
+          >
+            Remove
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -224,6 +241,21 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
 
   const updateRow = (updated: ProductVariant) =>
     setVariants((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
+
+  const handleDelete = async (variantId: number) => {
+    if (!confirm('Are you sure you want to delete this variant?')) return;
+    
+    setBusy(true);
+    try {
+      await deleteVariant(variantId);
+      setVariants((prev) => prev.filter((v) => v.id !== variantId));
+      toast.success('Variant deleted.');
+    } catch {
+      toast.error('Failed to delete variant.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const handleAdd = async () => {
     if (!newForm.size || !newForm.sku || !newForm.price) {
@@ -268,6 +300,8 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
               <VariantRow 
                 variant={v} 
                 onSaved={updateRow}
+                onDelete={() => handleDelete(v.id)}
+                canDelete={variants.length > 1}
                 disabled={busy}
               />
             </div>

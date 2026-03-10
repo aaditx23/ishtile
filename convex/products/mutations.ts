@@ -298,6 +298,55 @@ export const createVariant = mutation({
   },
 });
 
+// ─── Delete variant ───────────────────────────────────────────────────────────
+
+export const deleteVariant = mutation({
+  args: {
+    id: v.id("productVariants"),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { id, adminUserId }) => {
+    const variant = await ctx.db.get(id);
+    if (!variant) throw new Error("Variant not found");
+
+    const productId = variant.productId;
+
+    // Delete associated inventory record
+    const inventory = await ctx.db
+      .query("inventory")
+      .withIndex("by_variant", (q) => q.eq("variantId", id))
+      .first();
+    if (inventory) {
+      await ctx.db.delete(inventory._id);
+    }
+
+    // Delete the variant
+    await ctx.db.delete(id);
+
+    // Recalculate product basePrice
+    const remainingVariants = await ctx.db
+      .query("productVariants")
+      .withIndex("by_product", (q) => q.eq("productId", productId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    if (remainingVariants.length > 0) {
+      const basePrice = Math.min(...remainingVariants.map((v) => v.price));
+      await ctx.db.patch(productId, { basePrice });
+    }
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "delete",
+      entityType: "productVariant",
+      entityId: id,
+      description: `Deleted variant "${variant.size}" from product ${productId}`,
+    });
+
+    return { success: true };
+  },
+});
+
 // ─── Adjust inventory quantity ────────────────────────────────────────────────
 
 export const adjustInventory = mutation({
