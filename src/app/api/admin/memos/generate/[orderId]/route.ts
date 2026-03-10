@@ -8,8 +8,8 @@ import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../../../../../convex/_generated/api';
 import type { Id } from '../../../../../../../convex/_generated/dataModel';
 import { verifyToken } from '@/lib/auth';
-import { generateInvoicePDF, generateInvoiceNumber } from '@/lib/pdf/invoicePdf';
-import type { InvoiceOrder, InvoiceItem } from '@/lib/pdf/invoicePdf';
+import { generateMemoPDF } from '@/lib/pdf/invoicePdf';
+import type { MemoData } from '@/lib/pdf/memoHtml';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -67,38 +67,43 @@ export async function POST(
       );
     }
 
-    // 4️⃣ Map order data to invoice format
-    const invoiceOrder: InvoiceOrder = {
-      orderNumber: order.orderNumber,
-      shippingName: order.shippingName,
-      shippingPhone: order.shippingPhone,
-      shippingAddress: order.shippingAddress,
-      shippingCity: order.shippingCity,
-      subtotal: order.subtotal,
-      promoDiscount: order.promoDiscount,
-      shippingCost: order.shippingCost,
+    // 4️⃣ Map order data to MemoData
+    const memoData: MemoData = {
+      invoiceId: order.orderNumber,
+      date: new Date(order._creationTime).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }),
+      paymentStatus: order.isPaid ? 'PAID' : 'UNPAID',
+      customerName: order.shippingName,
+      phoneNumber: order.shippingPhone,
+      shippingAddress: [order.shippingAddress, order.shippingCity]
+        .filter(Boolean)
+        .join(', '),
+      items: order.items.map(item => ({
+        productName: item.productName,
+        sku: item.variantSku ?? '',
+        clr: item.variantColor ?? '',
+        sz: item.variantSize ?? '',
+        qty: item.quantity,
+        total: item.lineTotal,
+      })),
+      delivery: order.shippingCost,
+      advDisc: order.promoDiscount,
       total: order.total,
-      createdAt: order._creationTime,
     };
 
-    const invoiceItems: InvoiceItem[] = order.items.map(item => ({
-      productName: item.productName,
-      variantSize: item.variantSize,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      lineTotal: item.lineTotal,
-    }));
-
-    // 5️⃣ Generate invoice
-    const invoiceNumber = generateInvoiceNumber(order.orderNumber);
-    const pdfBuffer = await generateInvoicePDF(invoiceNumber, invoiceOrder, invoiceItems);
+    // 5️⃣ Generate memo PDF
+    const pdfBuffer = await generateMemoPDF(memoData);
+    const filename = `MEMO-${order.orderNumber}.pdf`;
 
     // 6️⃣ Return PDF as download
     return new NextResponse(pdfBuffer as unknown as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${invoiceNumber}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         'Content-Length': pdfBuffer.length.toString(),
       },
     });

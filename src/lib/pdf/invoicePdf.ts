@@ -6,6 +6,8 @@
  */
 
 import PDFDocument from 'pdfkit';
+import puppeteer from 'puppeteer';
+import { generateMemoHTML, type MemoData } from './memoHtml';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -232,3 +234,25 @@ export async function generateInvoicePDF(
     doc.end();
   });
 }
+
+// ─── Memo PDF (two-copy A4 layout) ───────────────────────────────────────────
+
+export async function generateMemoPDF(data: MemoData): Promise<Buffer> {
+  const html = generateMemoHTML(data);
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const pdf = await page.pdf({ format: 'A4', printBackground: true });
+    return Buffer.from(pdf);
+  } finally {
+    await browser.close();
+  }
+}
+
+
+
+
