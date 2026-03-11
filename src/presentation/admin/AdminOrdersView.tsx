@@ -24,7 +24,7 @@ const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 type DownloadStatus = 'pending' | 'downloading' | 'done' | 'error';
 
 interface DownloadItem {
-  id: string;
+  id: number;
   orderNumber: string;
   status: DownloadStatus;
   error?: string;
@@ -156,7 +156,7 @@ export default function AdminOrdersView() {
   const [loading, setLoading]       = useState(true);
 
   // ── selection state ─────────────────────────────────────────────────────────
-  const [selected, setSelected]           = useState<Set<string>>(new Set());
+  const [selected, setSelected]           = useState<Set<number>>(new Set());
   const [downloadItems, setDownloadItems] = useState<DownloadItem[] | null>(null);
 
   useEffect(() => {
@@ -178,7 +178,7 @@ export default function AdminOrdersView() {
     }
   }
 
-  function toggleOne(id: string) {
+  function toggleOne(id: number) {
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
