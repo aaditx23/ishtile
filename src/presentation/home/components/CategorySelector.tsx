@@ -16,6 +16,7 @@ export interface CategorySelectorItem {
 
 interface CategoryCardProps extends CategorySelectorItem {
   selected: boolean;
+  
   onClick: () => void;
 }
 
