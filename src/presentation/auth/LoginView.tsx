@@ -97,6 +97,18 @@ function LoginForm() {
   );
 }
 
+function RegisterLink() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next');
+  const registerUrl = next ? `/register?next=${encodeURIComponent(next)}` : '/register';
+  
+  return (
+    <Link href={registerUrl} style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
+      Create an account →
+    </Link>
+  );
+}
+
 export default function LoginView() {
   return (
     <div
@@ -140,9 +152,9 @@ export default function LoginView() {
         {/* Footer link */}
         <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
           New to Ishtile?{' '}
-          <Link href="/register" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
-            Create an account →
-          </Link>
+          <Suspense>
+            <RegisterLink />
+          </Suspense>
         </p>
       </div>
     </div>
