@@ -19,7 +19,12 @@ const AUTH_ROUTES = [
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+  
+  // Skip middleware for RSC requests (React Server Components)
+  if (searchParams.has('_rsc')) {
+    return NextResponse.next();
+  }
   
   // Check if user has session cookie (set by client-side auth)
   const sessionCookie = request.cookies.get('Ishtile_sess');
