@@ -79,6 +79,11 @@ function LoginForm() {
             {showPwd ? <FiEyeOff size={16} /> : <FiEye size={16} />}
           </button>
         </div>
+        <div style={{ textAlign: 'right', marginTop: '0.35rem' }}>
+          <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', textDecoration: 'none' }}>
+            Forgot Password?
+          </Link>
+        </div>
       </div>
 
       <Button

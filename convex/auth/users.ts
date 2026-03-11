@@ -220,3 +220,55 @@ export const createAdmin = mutation({
     return { userId, role: "admin" };
   },
 });
+
+// ─── Store reset token (called from Next.js API) ───────────────────────────────
+// tokenHash  = SHA-256 hex of the raw token (never store the raw token)
+// expiry     = Unix ms timestamp (now + 1 hour)
+
+export const storeResetToken = mutation({
+  args: {
+    email:      v.string(),
+    tokenHash:  v.string(),
+    expiry:     v.number(),
+  },
+  handler: async (ctx, { email, tokenHash, expiry }) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .first();
+    if (!user) throw new Error("No account found with that email");
+    await ctx.db.patch(user._id, { resetTokenHash: tokenHash, resetTokenExpiry: expiry });
+    return { ok: true };
+  },
+});
+
+// ─── Reset password (called from Next.js API) ─────────────────────────────────
+// tokenHash      = SHA-256 hex of the raw token
+// newPasswordHash = bcrypt hash pre-computed in Next.js
+
+export const resetPassword = mutation({
+  args: {
+    tokenHash:       v.string(),
+    newPasswordHash: v.string(),
+  },
+  handler: async (ctx, { tokenHash, newPasswordHash }) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_resetTokenHash", (q) => q.eq("resetTokenHash", tokenHash))
+      .first();
+    if (!user) throw new Error("Invalid or expired reset token");
+
+    const now = Date.now();
+    if (!user.resetTokenExpiry || now > user.resetTokenExpiry) {
+      throw new Error("Reset token has expired");
+    }
+
+    await ctx.db.patch(user._id, {
+      passwordHash:      newPasswordHash,
+      resetTokenHash:    undefined,
+      resetTokenExpiry:  undefined,
+    });
+
+    return { ok: true };
+  },
+});

@@ -17,12 +17,15 @@ export const authTables = {
     addressLine:  v.optional(v.string()),
     city:         v.optional(v.string()),
     postalCode:   v.optional(v.string()),
-    lastLoginAt:  v.optional(v.number()),   // Unix ms timestamp
+    lastLoginAt:       v.optional(v.number()),   // Unix ms timestamp
+    resetTokenHash:    v.optional(v.string()),
+    resetTokenExpiry:  v.optional(v.number()),
   })
-    .index('by_phone',    ['phone'])
-    .index('by_email',    ['email'])
-    .index('by_username', ['username'])
-    .index('by_role',     ['role']),
+    .index('by_phone',          ['phone'])
+    .index('by_email',          ['email'])
+    .index('by_username',       ['username'])
+    .index('by_role',           ['role'])
+    .index('by_resetTokenHash', ['resetTokenHash']),
 
   userAddresses: defineTable({
     userId:      v.id('users'),
