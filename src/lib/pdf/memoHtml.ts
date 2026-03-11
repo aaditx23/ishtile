@@ -68,7 +68,7 @@ export function renderMemo(data: MemoData): string {
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="header">
     <div class="brand-wrap">
-      <span class="brand-name">ISHTAILE</span>
+      <span class="brand-name">ISHTILE</span>
       <span class="badge ${badgeClass}">${data.paymentStatus}</span>
     </div>
     <div class="company-info">
