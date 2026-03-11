@@ -156,7 +156,7 @@ export default function AdminOrdersView() {
   const [loading, setLoading]       = useState(true);
 
   // ── selection state ─────────────────────────────────────────────────────────
-  const [selected, setSelected]           = useState<Set<string>>(new Set());
+  const [selected, setSelected]           = useState<Set<number>>(new Set());
   const [downloadItems, setDownloadItems] = useState<DownloadItem[] | null>(null);
 
   useEffect(() => {
