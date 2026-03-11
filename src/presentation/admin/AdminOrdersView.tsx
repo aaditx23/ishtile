@@ -329,8 +329,7 @@ export default function AdminOrdersView() {
                           key={order.id}
                           className="hover:bg-[var(--surface-variant)] transition-colors"
                           style={{
-                            borderBottom:    i < orders.length - 1 ? '1px solid var(--border)' : 'none',
-                            background:      selected.has(order.id) ? 'var(--surface-muted, #fafafa)' : undefined,
+                            borderBottom: i < orders.length - 1 ? '1px solid var(--border)' : 'none',
                           }}
                         >
                           <td style={{ padding: '0.75rem 0.75rem 0.75rem 1rem' }}>
