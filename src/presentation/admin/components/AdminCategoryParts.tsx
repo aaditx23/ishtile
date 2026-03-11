@@ -140,6 +140,12 @@ export function CategoryRow({
         padding: '0.75rem 1rem', backgroundColor: 'var(--surface)',
         cursor: 'pointer',
       }} onClick={() => setOpen(o => !o)}>
+        {cat.imageUrl && (
+          <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cat.imageUrl} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        )}
         <span style={{ fontSize: '0.8rem', fontWeight: 700, flex: 1 }}>{cat.name}</span>
         <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{cat.slug}</span>
         <Badge active={cat.isActive} />

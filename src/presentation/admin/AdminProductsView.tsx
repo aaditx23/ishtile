@@ -172,7 +172,7 @@ export default function AdminProductsView() {
                   <table style={{ width: '100%', minWidth: '42rem', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
-                        {['Product', 'SKU', 'Brand', 'Price', 'Status', ''].map((h) => (
+                        {['Image', 'Product', 'SKU', 'Brand', 'Price', 'Status', ''].map((h) => (
                           <th
                             key={h}
                             style={{
@@ -197,6 +197,16 @@ export default function AdminProductsView() {
                           key={product.id}
                           style={{ borderBottom: i < products.length - 1 ? '1px solid var(--border)' : 'none' }}
                         >
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            {product.imageUrls && product.imageUrls.length > 0 ? (
+                              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden' }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={product.imageUrls[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                            ) : (
+                              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--surface-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>—</div>
+                            )}
+                          </td>
                           <td style={{ padding: '0.75rem 1rem' }}>
                             <p style={{ fontWeight: 600, fontSize: '0.8rem' }}>{product.name}</p>
                             <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.7rem' }}>{product.slug}</p>
