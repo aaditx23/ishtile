@@ -104,3 +104,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Marquee Animation ───────────────────────────────────────────────────────── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}

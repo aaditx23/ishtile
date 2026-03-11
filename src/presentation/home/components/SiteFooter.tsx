@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { FiInstagram, FiFacebook, FiTwitter, FiYoutube } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Marquee } from '@/components/ui/marquee';
 import NewsletterForm from './NewsletterForm';
 
 const shopLinks = [
@@ -57,6 +58,25 @@ function FooterColumn({ title, links }: { title: string; links: { label: string;
 export default function SiteFooter() {
   return (
     <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>
+      {/* Brand Motto Marquee */}
+      <div style={{ padding: '3rem 0', overflow: 'hidden' }}>
+        <Marquee duration={40} pauseOnHover>
+          <span 
+            style={{ 
+              fontSize: 'clamp(1.5rem, 6vw, 4rem)', 
+              fontWeight: 900, 
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: 'white',
+              whiteSpace: 'nowrap',
+              paddingRight: '4rem',
+            }}
+          >
+            Forget style, embrace a different kind of IshtiLE!
+          </span>
+        </Marquee>
+      </div>
+
       {/* Main grid */}
       <div className="px-6 md:px-12 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
