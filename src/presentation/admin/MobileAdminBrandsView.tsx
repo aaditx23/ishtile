@@ -26,29 +26,29 @@ export default function MobileAdminBrandsView({
   setModal,
 }: MobileAdminBrandsViewProps) {
   return (
-    <div style={{ padding: '1.25rem 1rem' }}>
+    <div style={{ padding: '1rem', paddingBottom: '2rem' }}>
 
       <AdminMobileNavStrip activeHref="/admin/brands" />
 
       {/* Page header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Brands</h1>
-        <button onClick={() => setModal({ type: 'new' })} style={{ ...primaryBtn, padding: '0.4rem 0.9rem', fontSize: '0.8rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '0.75rem' }}>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Brands</h1>
+        <button onClick={() => setModal({ type: 'new' })} style={{ ...primaryBtn, padding: '0.5rem 1rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
           + New
         </button>
       </div>
 
       {/* Brand list */}
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.625rem' }} />)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4rem', borderRadius: '0.625rem' }} />)}
         </div>
       ) : brands.length === 0 ? (
         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>
           No brands yet.
         </p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {brands.map(brand => (
             <BrandRow
               key={brand.id}

@@ -105,23 +105,35 @@ export function BrandRow({
 }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: '0.75rem',
-      padding: '0.75rem 1rem', backgroundColor: 'var(--surface)',
-      border: '1px solid var(--border)', borderRadius: '0.625rem',
+      border:          '1px solid var(--border)',
+      borderRadius:    '0.625rem',
+      padding:         '0.75rem 1rem',
+      backgroundColor: 'var(--surface)',
     }}>
-      {brand.imageUrl && (
-        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={brand.imageUrl} alt={brand.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      {/* Row 1: Image + Name + Status + Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+        {brand.imageUrl && (
+          <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={brand.imageUrl} alt={brand.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        )}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <h3 style={{ fontSize: '0.825rem', fontWeight: 700, margin: 0 }}>{brand.name}</h3>
+          <Badge active={brand.isActive} />
         </div>
-      )}
-      <span style={{ fontSize: '0.8rem', fontWeight: 700, flex: 1 }}>{brand.name}</span>
-      <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{brand.slug}</span>
-      <Badge active={brand.isActive} />
-      <ActionLinks
-        onEdit={() => onEdit(brand)}
-        onDelete={() => onDelete(brand.id)}
-      />
+        <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+          <ActionLinks
+            onEdit={() => onEdit(brand)}
+            onDelete={() => onDelete(brand.id)}
+          />
+        </div>
+      </div>
+
+      {/* Row 2: Slug */}
+      <div style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
+        <span style={{ fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{brand.slug}</span>
+      </div>
     </div>
   );
 }
