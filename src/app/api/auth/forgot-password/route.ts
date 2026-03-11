@@ -24,6 +24,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid email format' },
+        { status: 400 },
+      );
+    }
+
     // Generate a 32-byte cryptographically random token
     const rawToken = crypto.randomBytes(32).toString('hex');
 
