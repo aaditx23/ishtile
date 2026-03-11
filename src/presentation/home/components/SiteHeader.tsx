@@ -223,7 +223,7 @@ export default function SiteHeader() {
                 className="text-white hover:bg-white/10"
                 style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding: '0.5rem' }}
               >
-                <Link href="/login">Login</Link>
+                <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Login</Link>
               </Button>
             )}
           </div>

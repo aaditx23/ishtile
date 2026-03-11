@@ -40,8 +40,10 @@ export default function AdminProductEditView() {
   const [notFound, setNotFound]       = useState(false);
 
   useEffect(() => {
-    const productId = Number(params.id);
-    if (isNaN(productId)) { setNotFound(true); setLoading(false); return; }
+    // Note: params.id is a Convex ID string, but domain expects number type.
+    // asId() helper casts it (runtime it's still string, which Convex needs).
+    const productId = params.id as unknown as number;
+    if (!productId) { setNotFound(true); setLoading(false); return; }
     Promise.all([getProductById(productId), getCategories({ activeOnly: true })])
       .then(([p, cats]) => {
         if (!p) { setNotFound(true); }
@@ -58,7 +60,7 @@ export default function AdminProductEditView() {
         <AdminMobileNavStrip activeHref="/admin/products" />
       </div>
 
-      <div style={{ maxWidth: '84rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
+      <div style={{ maxWidth: '96rem', margin: '0 auto', padding: '1.25rem 1.25rem 2rem' }}>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'start' }}>
           {/* Sidebar — desktop only */}
           <div className="hidden lg:block" style={{ width: '13rem', flexShrink: 0 }}>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   updateVariant,
   createVariant,
+  deleteVariant,
   getInventory,
   updateInventory,
 } from '@/application/product/adminProduct';
@@ -18,7 +19,24 @@ interface VariantManagerProps {
   initialVariants: ProductVariant[];
 }
 
-const cellStyle: React.CSSProperties = { padding: '0.5rem 0.625rem', fontSize: '0.78rem' };
+const labelStyle: React.CSSProperties = {
+  fontSize:      '0.65rem',
+  fontWeight:    700,
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  color:         'var(--on-surface-muted)',
+  marginBottom:  '0.2rem',
+  display:       'block',
+};
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label style={labelStyle}>{label}</label>
+      {children}
+    </div>
+  );
+}
 
 function InvCell({ variantId }: { variantId: number }) {
   const [inv, setInv]   = useState<InventoryDto | null>(null);
@@ -67,7 +85,7 @@ function InvCell({ variantId }: { variantId: number }) {
         style={{ width: '4.5rem', padding: '0.25rem 0.5rem', fontSize: '0.78rem' }}
         disabled={busy}
       />
-      <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>/ avail: {inv.availableQuantity}</span>
+      <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>/ {inv.availableQuantity}</span>
       <button
         onClick={save}
         disabled={busy}
@@ -82,21 +100,31 @@ function InvCell({ variantId }: { variantId: number }) {
 function VariantRow({
   variant,
   onSaved,
+  onDelete,
+  canDelete,
+  disabled,
 }: {
   variant:  ProductVariant;
   onSaved:  (v: ProductVariant) => void;
+  onDelete?: () => void;
+  canDelete?: boolean;
+  disabled?: boolean;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [form, setForm]       = useState({
+  const [form, setForm] = useState({
     size:  variant.size,
     color: variant.color ?? '',
     sku:   variant.sku,
     price: String(variant.price),
+    compareAtPrice: variant.compareAtPrice ? String(variant.compareAtPrice) : '',
     isActive: variant.isActive,
   });
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
+    if (form.compareAtPrice && Number(form.compareAtPrice) <= Number(form.price)) {
+      toast.error('Compare at price must be greater than price.');
+      return;
+    }
     setBusy(true);
     try {
       const updated = await updateVariant(variant.id, {
@@ -104,83 +132,106 @@ function VariantRow({
         color:    form.color || undefined,
         sku:      form.sku,
         price:    Number(form.price),
+        compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : undefined,
         isActive: form.isActive,
       });
       onSaved(updated);
-      setEditing(false);
       toast.success('Variant saved.');
-    } catch { toast.error('Failed to save variant.'); }
-    finally { setBusy(false); }
+    } catch { 
+      toast.error('Failed to save variant.'); 
+    } finally { 
+      setBusy(false); 
+    }
   };
 
-  if (editing) {
-    return (
-      <tr>
-        <td colSpan={6} style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--surface-muted)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '0.625rem', alignItems: 'end' }}>
-            {(['size', 'color', 'sku', 'price'] as const).map((k) => (
-              <div key={k}>
-                <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.2rem' }}>{k}</p>
-                {k === 'size' ? (
-                  <select
-                    value={form.size}
-                    onChange={(e) => setForm((p) => ({ ...p, size: e.target.value }))}
-                    disabled={busy}
-                    style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.78rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
-                  >
-                    <option value="" disabled hidden>Size</option>
-                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
-                      <option key={sz} value={sz}>{sz}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <Input
-                    value={form[k]}
-                    placeholder={k}
-                    onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
-                    style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
-                    disabled={busy}
-                    type={k === 'price' ? 'number' : 'text'}
-                  />
-                )}
-              </div>
-            ))}
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.78rem', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.isActive} onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))} disabled={busy} />
-              Active
-            </label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Button onClick={save} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>
-                {busy ? '…' : 'Save'}
-              </Button>
-              <Button variant="outline" onClick={() => setEditing(false)} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>Cancel</Button>
-            </div>
-          </div>
-        </td>
-      </tr>
-    );
-  }
+  const hasChanges = 
+    form.size !== variant.size ||
+    form.color !== (variant.color ?? '') ||
+    form.sku !== variant.sku ||
+    form.price !== String(variant.price) ||
+    form.compareAtPrice !== (variant.compareAtPrice ? String(variant.compareAtPrice) : '') ||
+    form.isActive !== variant.isActive;
 
   return (
-    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-      <td style={cellStyle}>{variant.size}</td>
-      <td style={cellStyle}>{variant.color ?? '—'}</td>
-      <td style={{ ...cellStyle, fontFamily: 'monospace', fontSize: '0.7rem' }}>{variant.sku}</td>
-      <td style={{ ...cellStyle, fontWeight: 700 }}>৳{Number(variant.price || 0).toFixed(0)}</td>
-      <td style={cellStyle}><InvCell variantId={variant.id} /></td>
-      <td style={cellStyle}>
-        <button
-          onClick={() => setEditing(true)}
-          style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer' }}
+    <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(5rem,1fr)_auto_auto] items-end gap-2">
+      <Field label="Size">
+        <select
+          value={form.size}
+          onChange={(e) => setForm((p) => ({ ...p, size: e.target.value }))}
+          disabled={busy || disabled}
+          style={{ width: '100%', padding: '0.45rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
         >
-          Edit
-        </button>
-      </td>
-    </tr>
+          <option value="" disabled hidden>Size</option>
+          {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
+            <option key={sz} value={sz}>{sz}</option>
+          ))}
+        </select>
+      </Field>
+      <Field label="Color">
+        <Input 
+          value={form.color} 
+          onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))} 
+          disabled={busy || disabled} 
+          placeholder="Red" 
+        />
+      </Field>
+      <div className="col-span-2 lg:col-span-1">
+        <Field label="SKU">
+          <Input 
+            value={form.sku} 
+            onChange={(e) => setForm((p) => ({ ...p, sku: e.target.value }))} 
+            disabled={busy || disabled} 
+            placeholder="SKU" 
+          />
+        </Field>
+      </div>
+      <Field label="Price">
+        <Input 
+          type="number" 
+          value={form.price} 
+          onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} 
+          disabled={busy || disabled} 
+          placeholder="৳" 
+        />
+      </Field>
+      <Field label="Compare">
+        <Input 
+          type="number" 
+          value={form.compareAtPrice} 
+          onChange={(e) => setForm((p) => ({ ...p, compareAtPrice: e.target.value }))} 
+          disabled={busy || disabled} 
+          placeholder="৳" 
+        />
+      </Field>
+      <Field label="Stock">
+        <InvCell variantId={variant.id} />
+      </Field>
+      <div className="flex items-end">
+        <Button 
+          onClick={save} 
+          disabled={!hasChanges || busy || disabled}
+          style={{ height: '40px', fontSize: '0.75rem', padding: '0 0.75rem', width: '100%' }}
+        >
+          {busy ? '…' : 'Save'}
+        </Button>
+      </div>
+      {onDelete && (
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={!canDelete || busy || disabled}
+            style={{ height: '40px', width: '100%', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
+          >
+            Remove
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
-const EMPTY_NEW = { size: '', color: '', sku: '', price: '' };
+const EMPTY_NEW = { size: '', color: '', sku: '', price: '', compareAtPrice: '' };
 
 export default function VariantManager({ productId, initialVariants }: VariantManagerProps) {
   const [variants, setVariants] = useState<ProductVariant[]>(initialVariants);
@@ -191,9 +242,28 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
   const updateRow = (updated: ProductVariant) =>
     setVariants((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
 
+  const handleDelete = async (variantId: number) => {
+    if (!confirm('Are you sure you want to delete this variant?')) return;
+    
+    setBusy(true);
+    try {
+      await deleteVariant(variantId);
+      setVariants((prev) => prev.filter((v) => v.id !== variantId));
+      toast.success('Variant deleted.');
+    } catch {
+      toast.error('Failed to delete variant.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const handleAdd = async () => {
     if (!newForm.size || !newForm.sku || !newForm.price) {
       toast.error('Size, SKU and price are required.'); return;
+    }
+    if (newForm.compareAtPrice && Number(newForm.compareAtPrice) <= Number(newForm.price)) {
+      toast.error('Compare at price must be greater than price.');
+      return;
     }
     setBusy(true);
     try {
@@ -203,6 +273,7 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
         color: newForm.color || undefined,
         sku:   newForm.sku,
         price: Number(newForm.price),
+        compareAtPrice: newForm.compareAtPrice ? Number(newForm.compareAtPrice) : undefined,
         isActive: true,
       });
       setVariants((prev) => [...prev, v]);
@@ -217,63 +288,97 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Existing variants */}
       {variants.length > 0 && (
-        <div style={{ border: '1px solid var(--border)', borderRadius: '0.5rem', overflowX: 'auto' }}>
-          <table style={{ width: '100%', minWidth: '36rem', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-muted)' }}>
-                {['Size', 'Color', 'SKU', 'Price', 'Inventory', ''].map((h) => (
-                  <th key={h} style={{ ...cellStyle, fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--on-surface-muted)', textAlign: 'left' }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {variants.map((v) => (
-                <VariantRow key={v.id} variant={v} onSaved={updateRow} />
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {variants.map((v, i) => (
+            <div
+              key={v.id}
+              style={{ 
+                borderTop: i > 0 ? '1px dashed var(--border)' : undefined, 
+                paddingTop: i > 0 ? '1rem' : undefined 
+              }}
+            >
+              <VariantRow 
+                variant={v} 
+                onSaved={updateRow}
+                onDelete={() => handleDelete(v.id)}
+                canDelete={variants.length > 1}
+                disabled={busy}
+              />
+            </div>
+          ))}
         </div>
       )}
 
       {/* Add variant form */}
       {adding ? (
-        <div style={{ border: '1px solid var(--border)', borderRadius: '0.5rem', padding: '0.875rem', backgroundColor: 'var(--surface-muted)' }}>
-          <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.625rem' }}>New Variant</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '0.625rem', alignItems: 'end' }}>
-            {(['size', 'color', 'sku', 'price'] as const).map((k) => (
-              <div key={k}>
-                <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.2rem' }}>{k}</p>
-                {k === 'size' ? (
-                  <select
-                    value={newForm.size}
-                    onChange={(e) => setNewForm((p) => ({ ...p, size: e.target.value }))}
-                    disabled={busy}
-                    style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.78rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
-                  >
-                    <option value="" disabled hidden>Size</option>
-                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
-                      <option key={sz} value={sz}>{sz}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <Input
-                    value={newForm[k]}
-                    placeholder={k}
-                    onChange={(e) => setNewForm((p) => ({ ...p, [k]: e.target.value }))}
-                    style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }}
-                    disabled={busy}
-                    type={k === 'price' ? 'number' : 'text'}
-                  />
-                )}
-              </div>
-            ))}
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-              <Button onClick={handleAdd} disabled={busy} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>
-                {busy ? '…' : 'Add'}
+        <div 
+          style={{ 
+            border: '2px dashed var(--border)', 
+            borderRadius: '0.5rem', 
+            padding: '1rem', 
+            backgroundColor: 'var(--surface-muted)' 
+          }}
+        >
+          <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.75rem' }}>
+            New Variant
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2">
+            <Field label="Size">
+              <select
+                value={newForm.size}
+                onChange={(e) => setNewForm((p) => ({ ...p, size: e.target.value }))}
+                disabled={busy}
+                style={{ width: '100%', padding: '0.45rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+              >
+                <option value="" disabled hidden>Size</option>
+                {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
+                  <option key={sz} value={sz}>{sz}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Color">
+              <Input 
+                value={newForm.color} 
+                onChange={(e) => setNewForm((p) => ({ ...p, color: e.target.value }))} 
+                disabled={busy} 
+                placeholder="Red" 
+              />
+            </Field>
+            <div className="col-span-2 lg:col-span-1">
+              <Field label="SKU">
+                <Input 
+                  value={newForm.sku} 
+                  onChange={(e) => setNewForm((p) => ({ ...p, sku: e.target.value }))} 
+                  disabled={busy} 
+                  placeholder="SKU" 
+                />
+              </Field>
+            </div>
+            <Field label="Price">
+              <Input 
+                type="number" 
+                value={newForm.price} 
+                onChange={(e) => setNewForm((p) => ({ ...p, price: e.target.value }))} 
+                disabled={busy} 
+                placeholder="৳" 
+              />
+            </Field>
+            <Field label="Compare">
+              <Input 
+                type="number" 
+                value={newForm.compareAtPrice} 
+                onChange={(e) => setNewForm((p) => ({ ...p, compareAtPrice: e.target.value }))} 
+                disabled={busy} 
+                placeholder="৳" 
+              />
+            </Field>
+            <div className="flex items-end gap-2 col-span-2 lg:col-span-1">
+              <Button onClick={handleAdd} disabled={busy} style={{ height: '40px', fontSize: '0.75rem', flex: 1 }}>
+                {busy ? '…' : 'Add Variant'}
               </Button>
-              <Button variant="outline" onClick={() => setAdding(false)} style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}>Cancel</Button>
+              <Button variant="outline" onClick={() => setAdding(false)} disabled={busy} style={{ height: '40px', fontSize: '0.75rem', flex: 1 }}>
+                Cancel
+              </Button>
             </div>
           </div>
         </div>
@@ -283,10 +388,10 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
           style={{
             alignSelf:      'flex-start',
             background:     'none',
-            border:         '1px dashed var(--border)',
+            border:         '2px dashed var(--border)',
             borderRadius:   '0.5rem',
-            padding:        '0.4rem 1rem',
-            fontSize:       '0.78rem',
+            padding:        '0.5rem 1.25rem',
+            fontSize:       '0.875rem',
             fontWeight:     600,
             cursor:         'pointer',
             color:          'var(--on-surface-muted)',

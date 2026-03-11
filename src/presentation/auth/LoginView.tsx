@@ -7,8 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { authService } from '@/infrastructure/auth/auth.service';
-import { ApiError } from '@/infrastructure/api/apiClient';
+import { authConvexService } from '@/infrastructure/auth/authConvex.service';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -34,15 +33,13 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      await authService.login(email, password);
+      await authConvexService.login(email, password);
       toast.success('Welcome back!');
       router.push(next);
     } catch (err) {
-      if (err instanceof ApiError && err.errors && err.errors.length > 0) {
-        err.errors.forEach(error => toast.error(error));
-      } else {
-        toast.error(err instanceof Error ? err.message : 'Login failed. Check your credentials.');
-      }
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Check your credentials.';
+      console.error('Login error:', err);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -82,6 +79,11 @@ function LoginForm() {
             {showPwd ? <FiEyeOff size={16} /> : <FiEye size={16} />}
           </button>
         </div>
+        <div style={{ textAlign: 'right', marginTop: '0.35rem' }}>
+          <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', textDecoration: 'none' }}>
+            Forgot Password?
+          </Link>
+        </div>
       </div>
 
       <Button
@@ -92,6 +94,18 @@ function LoginForm() {
         {loading ? 'Logging in…' : 'Login'}
       </Button>
     </form>
+  );
+}
+
+function RegisterLink() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next');
+  const registerUrl = next ? `/register?next=${encodeURIComponent(next)}` : '/register';
+  
+  return (
+    <Link href={registerUrl} style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
+      Create an account →
+    </Link>
   );
 }
 
@@ -138,9 +152,9 @@ export default function LoginView() {
         {/* Footer link */}
         <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
           New to Ishtile?{' '}
-          <Link href="/register" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
-            Create an account →
-          </Link>
+          <Suspense>
+            <RegisterLink />
+          </Suspense>
         </p>
       </div>
     </div>

@@ -1,14 +1,13 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { authService } from '@/infrastructure/auth/auth.service';
-import { ApiError } from '@/infrastructure/api/apiClient';
+import { authConvexService } from '@/infrastructure/auth/authConvex.service';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -22,6 +21,8 @@ const labelStyle: React.CSSProperties = {
 
 function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next') ?? '/';
 
   const [phone, setPhone]         = useState('');
   const [email, setEmail]         = useState('');
@@ -33,9 +34,17 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    
     setLoading(true);
     try {
-      await authService.register({
+      await authConvexService.register({
         phone,
         email,
         username,
@@ -43,13 +52,9 @@ function RegisterForm() {
         password,
       });
       toast.success('Account created! Welcome to Ishtile.');
-      router.push('/');
+      router.push(next);
     } catch (err) {
-      if (err instanceof ApiError && err.errors && err.errors.length > 0) {
-        err.errors.forEach(error => toast.error(error));
-      } else {
-        toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
-      }
+      toast.error(err instanceof Error ? err.message : 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -131,6 +136,18 @@ function RegisterForm() {
   );
 }
 
+function LoginLink() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next');
+  const loginUrl = next ? `/login?next=${encodeURIComponent(next)}` : '/login';
+  
+  return (
+    <Link href={loginUrl} style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
+      Sign in →
+    </Link>
+  );
+}
+
 export default function RegisterView() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--background)', padding: '2rem 1rem' }}>
@@ -153,9 +170,9 @@ export default function RegisterView() {
 
         <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
           Already have an account?{' '}
-          <Link href="/login" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
-            Sign in →
-          </Link>
+          <Suspense>
+            <LoginLink />
+          </Suspense>
         </p>
       </div>
     </div>

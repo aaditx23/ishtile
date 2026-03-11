@@ -134,51 +134,99 @@ export function CategoryRow({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: '1px solid var(--border)', borderRadius: '0.625rem', overflow: 'hidden' }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '0.75rem',
-        padding: '0.75rem 1rem', backgroundColor: 'var(--surface)',
-        cursor: 'pointer',
-      }} onClick={() => setOpen(o => !o)}>
-        <span style={{ fontSize: '0.8rem', fontWeight: 700, flex: 1 }}>{cat.name}</span>
-        <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{cat.slug}</span>
-        <Badge active={cat.isActive} />
-        <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
-          {cat.subcategories.length} sub
-        </span>
-        <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>{open ? '▲' : '▼'}</span>
-        <ActionLinks
-          onEdit={e => { e.stopPropagation(); onEdit(cat); }}
-          onDelete={e => { e.stopPropagation(); onDelete(cat.id); }}
-          deleteDisabled={deleteDisabled}
-        />
+    <div style={{ border: '1px solid var(--border)', borderRadius: '0.625rem', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
+      {/* Main category card */}
+      <div style={{ padding: '0.75rem 1rem' }}>
+        {/* Row 1: Image + Name + Status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+          {cat.imageUrl && (
+            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={cat.imageUrl} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h3 style={{ fontSize: '0.825rem', fontWeight: 700, margin: 0 }}>{cat.name}</h3>
+            <Badge active={cat.isActive} />
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+            <ActionLinks
+              onEdit={() => onEdit(cat)}
+              onDelete={() => onDelete(cat.id)}
+              deleteDisabled={deleteDisabled}
+            />
+          </div>
+        </div>
+
+        {/* Row 2: Slug + Subcategory count + Expand button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
+          <span style={{ flex: 1, minWidth: 0, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.slug}</span>
+          <button
+            onClick={() => setOpen(o => !o)}
+            style={{
+              padding: '0.2rem 0.5rem',
+              border: '1px solid var(--border)',
+              borderRadius: '0.375rem',
+              backgroundColor: open ? 'var(--surface-variant)' : 'transparent',
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: 'var(--on-surface-muted)',
+              flexShrink: 0,
+            }}
+          >
+            {cat.subcategories.length} sub {open ? '▲' : '▼'}
+          </button>
+        </div>
       </div>
 
+      {/* Subcategories list */}
       {open && (
         <div style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface-variant)' }}>
-          {cat.subcategories.map(sub => (
-            <div key={sub.id} style={{
-              display: 'flex', alignItems: 'center', gap: '0.75rem',
-              padding: '0.55rem 1rem 0.55rem 2rem',
-              borderBottom: '1px solid var(--border)',
-              fontSize: '0.8rem',
-            }}>
-              <span style={{ flex: 1, fontWeight: 500 }}>{sub.name}</span>
-              <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>{sub.slug}</span>
-              <Badge active={sub.isActive} />
-              <ActionLinks
-                onEdit={e => { e.stopPropagation(); onEditSub(sub, cat); }}
-                onDelete={e => { e.stopPropagation(); onDeleteSub(sub.id, cat.id); }}
-              />
+          {cat.subcategories.map((sub, i) => (
+            <div
+              key={sub.id}
+              style={{
+                padding: '0.6rem 1rem',
+                borderBottom: i < cat.subcategories.length - 1 ? '1px solid var(--border)' : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{sub.name}</span>
+                  <Badge active={sub.isActive} />
+                </div>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--on-surface-muted)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {sub.slug}
+                </span>
+              </div>
+              <div style={{ flexShrink: 0 }}>
+                <ActionLinks
+                  onEdit={() => onEditSub(sub, cat)}
+                  onDelete={() => onDeleteSub(sub.id, cat.id)}
+                />
+              </div>
             </div>
           ))}
           <button
             onClick={() => onAddSub(cat)}
             style={{
-              display: 'block', width: '100%', textAlign: 'left',
-              padding: '0.5rem 1rem 0.5rem 2rem', fontSize: '0.75rem',
-              fontWeight: 600, color: 'var(--on-surface-muted)',
-              background: 'none', border: 'none', cursor: 'pointer',
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '0.6rem 1rem',
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              color: 'var(--brand-gold)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
             }}
           >
             + Add Subcategory
@@ -253,7 +301,7 @@ export function CategoryModal({
           </div>
           <div>
             <label style={labelStyle}>Slug</label>
-            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} />
+            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} readOnly />
           </div>
           <div>
             <label style={labelStyle}>Display Order</label>
@@ -357,7 +405,7 @@ export function SubcategoryModal({
           </div>
           <div>
             <label style={labelStyle}>Slug</label>
-            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} />
+            <Input value={form.slug} onChange={e => set('slug', e.target.value)} required disabled={saving} readOnly />
           </div>
           <div>
             <label style={labelStyle}>Display Order</label>

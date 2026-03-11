@@ -1,5 +1,5 @@
 import { favouriteRepository } from '@/lib/di';
-import type { PaginatedFavourites } from '@/infrastructure/api/favouriteApi.repository';
+import type { PaginatedFavourites } from '@/infrastructure/convex/favouriteConvex.repository';
 
 export async function getFavourites(
   page = 1,

@@ -7,6 +7,7 @@ node_modules/
 .next/
 out/
 build/
+package.lock.json
 
 # Production
 dist/
@@ -59,3 +60,5 @@ coverage/
 
 api_response.md
 address-and-file-api.md
+ishtile-backend
+docs

@@ -8,7 +8,7 @@ import type { ThemeProviderProps } from 'next-themes';
  *
  * - `attribute="class"` → adds/removes `.dark` on <html>, which is what
  *   globals.css and toCssVars() target.
- * - `defaultTheme="system"` → respects OS preference on first visit.
+ * - `defaultTheme="light"` → defaults to light theme.
  * - `disableTransitionOnChange` → prevents the flash of unstyled transition
  *   when switching themes.
  *
@@ -20,7 +20,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="light"
       enableSystem
       disableTransitionOnChange
       {...props}

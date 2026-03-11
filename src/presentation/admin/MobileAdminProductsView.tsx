@@ -7,10 +7,12 @@ import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import Pagination from '@/presentation/shared/components/Pagination';
 import AdminProductsActions from './components/AdminProductsActions';
 import type { Product } from '@/domain/product/product.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
 
 interface MobileAdminProductsViewProps {
   products:       Product[];
+  brands:         Brand[];
   loading:        boolean;
   pagination:     PaginationMeta | null;
   searchInput:    string;
@@ -32,20 +34,27 @@ const newProductBtn: React.CSSProperties = {
 
 export default function MobileAdminProductsView({
   products,
+  brands,
   loading,
   pagination,
   searchInput,
   onSearch,
   onDeleted,
 }: MobileAdminProductsViewProps) {
+  const getBrandName = (brandId: number | null) => {
+    if (!brandId) return null;
+    const brand = brands.find(b => b.id === brandId);
+    return brand?.name ?? null;
+  };
+
   return (
     <div style={{ padding: '1.25rem 1rem' }}>
       <AdminMobileNavStrip activeHref="/admin/products" />
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', gap: '0.75rem' }}>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Products</h1>
-        <Link href="/admin/products/new" style={newProductBtn}>+ New</Link>
+        <Link href="/admin/products/new" style={{ ...newProductBtn, whiteSpace: 'nowrap' }}>+ New</Link>
       </div>
 
       {/* Search */}
@@ -88,7 +97,7 @@ export default function MobileAdminProductsView({
       {/* Product cards */}
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4.5rem', borderRadius: '0.625rem' }} />)}
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.625rem' }} />)}
         </div>
       ) : products.length === 0 ? (
         <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
@@ -102,19 +111,45 @@ export default function MobileAdminProductsView({
               style={{
                 border:          '1px solid var(--border)',
                 borderRadius:    '0.625rem',
-                padding:         '0.7rem 1rem',
+                padding:         '0.75rem 1rem',
                 backgroundColor: 'var(--surface)',
               }}
             >
-              {/* Row 1: name + actions */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
-                <p style={{ flex: 1, minWidth: 0, fontWeight: 600, fontSize: '0.825rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {product.name}
-                </p>
-                <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center', flexShrink: 0 }}>
+              {/* Row 1: Image + Name + Status + Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+                {product.imageUrls && product.imageUrls.length > 0 ? (
+                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={product.imageUrls[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ) : (
+                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--surface-variant)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'var(--on-surface-muted)', flexShrink: 0 }}>
+                    —
+                  </div>
+                )}
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <h3 style={{ fontSize: '0.825rem', fontWeight: 700, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {product.name}
+                  </h3>
+                  <span
+                    style={{
+                      fontSize:        '0.6rem',
+                      fontWeight:      700,
+                      textTransform:   'uppercase',
+                      padding:         '0.15rem 0.4rem',
+                      borderRadius:    '9999px',
+                      backgroundColor: product.isActive ? '#d1fae5' : '#fee2e2',
+                      color:           product.isActive ? '#065f46' : '#991b1b',
+                      flexShrink:      0,
+                    }}
+                  >
+                    {product.isActive ? 'Active' : 'Off'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
                   <Link
                     href={`/admin/products/${product.id}`}
-                    style={{ fontSize: '0.72rem', fontWeight: 600, textDecoration: 'none', color: '#A58C69' }}
+                    style={{ fontSize: '0.72rem', fontWeight: 600, textDecoration: 'none', color: 'var(--brand-gold)' }}
                   >
                     Edit
                   </Link>
@@ -126,27 +161,19 @@ export default function MobileAdminProductsView({
                 </div>
               </div>
 
-              {/* Row 2: sku + price + badge */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <p style={{ flex: 1, minWidth: 0, color: 'var(--on-surface-muted)', fontSize: '0.7rem', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {/* Row 2: Brand + SKU + Price */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
+                {getBrandName(product.brandId) && (
+                  <>
+                    <span>{getBrandName(product.brandId)}</span>
+                    <span>•</span>
+                  </>
+                )}
+                <span style={{ flex: 1, minWidth: 0, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {product.sku}
-                </p>
-                <span style={{ fontWeight: 700, fontSize: '0.78rem', flexShrink: 0 }}>
-                  ৳{Number(product.basePrice || 0).toFixed(0)}
                 </span>
-                <span
-                  style={{
-                    fontSize:        '0.6rem',
-                    fontWeight:      700,
-                    textTransform:   'uppercase',
-                    padding:         '0.15rem 0.4rem',
-                    borderRadius:    '9999px',
-                    backgroundColor: product.isActive ? '#d1fae5' : '#fee2e2',
-                    color:           product.isActive ? '#065f46' : '#991b1b',
-                    flexShrink:      0,
-                  }}
-                >
-                  {product.isActive ? 'Active' : 'Off'}
+                <span style={{ fontWeight: 700, fontSize: '0.78rem', color: 'var(--on-surface)', flexShrink: 0 }}>
+                  ৳{Number(product.basePrice || 0).toFixed(0)}
                 </span>
               </div>
             </div>

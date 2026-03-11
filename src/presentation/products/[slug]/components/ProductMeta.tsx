@@ -11,6 +11,7 @@ interface ProductMetaProps {
   /** Compare-at price for strike-through */
   compareAtPrice?: number | null;
   categoryName?: string;
+  brandName?: string;
 }
 
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
@@ -18,7 +19,7 @@ const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 /**
  * Static product information — server-renderable (no interactivity).
  */
-export default function ProductMeta({ product, hidePrice, displayPrice, compareAtPrice, categoryName }: ProductMetaProps) {
+export default function ProductMeta({ product, hidePrice, displayPrice, compareAtPrice, categoryName, brandName }: ProductMetaProps) {
   const price       = displayPrice ?? product.basePrice;
   const compareAt   = compareAtPrice ?? product.compareAtPrice;
   const hasSale     = compareAt !== null && compareAt > price;
@@ -65,6 +66,14 @@ export default function ProductMeta({ product, hidePrice, displayPrice, compareA
         </p>
       )}
 
+      {/* Brand */}
+      {brandName && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
+          <span style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Brand:</span>{' '}
+          {brandName}
+        </p>
+      )}
+
       {/* Material & care */}
       {(product.material || product.careInstructions) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -81,14 +90,6 @@ export default function ProductMeta({ product, hidePrice, displayPrice, compareA
             </p>
           )}
         </div>
-      )}
-
-      {/* Brand */}
-      {product.brand && (
-        <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
-          <span style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Brand:</span>{' '}
-          {product.brand}
-        </p>
       )}
     </div>
   );

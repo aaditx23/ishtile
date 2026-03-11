@@ -28,7 +28,7 @@ export function mapProduct(dto: ProductDto | ProductWithVariantsDto): Product {
     basePrice:        dto.basePrice,
     compareAtPrice:   dto.compareAtPrice,
     imageUrls:        dto.imageUrls ?? [],
-    brand:            dto.brand,
+    brandId:          dto.brandId,
     material:         dto.material,
     careInstructions: dto.careInstructions,
     categoryId:       dto.categoryId,

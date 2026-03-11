@@ -44,6 +44,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Don't bundle pdfkit for server - let Node.js require it normally
+      // This prevents webpack from breaking pdfkit's font file resolution
+      config.externals = [...(config.externals || []), 'pdfkit'];
+      
+      // Ignore optional canvas dependency
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        canvas: false,
+      };
+    }
+    
+    return config;
+  },
 };
 
 export default nextConfig;

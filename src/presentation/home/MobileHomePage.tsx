@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
 import CountdownBanner from './components/CountdownBanner';
 import HomeProductSection from './components/HomeProductSection';
+import HomeBrandSection from './components/HomeBrandSection';
 import type { ProductCardData } from './components/ProductCard';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 // ── Slide types ───────────────────────────────────────────────────────────────
 type SlideButton = { label: string; href: string; authGate?: 'guest' };
@@ -206,10 +208,11 @@ function MobileHeroBanner({ isGuest }: { isGuest: boolean }) {
 interface MobileHomePageProps {
   products:         ProductCardData[];
   categories:       Category[];
+  brands:           Brand[];
   countdownTarget?: string | null;
 }
 
-export default function MobileHomePage({ products, categories, countdownTarget = null }: MobileHomePageProps) {
+export default function MobileHomePage({ products, categories, brands, countdownTarget = null }: MobileHomePageProps) {
   const auth    = useCurrentUser();
   const isGuest = auth.status !== 'authenticated';
 
@@ -218,6 +221,7 @@ export default function MobileHomePage({ products, categories, countdownTarget =
       <MobileHeroBanner isGuest={isGuest} />
       <CountdownBanner targetDate={countdownTarget} />
       <HomeProductSection products={products} categories={categories} />
+      <HomeBrandSection products={products} brands={brands} />
     </div>
   );
 }

@@ -24,7 +24,7 @@ export interface CreateProductPayload {
   imageUrls?: string[];
   material?: string;
   careInstructions?: string;
-  brand?: string;
+  brandId?: number;
   isActive?: boolean;
   isFeatured?: boolean;
   metaTitle?: string;

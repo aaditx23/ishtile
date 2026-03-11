@@ -133,7 +133,7 @@ export interface ProductDto {
   imageUrls: string[] | null;
   material: string | null;
   careInstructions: string | null;
-  brand: string | null;
+  brandId: number | null;
   isActive: boolean;
   isFeatured: boolean;
   metaTitle: string | null;

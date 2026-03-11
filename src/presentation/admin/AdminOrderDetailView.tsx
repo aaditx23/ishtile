@@ -11,7 +11,7 @@ import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
 import OrderStatusSelector from './components/OrderStatusSelector';
 import { Button } from '@/components/ui/button';
-import { getOrder } from '@/application/order/getOrder';
+import { getAdminOrder } from '@/application/order/getAdminOrder';
 import { generateMemo } from '@/application/order/generateMemo';
 import type { Order } from '@/domain/order/order.entity';
 
@@ -42,23 +42,20 @@ export default function AdminOrderDetailView() {
     if (!order) return;
     setMemoLoading(true);
     try {
-      const memo = await generateMemo(order.id);
-      if (memo.pdfUrl) {
-        window.open(memo.pdfUrl, '_blank', 'noopener,noreferrer');
-      } else {
-        toast.error('Memo generated but PDF not available yet.');
-      }
-    } catch {
-      toast.error('Failed to generate memo.');
+      const filename = await generateMemo(order.id);
+      toast.success(`Invoice downloaded: ${filename}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to generate memo.');
     } finally {
       setMemoLoading(false);
     }
   };
 
   useEffect(() => {
-    const orderId = Number(params.id);
-    if (isNaN(orderId)) { setNotFound(true); setLoading(false); return; }
-    getOrder(orderId)
+    // Note: params.id is a Convex ID string, but domain expects number type.
+    const orderId = params.id as unknown as number;
+    if (!orderId) { setNotFound(true); setLoading(false); return; }
+    getAdminOrder(orderId)
       .then((o) => { if (!o) { setNotFound(true); } else { setOrder(o); } })
       .catch(() => toast.error('Failed to load order.'))
       .finally(() => setLoading(false));

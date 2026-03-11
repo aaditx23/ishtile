@@ -6,14 +6,17 @@ import ProductDetailInteractive from './components/ProductDetailInteractive';
 import FavouriteButton from './components/FavouriteButton';
 import type { Product } from '@/domain/product/product.entity';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 interface ProductDetailViewProps {
   product: Product;
   categories: Category[];
+  brands: Brand[];
 }
 
-export default function ProductDetailView({ product, categories }: ProductDetailViewProps) {
+export default function ProductDetailView({ product, categories, brands }: ProductDetailViewProps) {
   const category = categories.find((c) => c.id === product.categoryId);
+  const brand = brands.find((b) => b.id === product.brandId);
 
   return (
     <ShopLayout>
@@ -54,7 +57,7 @@ export default function ProductDetailView({ product, categories }: ProductDetail
             {/* Header row: meta + favourite button */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
               <div style={{ flex: 1 }}>
-                <ProductMeta product={product} categoryName={category?.name} hidePrice={!!product.variants?.length} />
+                <ProductMeta product={product} categoryName={category?.name} brandName={brand?.name} hidePrice={!!product.variants?.length} />
               </div>
               <FavouriteButton productId={product.id} />
             </div>

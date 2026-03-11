@@ -65,15 +65,17 @@ export const ENDPOINTS = {
   },
 
   // ─── Locations ──────────────────────────────────────────────────────────────
+  // Now handled by Next.js API route instead of Python backend
   locations: {
-    cities:          `${API_BASE}/locations/cities`,
-    zones:  (cityId: number) => `${API_BASE}/locations/zones/${cityId}`,
-    areas:  (zoneId: number) => `${API_BASE}/locations/areas/${zoneId}`,
+    cities:          '/api/locations/cities',
+    zones:  (cityId: number) => `/api/locations/zones/${cityId}`,
+    areas:  (zoneId: number) => `/api/locations/areas/${zoneId}`,
   },
 
   // ─── Files ────────────────────────────────────────────────────────────────
+  // Now handled by Next.js API route instead of Python backend
   files: {
-    upload: (folder: string) => `${API_BASE}/files/upload?folder=${folder}`,
+    upload: (folder: string) => `/api/files/upload?folder=${folder}`,
   },
 
   // ─── Admin ────────────────────────────────────────────────────────────────

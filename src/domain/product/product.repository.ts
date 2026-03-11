@@ -6,7 +6,7 @@ export interface ListProductsParams {
   pageSize?: number;
   categoryId?: number;
   subcategoryId?: number;
-  brand?: string;
+  brandId?: number;
   search?: string;
   isFeatured?: boolean;
   activeOnly?: boolean;

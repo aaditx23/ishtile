@@ -12,7 +12,9 @@ import { AdminSidebarNav } from './AdminLayout';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { createProduct, uploadProductImages } from '@/application/product/adminProduct';
 import { getCategories } from '@/application/category/getCategories';
+import { getBrands } from '@/application/brand/getBrands';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -40,6 +42,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function AdminNewProductView() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [catsLoading, setCatsLoading] = useState(true);
   const [form, setForm] = useState({
     name:           '',
@@ -47,7 +50,7 @@ export default function AdminNewProductView() {
     sku:            '',
     categoryId:     0,
     subcategoryId:  undefined as number | undefined,
-    brand:          '',
+    brandId:        undefined as number | undefined,
     material:       '',
     description:    '',
     isActive:       true,
@@ -68,13 +71,17 @@ export default function AdminNewProductView() {
   const [savingMsg, setSavingMsg] = useState('');
 
   useEffect(() => {
-    getCategories({ activeOnly: true })
-      .then((cats) => {
+    Promise.all([
+      getCategories({ activeOnly: true }),
+      getBrands({ activeOnly: false }),
+    ])
+      .then(([cats, brds]) => {
         setCategories(cats);
+        setBrands(brds);
         // Set categoryId to the first loaded category
         if (cats.length > 0) setForm(p => ({ ...p, categoryId: cats[0].id }));
       })
-      .catch(() => toast.error('Failed to load categories.'))
+      .catch(() => toast.error('Failed to load data.'))
       .finally(() => setCatsLoading(false));
   }, []);
 
@@ -124,7 +131,7 @@ export default function AdminNewProductView() {
         compareAtPrice,
         categoryId:     form.categoryId,
         subcategoryId:  form.subcategoryId,
-        brand:          form.brand    || undefined,
+        brandId:        form.brandId,
         material:       form.material || undefined,
         description:    form.description || undefined,
         isActive:       form.isActive,
@@ -179,7 +186,7 @@ export default function AdminNewProductView() {
                 <Input value={form.name} onChange={(e) => { set('name', e.target.value); set('slug', slugify(e.target.value)); }} required disabled={saving} />
               </Field>
               <Field label="Slug">
-                <Input value={form.slug} onChange={(e) => set('slug', e.target.value)} required disabled={saving} />
+                <Input value={form.slug} onChange={(e) => set('slug', e.target.value)} required disabled={saving} readOnly />
               </Field>
               <Field label="SKU">
                 <Input value={form.sku} onChange={(e) => set('sku', e.target.value)} required disabled={saving} />
@@ -188,7 +195,7 @@ export default function AdminNewProductView() {
                 <select
                   value={form.categoryId}
                   onChange={(e) => {
-                    set('categoryId', Number(e.target.value));
+                    set('categoryId', e.target.value as unknown as number);
                     set('subcategoryId', undefined);
                   }}
                   disabled={saving || catsLoading}
@@ -210,7 +217,7 @@ export default function AdminNewProductView() {
                   <Field label="Subcategory">
                     <select
                       value={form.subcategoryId ?? ''}
-                      onChange={(e) => set('subcategoryId', e.target.value ? Number(e.target.value) : undefined)}
+                      onChange={(e) => set('subcategoryId', e.target.value ? (e.target.value as unknown as number) : undefined)}
                       disabled={saving}
                       style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                     >
@@ -222,9 +229,21 @@ export default function AdminNewProductView() {
                   </Field>
                 );
               })()}
+              
               <Field label="Brand">
-                <Input value={form.brand} onChange={(e) => set('brand', e.target.value)} disabled={saving} />
+                <select
+                  value={form.brandId ?? ''}
+                  onChange={(e) => set('brandId', e.target.value ? (e.target.value as unknown as number) : undefined)}
+                  disabled={saving || catsLoading}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                >
+                  <option value="">— None —</option>
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
               </Field>
+              
               <Field label="Material">
                 <Input value={form.material} onChange={(e) => set('material', e.target.value)} disabled={saving} />
               </Field>
@@ -240,88 +259,44 @@ export default function AdminNewProductView() {
             </Field>
 
             {/* Images upload */}
-            <Field label="Images (optional)">
-              <label
-                style={{
-                  display:         'flex',
-                  flexDirection:   'column',
-                  alignItems:      'center',
-                  justifyContent:  'center',
-                  gap:             '0.375rem',
-                  padding:         '1.25rem',
-                  border:          '2px dashed var(--border)',
-                  borderRadius:    '0.5rem',
-                  cursor:          saving ? 'not-allowed' : 'pointer',
-                  backgroundColor: 'var(--surface-muted)',
-                  fontSize:        '0.8rem',
-                  color:           'var(--on-surface-muted)',
-                }}
-              >
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V19a1 1 0 001 1h16a1 1 0 001-1v-2.5M16 8l-4-4-4 4M12 4v12" />
-                </svg>
-                {images.length === 0
-                  ? 'Click to upload images'
-                  : `${images.length} file${images.length > 1 ? 's' : ''} selected`}
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  disabled={saving}
-                  style={{ display: 'none' }}
-                  onChange={(e) => setImages(Array.from(e.target.files ?? []))}
-                />
-              </label>
-              {images.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  {images.map((file, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        position:        'relative',
-                        width:           '4rem',
-                        height:          '4rem',
-                        borderRadius:    '0.375rem',
-                        overflow:        'hidden',
-                        border:          '1px solid var(--border)',
-                        backgroundColor: 'var(--surface-muted)',
-                      }}
+            <div>
+              <label style={labelStyle}>Images (optional)</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {/* Preview thumbnails of selected files */}
+                {images.map((file, i) => (
+                  <div
+                    key={i}
+                    style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button
+                      type="button"
+                      onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                      disabled={saving}
+                      style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      aria-label="Remove image"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
-                        style={{
-                          position:        'absolute',
-                          top:             '2px',
-                          right:           '2px',
-                          width:           '1.1rem',
-                          height:          '1.1rem',
-                          borderRadius:    '9999px',
-                          backgroundColor: 'rgba(0,0,0,0.55)',
-                          color:           '#fff',
-                          border:          'none',
-                          cursor:          'pointer',
-                          fontSize:        '0.65rem',
-                          lineHeight:      1,
-                          display:         'flex',
-                          alignItems:      'center',
-                          justifyContent:  'center',
-                        }}
-                        aria-label="Remove image"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Field>
+                      &times;
+                    </button>
+                  </div>
+                ))}
+                {/* Upload-more box */}
+                <label
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
+                >
+                  +
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={saving}
+                    style={{ display: 'none' }}
+                    onChange={(e) => setImages((prev) => [...prev, ...Array.from(e.target.files ?? [])])}
+                  />
+                </label>
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: '1.5rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
                 <input type="checkbox" checked={form.isActive} onChange={(e) => set('isActive', e.target.checked)} disabled={saving} />
@@ -352,7 +327,7 @@ export default function AdminNewProductView() {
                 {variants.map((v, i) => (
                   <div
                     key={v.id}
-                    className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,2fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2"
+                    className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2"
                     style={{ borderTop: i > 0 ? '1px dashed var(--border)' : undefined, paddingTop: i > 0 ? '1rem' : undefined }}
                   >
                     <Field label="Size">

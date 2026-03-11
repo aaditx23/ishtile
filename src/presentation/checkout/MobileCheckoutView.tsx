@@ -117,6 +117,7 @@ interface MobileCheckoutViewProps {
   submitting:     boolean;
   codConfirmed:   boolean;
   canSubmit:      boolean;
+  shippingCost:   number;
   patchFields:    (partial: Partial<ShippingFields>) => void;
   handleAddressPick: (partial: Partial<ShippingFields> | null) => void;
   handlePromoApply:  (result: PromoValidationDto, code: string) => void;
@@ -135,6 +136,7 @@ export default function MobileCheckoutView({
   submitting,
   codConfirmed,
   canSubmit,
+  shippingCost,
   patchFields,
   handleAddressPick,
   handlePromoApply,
@@ -143,7 +145,7 @@ export default function MobileCheckoutView({
   onSubmit,
 }: MobileCheckoutViewProps) {
   const promoDiscount = promoResult?.discountAmount ?? 0;
-  const total = (cart?.subtotal ?? 0) - promoDiscount;
+  const total = (cart?.subtotal ?? 0) - promoDiscount + shippingCost;
 
   if (cartLoading) {
     return (
@@ -198,7 +200,7 @@ export default function MobileCheckoutView({
 
         {/* Order summary */}
         <Section title="Order Summary">
-          <OrderReview cart={cart} promoDiscount={promoDiscount} />
+          <OrderReview cart={cart} promoDiscount={promoDiscount} shippingCost={shippingCost} />
         </Section>
 
         {/* Promo */}

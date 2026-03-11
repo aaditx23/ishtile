@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -64,7 +65,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
             variant="ghost"
             className="w-full justify-start text-white hover:bg-white/10 h-auto px-3 py-3"
           >
-            <Link href="/login">
+            <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
               <span className="text-[0.85rem] font-semibold uppercase tracking-[0.1em]">
                 Login
               </span>

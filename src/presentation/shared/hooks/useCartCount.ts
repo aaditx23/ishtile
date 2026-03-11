@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiClient } from '@/infrastructure/api/apiClient';
-import { ENDPOINTS } from '@/infrastructure/api/endpoints';
-import type { GetCartResponse } from '@/shared/types/api.types';
+import { cartRepository } from '@/lib/di';
 
 /**
  * Returns the live cart item count.
@@ -15,20 +13,21 @@ export function useCartCount(): number {
   useEffect(() => {
     let cancelled = false;
 
-    const fetchCount = () => {
-      apiClient
-        .get<GetCartResponse>(ENDPOINTS.cart.root)
-        .then((res) => {
-          if (!cancelled) setCount(res.data.totalItems ?? 0);
-        })
-        .catch(() => {
-          // Unauthenticated or network error — silently keep 0
-        });
+    const fetchCount = async () => {
+      try {
+        const cart = await cartRepository.getCart();
+        if (!cancelled) {
+          setCount(cart.totalItems);
+        }
+      } catch {
+        // Unauthenticated or error — keep 0
+        if (!cancelled) setCount(0);
+      }
     };
 
-    fetchCount();
+    void fetchCount();
 
-    const handleCartUpdate = () => fetchCount();
+    const handleCartUpdate = () => { void fetchCount(); };
     window.addEventListener('CART_UPDATED', handleCartUpdate);
 
     return () => {
