@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -41,10 +43,9 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
         minWidth:        'unset',
         aspectRatio:     '3/4',
         backgroundColor: bg,
-        outline:         selected ? '2px solid var(--brand-gold)' : '2px solid transparent',
-        borderRadius:    '0.75rem',
+        outline:         selected ? '2px solid var(--brand-gold)' : 'none',
       }}
-      className="transition-all duration-200 hover:brightness-105 hover:scale-[1.01]"
+      className="border border-input transition-all duration-200 hover:brightness-105 hover:shadow-md"
       aria-pressed={selected}
       aria-label={`Filter by ${label}`}
     >
@@ -81,18 +82,92 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
 // ── Selector ──────────────────────────────────────────────────────────────────
 
 export default function CategorySelector({ categories, selected, onSelect }: CategorySelectorProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(false);
+
+  const checkScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeft(scrollLeft > 10);
+    setShowRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const ref = scrollRef.current;
+    if (ref) {
+      ref.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      return () => {
+        ref.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, [categories]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const scrollAmount = 300;
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <div style={{ overflowX: 'auto', padding: 'clamp(1rem, 4vw, 2rem) clamp(1rem, 5vw, 3rem)' }}>
-      <div style={{ display: 'flex', gap: 'clamp(0.4rem, 2vw, 1rem)', width: 'max-content' }}>
-        {categories.map((cat) => (
-          <CategoryCard
-            key={String(cat.value)}
-            {...cat}
-            selected={cat.value === selected}
-            onClick={() => onSelect(cat.value)}
-          />
-        ))}
+    <div style={{ position: 'relative', padding: 'clamp(2rem, 5vw, 3.5rem) 0' }}>
+      {/* Left scroll button */}
+      {showLeft && (
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft size={20} className="text-gray-800" />
+        </button>
+      )}
+
+      {/* Right scroll button */}
+      {showRight && (
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
+          aria-label="Scroll right"
+        >
+          <ChevronRight size={20} className="text-gray-800" />
+        </button>
+      )}
+
+      {/* Scrollable container */}
+      <div
+        ref={scrollRef}
+        style={{
+          overflowX: 'auto',
+          overflowY: 'visible',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          padding: '0.75rem clamp(1rem, 5vw, 3rem)',
+        }}
+        className="hide-scrollbar"
+      >
+        <div style={{ display: 'flex', gap: 'clamp(0.4rem, 2vw, 1rem)', justifyContent: 'center', minWidth: 'max-content' }}>
+          {categories.map((cat) => (
+            <CategoryCard
+              key={String(cat.value)}
+              {...cat}
+              selected={cat.value === selected}
+              onClick={() => onSelect(cat.value)}
+            />
+          ))}
+        </div>
       </div>
+
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }

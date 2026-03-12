@@ -58,8 +58,8 @@ export default function HomeBrandSection({ products, brands }: HomeBrandSectionP
 
   const sectionTitle =
     selectedBrand === 'all'
-      ? 'Featured Brands'
-      : `${selectorItems.find((b) => b.value === selectedBrand)?.label ?? ''}`;
+      ? 'All Featured brand products'
+      : `Featured ${selectorItems.find((b) => b.value === selectedBrand)?.label ?? ''} products`;
 
   const viewAllSlug =
     selectedBrand === 'all'
