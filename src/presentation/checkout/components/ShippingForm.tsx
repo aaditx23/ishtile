@@ -46,7 +46,6 @@ const selectStyle: React.CSSProperties = {
   width:           '100%',
   padding:         '0.5rem 0.75rem',
   border:          '1px solid var(--border)',
-  borderRadius:    '0.5rem',
   backgroundColor: 'var(--surface)',
   color:           'var(--on-surface)',
   fontSize:        '0.875rem',

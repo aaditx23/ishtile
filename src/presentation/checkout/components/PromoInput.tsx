@@ -50,7 +50,6 @@ export default function PromoInput({ subtotal, onApply, onRemove, appliedCode, d
           alignItems:      'center',
           justifyContent:  'space-between',
           padding:         '0.75rem 1rem',
-          borderRadius:    '0.5rem',
           border:          '1px solid var(--brand-gold)',
           backgroundColor: 'rgba(165,140,105,0.08)',
         }}

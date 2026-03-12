@@ -34,7 +34,7 @@ function QttStepper({
   return (
     <div style={{
       display: 'flex', alignItems: 'center',
-      border: '1.5px solid var(--border)', borderRadius: '9999px',
+      border: '1.5px solid var(--border)',
       overflow: 'hidden', backgroundColor: 'var(--surface)',
     }}>
       <button
@@ -93,7 +93,6 @@ function MobileCartItem({ item, onUpdate }: { item: CartItem; onUpdate: () => vo
         display:         'flex',
         gap:             '0.875rem',
         backgroundColor: 'var(--surface)',
-        borderRadius:    '0.875rem',
         padding:         '0.875rem',
         border:          '1px solid var(--border)',
         opacity:         loading ? 0.5 : 1,
@@ -103,7 +102,7 @@ function MobileCartItem({ item, onUpdate }: { item: CartItem; onUpdate: () => vo
       {/* Image */}
       <Link href={`/products/${item.variantSku}`} style={{ flexShrink: 0 }}>
         <div style={{
-          width: '96px', height: '128px', borderRadius: '0.625rem',
+          width: '96px', height: '128px',
           overflow: 'hidden', backgroundColor: 'var(--surface-variant)', position: 'relative',
         }}>
           {item.imageUrl ? (
@@ -147,7 +146,7 @@ function MobileCartItem({ item, onUpdate }: { item: CartItem; onUpdate: () => vo
               disabled={loading}
               aria-label="Remove item"
               style={{
-                width: '2rem', height: '2rem', borderRadius: '50%',
+                width: '2rem', height: '2rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 backgroundColor: 'rgba(239,68,68,0.09)', border: 'none',
                 cursor: 'pointer', color: '#ef4444', flexShrink: 0,
@@ -172,16 +171,16 @@ function MobileCartSkeleton() {
           key={i}
           style={{
             display: 'flex', gap: '0.875rem',
-            backgroundColor: 'var(--surface)', borderRadius: '0.875rem',
+            backgroundColor: 'var(--surface)',
             padding: '0.875rem', border: '1px solid var(--border)',
           }}
         >
-          <Skeleton style={{ width: '96px', height: '128px', borderRadius: '0.625rem', flexShrink: 0 }} />
+          <Skeleton style={{ width: '96px', height: '128px', flexShrink: 0 }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.25rem' }}>
             <Skeleton style={{ height: '0.875rem', width: '70%' }} />
             <Skeleton style={{ height: '0.75rem', width: '40%' }} />
             <Skeleton style={{ height: '0.75rem', width: '25%' }} />
-            <Skeleton style={{ height: '2.1rem', width: '7.5rem', marginTop: 'auto', borderRadius: '9999px' }} />
+            <Skeleton style={{ height: '2.1rem', width: '7.5rem', marginTop: 'auto' }} />
           </div>
         </div>
       ))}
@@ -213,7 +212,7 @@ function CheckoutBar({ cart }: { cart: Cart }) {
         href="/checkout"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '0.75rem 2rem', borderRadius: '9999px',
+          padding: '0.75rem 2rem',
           backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
           fontWeight: 700, fontSize: '0.875rem', letterSpacing: '0.08em',
           textTransform: 'uppercase', textDecoration: 'none', whiteSpace: 'nowrap',
@@ -270,7 +269,7 @@ export default function MobileCartView({
         <Link
           href="/products"
           style={{
-            padding: '0.75rem 2.25rem', borderRadius: '9999px',
+            padding: '0.75rem 2.25rem',
             backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
             fontWeight: 700, fontSize: '0.875rem', letterSpacing: '0.08em',
             textTransform: 'uppercase', textDecoration: 'none',
@@ -294,7 +293,7 @@ export default function MobileCartView({
             <p style={{ fontWeight: 700, fontSize: '1.05rem' }}>My Cart</p>
             <span style={{
               backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
-              borderRadius: '9999px', fontSize: '0.7rem', fontWeight: 700,
+              fontSize: '0.7rem', fontWeight: 700,
               padding: '0.1rem 0.55rem', lineHeight: 1.7,
             }}>
               {cart.totalItems}
@@ -311,7 +310,7 @@ export default function MobileCartView({
 
         {/* Order summary */}
         <div style={{
-          marginTop: '1.25rem', borderRadius: '0.875rem',
+          marginTop: '1.25rem',
           border: '1px solid var(--border)', backgroundColor: 'var(--surface)',
           padding: '1rem 1.25rem',
         }}>
