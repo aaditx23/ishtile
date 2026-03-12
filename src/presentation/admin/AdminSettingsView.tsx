@@ -8,6 +8,7 @@ import MobileAdminSettingsView from './MobileAdminSettingsView';
 import { Input } from '@/components/ui/input';
 import { getAdminSettings, updateAdminSettings } from '@/application/adminSettings/adminSettings';
 import type { AdminSettings } from '@/domain/adminSettings/adminSettings.entity';
+import { Button } from '@/components/ui/button';
 
 const primaryBtn: React.CSSProperties = {
   display: 'inline-flex',
@@ -147,9 +148,9 @@ export default function AdminSettingsView() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                    <button type="submit" disabled={saving} style={primaryBtn}>
+                    <Button type="submit" disabled={saving} style={primaryBtn}>
                       {saving ? 'Saving...' : 'Save Settings'}
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   createCategory,
   updateCategory,
@@ -79,18 +80,26 @@ export function ActionLinks({
 }) {
   return (
     <div style={{ display: 'flex', gap: '0.75rem' }}>
-      <button onClick={onEdit} style={actionBtn('#A58C69')}>Edit</button>
-      <button
+      <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: '#A58C69', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={deleteDisabled ? undefined : onDelete}
         title={deleteDisabled ? 'Cannot delete: category has products' : undefined}
+        disabled={deleteDisabled}
         style={{
-          ...actionBtn(deleteDisabled ? 'var(--on-surface-muted)' : 'var(--destructive)'),
+          fontSize: '0.72rem',
+          fontWeight: 600,
+          color: deleteDisabled ? 'var(--on-surface-muted)' : 'var(--destructive)',
+          background: 'none',
+          padding: 0,
+          height: 'auto',
           cursor: deleteDisabled ? 'not-allowed' : 'pointer',
           opacity: deleteDisabled ? 0.45 : 1,
         }}
       >
         Delete
-      </button>
+      </Button>
     </div>
   );
 }
@@ -161,25 +170,22 @@ export function CategoryRow({
         {/* Row 2: Slug + Subcategory count + Expand button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.slug}</span>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setOpen(o => !o)}
             style={{
               padding: '0.2rem 0.5rem',
-              border: '1px solid var(--border)',
-              borderRadius: '0.375rem',
               backgroundColor: open ? 'var(--surface-variant)' : 'transparent',
               fontSize: '0.7rem',
               fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
+              height: 'auto',
               color: 'var(--on-surface-muted)',
               flexShrink: 0,
             }}
           >
             {cat.subcategories.length} sub {open ? '▲' : '▼'}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -214,23 +220,23 @@ export function CategoryRow({
               </div>
             </div>
           ))}
-          <button
+          <Button
+            variant="ghost"
             onClick={() => onAddSub(cat)}
             style={{
               display: 'block',
               width: '100%',
-              textAlign: 'left',
+              justifyContent: 'flex-start',
               padding: '0.6rem 1rem',
               fontSize: '0.7rem',
               fontWeight: 600,
               color: 'var(--brand-gold)',
               background: 'none',
-              border: 'none',
-              cursor: 'pointer',
+              height: 'auto',
             }}
           >
             + Add Subcategory
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -335,8 +341,8 @@ export function CategoryModal({
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-          <button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</button>
-          <button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</button>
+          <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
     </Overlay>
@@ -421,8 +427,8 @@ export function SubcategoryModal({
           <Input value={form.description} onChange={e => set('description', e.target.value)} disabled={saving} />
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-          <button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</button>
-          <button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</button>
+          <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
     </Overlay>

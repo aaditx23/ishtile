@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { Input } from '@/components/ui/input';
 
@@ -97,9 +98,9 @@ export default function MobileAdminSettingsView({
               />
             </div>
 
-            <button type="submit" disabled={saving} style={primaryBtn}>
+            <Button type="submit" disabled={saving} style={primaryBtn}>
               {saving ? 'Saving...' : 'Save Settings'}
-            </button>
+            </Button>
           </form>
         </div>
       )}

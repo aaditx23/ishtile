@@ -36,17 +36,16 @@ export default function MobileOrderHistoryView({
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {loading ? (
           [1, 2, 3].map((i) => (
-            <Skeleton key={i} style={{ height: '4rem', borderRadius: '0.75rem' }} />
+            <Skeleton key={i} style={{ height: '4rem' }} />
           ))
         ) : orders.length === 0 ? (
           <div
             style={{
-              padding:      '3rem',
-              textAlign:    'center',
-              border:       '1px dashed var(--border)',
-              borderRadius: '0.75rem',
-              color:        'var(--on-surface-muted)',
-              fontSize:     '0.9rem',
+              padding:   '3rem',
+              textAlign: 'center',
+              border:    '1px dashed var(--border)',
+              color:     'var(--on-surface-muted)',
+              fontSize:  '0.9rem',
             }}
           >
             You haven&apos;t placed any orders yet.
@@ -60,7 +59,6 @@ export default function MobileOrderHistoryView({
                 display:         'block',
                 textDecoration:  'none',
                 border:          '1px solid var(--border)',
-                borderRadius:    '0.75rem',
                 padding:         '1rem 1.25rem',
                 backgroundColor: 'var(--surface)',
                 transition:      'all 0.2s ease',

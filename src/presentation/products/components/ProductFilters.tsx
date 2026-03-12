@@ -3,6 +3,8 @@
 import { useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FiSearch, FiX, FiChevronRight } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import type { Category } from '@/domain/category/category.entity';
 
 interface ProductFiltersProps {
@@ -19,37 +21,28 @@ const SECTION_LABEL: React.CSSProperties = {
   display:       'block',
 };
 
-const FILTER_ROW: React.CSSProperties = {
-  display:        'flex',
-  alignItems:     'center',
-  gap:            '0.5rem',
-  padding:        '0.35rem 0.5rem',
-  borderRadius:   '0.5rem',
-  cursor:         'pointer',
-  fontSize:       '0.8rem',
-  fontWeight:     500,
-  color:          'var(--on-surface)',
-  background:     'none',
-  border:         'none',
-  width:          '100%',
-  textAlign:      'left',
-  transition:     'background 0.12s',
-};
-
 function FilterRow({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={onClick}
       style={{
-        ...FILTER_ROW,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.35rem 0.5rem',
+        height: 'auto',
+        fontSize: '0.8rem',
+        fontWeight: active ? 700 : 500,
+        color: active ? 'var(--on-surface)' : 'var(--on-surface-muted)',
         backgroundColor: active ? 'var(--surface-variant)' : 'transparent',
-        color:           active ? 'var(--on-surface)' : 'var(--on-surface-muted)',
-        fontWeight:      active ? 700 : 500,
+        justifyContent: 'flex-start',
+        width: '100%',
       }}
     >
       {active && <FiChevronRight size={12} style={{ color: 'var(--brand-gold)', flexShrink: 0 }} />}
       {label}
-    </button>
+    </Button>
   );
 }
 
@@ -104,11 +97,10 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
         <span style={SECTION_LABEL}>Search</span>
         <div style={{ display: 'flex', gap: '0.4rem' }}>
           <div style={{ position: 'relative', flex: 1 }}>
-            <FiSearch
-              size={14}
-              style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)', pointerEvents: 'none' }}
-            />
-            <input
+            <div style={{ position: 'absolute', left: '0.65rem', top: '0', bottom: '0', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+              <FiSearch size={14} style={{ color: 'var(--on-surface-muted)' }} />
+            </div>
+            <Input
               ref={searchRef}
               key={active.search}
               defaultValue={active.search}
@@ -117,33 +109,30 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
                 if (e.key === 'Enter') push({ search: (e.target as HTMLInputElement).value });
               }}
               style={{
-                width:           '100%',
-                padding:         '0.45rem 1.75rem 0.45rem 2rem',
-                borderRadius:    '0.5rem',
-                border:          '1px solid var(--border)',
-                fontSize:        '0.8rem',
-                backgroundColor: 'var(--surface)',
-                color:           'inherit',
-                outline:         'none',
+                paddingLeft: '2rem',
+                paddingRight: '1.75rem',
+                fontSize: '0.8rem',
               }}
             />
             {active.search && (
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => push({ search: '' })}
-                style={{ position: 'absolute', right: '0.4rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
+                style={{ position: 'absolute', right: '0.4rem', top: '50%', transform: 'translateY(-50%)', height: 'auto', width: 'auto', padding: 0 }}
                 aria-label="Clear search"
               >
                 <FiX size={13} />
-              </button>
+              </Button>
             )}
           </div>
-          <button
+          <Button
             onClick={() => push({ search: searchRef.current?.value ?? '' })}
-            style={{ padding: '0.45rem 0.65rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            style={{ height: '36px', width: 'auto', padding: '0 0.65rem' }}
             aria-label="Search"
           >
             <FiSearch size={13} />
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -181,33 +170,29 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
       <section>
         <span style={SECTION_LABEL}>Brand</span>
         <div style={{ position: 'relative' }}>
-          <input
+          <Input
             ref={brandRef}
-            key={active.brand} // re-mount when cleared
+            key={active.brand}
             defaultValue={active.brand}
-            placeholder="e.g. Levi’s"
+            placeholder="e.g. Levi's"
             onKeyDown={(e) => {
               if (e.key === 'Enter') push({ brand: (e.target as HTMLInputElement).value.trim() });
             }}
             style={{
-              width:           '100%',
-              padding:         '0.45rem 1.75rem 0.45rem 0.65rem',
-              borderRadius:    '0.5rem',
-              border:          '1px solid var(--border)',
-              fontSize:        '0.8rem',
-              backgroundColor: 'var(--surface)',
-              color:           'inherit',
-              outline:         'none',
+              paddingRight: '1.75rem',
+              fontSize: '0.8rem',
             }}
           />
           {active.brand && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => push({ brand: '' })}
-              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
+              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', height: 'auto', width: 'auto', padding: 0 }}
               aria-label="Clear brand"
             >
               <FiX size={13} />
-            </button>
+            </Button>
           )}
         </div>
       </section>
@@ -239,22 +224,20 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
 
       {/* ── Clear all ─────────────────────────────────────────────────── */}
       {(active.search || active.category || active.brand || active.featured || !active.activeOnly) && (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => router.push('/products')}
           style={{
-            fontSize:    '0.75rem',
-            fontWeight:  600,
-            color:       'var(--brand-gold)',
-            background:  'none',
-            border:      'none',
-            cursor:      'pointer',
-            padding:     0,
-            textAlign:   'left',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            color: 'var(--brand-gold)',
+            padding: 0,
+            height: 'auto',
             letterSpacing: '0.02em',
           }}
         >
           × Clear all filters
-        </button>
+        </Button>
       )}
     </aside>
   );

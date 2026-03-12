@@ -45,7 +45,7 @@ export default function ProductDetailInteractive({ product }: ProductDetailInter
             <span style={{ fontSize: '1rem', color: 'var(--on-surface-muted)', textDecoration: 'line-through' }}>
               {fmt(compareAt)}
             </span>
-            <Badge style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
+            <Badge className="rounded-none" style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
               {Math.round((1 - price / compareAt) * 100)}% OFF
             </Badge>
           </>

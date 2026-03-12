@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { createBrand, updateBrand, uploadBrandImage } from '@/application/brand/adminBrand';
 import type { Brand } from '@/domain/brand/brand.entity';
+import { Button } from '@/components/ui/button';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -242,8 +243,8 @@ export function BrandModal({
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-          <button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</button>
-          <button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</button>
+          <Button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</Button>
+          <Button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
     </Overlay>

@@ -33,7 +33,6 @@ export default function AdminMobileNavStrip({ activeHref }: AdminMobileNavStripP
               gap:             '0.3rem',
               padding:         '0.4rem 0.75rem',
               border:          '1px solid var(--border)',
-              borderRadius:    '0.5rem',
               fontSize:        '0.75rem',
               fontWeight:      active ? 700 : 500,
               textDecoration:  'none',

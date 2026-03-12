@@ -21,7 +21,6 @@ export default function OrderStatusBadge({ status, size = 'md' }: OrderStatusBad
       style={{
         display:       'inline-flex',
         alignItems:    'center',
-        borderRadius:  '9999px',
         padding:       size === 'sm' ? '0.15rem 0.6rem' : '0.25rem 0.75rem',
         fontSize,
         fontWeight:    700,

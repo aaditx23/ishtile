@@ -38,7 +38,7 @@ export default function OrderDetailView() {
 
         </div>
 
-        {loading && <Skeleton style={{ height: '12rem', borderRadius: '0.75rem' }} />}
+        {loading && <Skeleton style={{ height: '12rem' }} />}
         {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Order not found.</p>}
         {order && <OrderSummaryCard order={order} />}
       </div>

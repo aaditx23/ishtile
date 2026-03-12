@@ -192,18 +192,18 @@ export const IshtileTypography: TypographyScheme = {
 };
 
 // ─── Radius (shared across themes) ───────────────────────────────────────────
-// Larger values = the modern rounded feel from the product card
+// P&Co Sharp Design: All elements have sharp corners (no rounding)
 
 export const IshtileRadius: RadiusScheme = {
   none: '0px',
-  xs: '4px',
-  sm: '8px',
-  md: '12px',
-  lg: '16px',
-  xl: '20px',
-  '2xl': '24px',
-  '3xl': '32px',
-  full: '9999px',
+  xs: '0px',
+  sm: '0px',
+  md: '0px',
+  lg: '0px',
+  xl: '0px',
+  '2xl': '0px',
+  '3xl': '0px',
+  full: '0px',
 };
 
 // ─── Theme objects (analogous to lightColorScheme / darkColorScheme in Compose)
