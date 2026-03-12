@@ -10,7 +10,6 @@ export default function StatCard({ label, value, sub, accent }: StatCardProps) {
     <div
       style={{
         border:          '1px solid var(--border)',
-        borderRadius:    '0.75rem',
         padding:         '1.25rem',
         backgroundColor: accent ? 'var(--brand-dark)' : 'var(--surface)',
         color:           accent ? 'var(--on-primary)' : 'inherit',

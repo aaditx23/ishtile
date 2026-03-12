@@ -41,7 +41,6 @@ export default function MobileAdminPromosView({
               alignItems:      'center',
               gap:             '0.25rem',
               padding:         '0.45rem 0.875rem',
-              borderRadius:    '0.5rem',
               backgroundColor: 'var(--primary)',
               color:           'var(--on-primary)',
               border:          'none',
@@ -58,7 +57,7 @@ export default function MobileAdminPromosView({
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} style={{ height: '6rem', borderRadius: '0.75rem' }} />
+              <Skeleton key={i} style={{ height: '6rem' }} />
             ))}
           </div>
         ) : promos.length === 0 ? (
@@ -72,7 +71,6 @@ export default function MobileAdminPromosView({
                 key={p.id}
                 style={{
                   border:          '1px solid var(--border)',
-                  borderRadius:    '0.75rem',
                   padding:         '0.875rem 1rem',
                   backgroundColor: 'var(--surface)',
                   display:         'flex',
@@ -92,7 +90,6 @@ export default function MobileAdminPromosView({
                       textTransform:   'uppercase',
                       letterSpacing:   '0.05em',
                       padding:         '0.2rem 0.5rem',
-                      borderRadius:    '9999px',
                       backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2',
                       color:           p.isActive ? '#065f46' : '#991b1b',
                       flexShrink:      0,

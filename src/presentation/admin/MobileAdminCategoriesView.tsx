@@ -46,10 +46,10 @@ export default function MobileAdminCategoriesView({
       {/* Category list */}
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4.5rem', borderRadius: '0.625rem' }} />)}
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4.5rem' }} />)}
         </div>
       ) : cats.length === 0 ? (
-        <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
+        <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
           No categories yet.
         </div>
       ) : (

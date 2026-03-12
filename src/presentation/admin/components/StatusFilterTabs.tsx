@@ -34,7 +34,6 @@ export default function StatusFilterTabs() {
             onClick={() => setStatus(value)}
             style={{
               padding:         '0.35rem 0.875rem',
-              borderRadius:    '9999px',
               fontSize:        '0.75rem',
               fontWeight:      active ? 700 : 500,
               border:          active ? 'none' : '1px solid var(--border)',

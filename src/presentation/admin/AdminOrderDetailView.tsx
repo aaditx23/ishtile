@@ -17,7 +17,6 @@ import type { Order } from '@/domain/order/order.entity';
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
   padding:         '1.25rem',
   backgroundColor: 'var(--surface)',
 };
@@ -98,7 +97,7 @@ export default function AdminOrderDetailView() {
 
             {loading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {[1, 2].map((i) => <Skeleton key={i} style={{ height: '12rem', borderRadius: '0.75rem' }} />)}
+                {[1, 2].map((i) => <Skeleton key={i} style={{ height: '12rem' }} />)}
               </div>
             )}
             {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Order not found.</p>}

@@ -122,7 +122,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
             style={{
               width:        '100%',
               padding:      '0.5rem 0.75rem',
-              borderRadius: '0.5rem',
               border:       '1px solid var(--border)',
               fontSize:     '0.875rem',
               backgroundColor: 'var(--surface)',
@@ -147,7 +146,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
                 style={{
                   width:        '100%',
                   padding:      '0.5rem 0.75rem',
-                  borderRadius: '0.5rem',
                   border:       '1px solid var(--border)',
                   fontSize:     '0.875rem',
                   backgroundColor: 'var(--surface)',
@@ -171,7 +169,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
             style={{
               width:        '100%',
               padding:      '0.5rem 0.75rem',
-              borderRadius: '0.5rem',
               border:       '1px solid var(--border)',
               fontSize:     '0.875rem',
               backgroundColor: 'var(--surface)',
@@ -199,7 +196,6 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           style={{
             width:        '100%',
             padding:      '0.5rem 0.75rem',
-            borderRadius: '0.5rem',
             border:       '1px solid var(--border)',
             fontSize:     '0.875rem',
             resize:       'vertical',
@@ -222,7 +218,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           {imageUrls.map((url, i) => (
             <div
               key={url}
-              style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}
+              style={{ position: 'relative', width: '4rem', height: '4rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`Product image ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -230,7 +226,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
                 type="button"
                 onClick={() => setImageUrls((prev) => prev.filter((_, idx) => idx !== i))}
                 disabled={saving}
-                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 aria-label="Remove image"
               >
                 &times;
@@ -241,7 +237,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           {newFiles.map((file, i) => (
             <div
               key={`new-${i}`}
-              style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
+              style={{ position: 'relative', width: '4rem', height: '4rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -249,7 +245,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
                 type="button"
                 onClick={() => setNewFiles((prev) => prev.filter((_, idx) => idx !== i))}
                 disabled={saving}
-                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 aria-label="Remove new image"
               >
                 &times;
@@ -258,7 +254,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
           ))}
           {/* Upload-more box */}
           <label
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
           >
             +
             <input

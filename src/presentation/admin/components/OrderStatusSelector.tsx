@@ -51,7 +51,6 @@ export default function OrderStatusSelector({ orderId, currentStatus, onStatusCh
               disabled={saving}
               style={{
                 padding:         '0.35rem 0.875rem',
-                borderRadius:    '9999px',
                 fontSize:        '0.75rem',
                 fontWeight:      active ? 700 : 500,
                 border:          active ? '2px solid var(--brand-gold)' : '1px solid var(--border)',
@@ -77,7 +76,6 @@ export default function OrderStatusSelector({ orderId, currentStatus, onStatusCh
         style={{
           width:        '100%',
           padding:      '0.5rem 0.75rem',
-          borderRadius: '0.5rem',
           border:       '1px solid var(--border)',
           fontSize:     '0.8rem',
           resize:       'vertical',

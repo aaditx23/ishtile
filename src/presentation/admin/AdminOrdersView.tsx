@@ -56,7 +56,6 @@ function BatchProgressModal({
       <div
         style={{
           backgroundColor: 'var(--surface)',
-          borderRadius:    '0.875rem',
           padding:         '1.75rem',
           width:           '100%',
           maxWidth:        '28rem',
@@ -76,11 +75,10 @@ function BatchProgressModal({
         </div>
 
         {/* progress bar */}
-        <div style={{ height: 4, borderRadius: 4, background: 'var(--border)', overflow: 'hidden' }}>
+        <div style={{ height: 4, background: 'var(--border)', overflow: 'hidden' }}>
           <div
             style={{
               height:     '100%',
-              borderRadius: 4,
               width:      `${(done / total) * 100}%`,
               background: 'var(--brand-gold, #b8860b)',
               transition: 'width 0.3s',
@@ -98,7 +96,6 @@ function BatchProgressModal({
                 alignItems:     'center',
                 gap:            '0.6rem',
                 padding:        '0.35rem 0.6rem',
-                borderRadius:   '0.4rem',
                 background:     item.status === 'downloading' ? 'var(--surface-muted, #f4f4f4)' : 'transparent',
                 fontSize:       '0.82rem',
               }}
@@ -131,7 +128,6 @@ function BatchProgressModal({
               background:   'var(--brand-dark, #000)',
               color:        '#fff',
               border:       'none',
-              borderRadius: '0.5rem',
               fontWeight:   600,
               fontSize:     '0.82rem',
               cursor:       'pointer',
@@ -257,7 +253,6 @@ export default function AdminOrdersView() {
                     background:   'var(--brand-dark, #000)',
                     color:        '#fff',
                     border:       'none',
-                    borderRadius: '0.5rem',
                     fontWeight:   600,
                     fontSize:     '0.8rem',
                     cursor:       'pointer',
@@ -275,13 +270,12 @@ export default function AdminOrdersView() {
 
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.5rem' }} />)}
+                {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem' }} />)}
               </div>
             ) : (
               <div
                 style={{
                   border:          '1px solid var(--border)',
-                  borderRadius:    '0.75rem',
                   overflowX:       'auto',
                   backgroundColor: 'var(--surface)',
                 }}

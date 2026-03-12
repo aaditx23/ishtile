@@ -9,7 +9,6 @@ const fmtD = (s: string) => new Date(s).toLocaleDateString('en-GB', { day: 'nume
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
   padding:         '1rem',
   backgroundColor: 'var(--surface)',
 };
@@ -42,7 +41,6 @@ function BarChart({ data }: { data: DailySalesDto[] }) {
                 minWidth:        '6px',
                 maxWidth:        '24px',
                 height:          `${Math.max(pct * 100, 2)}%`,
-                borderRadius:    '2px 2px 0 0',
                 backgroundColor: 'var(--brand-gold)',
                 opacity:         0.85,
               }}
@@ -94,11 +92,11 @@ export default function MobileAdminAnalyticsView({
         {loading ? (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              {[1, 2].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)}
+              {[1, 2].map((i) => <Skeleton key={i} style={{ height: '5rem' }} />)}
             </div>
-            <Skeleton style={{ height: '9rem', borderRadius: '0.75rem' }} />
-            <Skeleton style={{ height: '12rem', borderRadius: '0.75rem' }} />
-            <Skeleton style={{ height: '10rem', borderRadius: '0.75rem' }} />
+            <Skeleton style={{ height: '9rem' }} />
+            <Skeleton style={{ height: '12rem' }} />
+            <Skeleton style={{ height: '10rem' }} />
           </>
         ) : (
           <>

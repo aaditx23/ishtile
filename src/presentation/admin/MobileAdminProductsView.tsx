@@ -24,7 +24,6 @@ const newProductBtn: React.CSSProperties = {
   display:         'inline-flex',
   alignItems:      'center',
   padding:         '0.4rem 0.9rem',
-  borderRadius:    '0.5rem',
   backgroundColor: 'var(--primary)',
   color:           'var(--on-primary)',
   textDecoration:  'none',
@@ -78,7 +77,6 @@ export default function MobileAdminProductsView({
             paddingTop:      '0.45rem',
             paddingBottom:   '0.45rem',
             border:          '1px solid var(--border)',
-            borderRadius:    '0.5rem',
             backgroundColor: 'var(--surface)',
             color:           'var(--on-surface)',
             fontSize:        '0.8rem',
@@ -97,10 +95,10 @@ export default function MobileAdminProductsView({
       {/* Product cards */}
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.625rem' }} />)}
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '5rem' }} />)}
         </div>
       ) : products.length === 0 ? (
-        <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
+        <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
           No products found.
         </div>
       ) : (
@@ -110,7 +108,6 @@ export default function MobileAdminProductsView({
               key={product.id}
               style={{
                 border:          '1px solid var(--border)',
-                borderRadius:    '0.625rem',
                 padding:         '0.75rem 1rem',
                 backgroundColor: 'var(--surface)',
               }}
@@ -118,12 +115,12 @@ export default function MobileAdminProductsView({
               {/* Row 1: Image + Name + Status + Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
                 {product.imageUrls && product.imageUrls.length > 0 ? (
-                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+                  <div style={{ width: '2.5rem', height: '2.5rem', overflow: 'hidden', flexShrink: 0 }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={product.imageUrls[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
-                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--surface-variant)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'var(--on-surface-muted)', flexShrink: 0 }}>
+                  <div style={{ width: '2.5rem', height: '2.5rem', backgroundColor: 'var(--surface-variant)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'var(--on-surface-muted)', flexShrink: 0 }}>
                     —
                   </div>
                 )}
@@ -137,7 +134,6 @@ export default function MobileAdminProductsView({
                       fontWeight:      700,
                       textTransform:   'uppercase',
                       padding:         '0.15rem 0.4rem',
-                      borderRadius:    '9999px',
                       backgroundColor: product.isActive ? '#d1fae5' : '#fee2e2',
                       color:           product.isActive ? '#065f46' : '#991b1b',
                       flexShrink:      0,

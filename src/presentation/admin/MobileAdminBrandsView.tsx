@@ -41,7 +41,7 @@ export default function MobileAdminBrandsView({
       {/* Brand list */}
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4rem', borderRadius: '0.625rem' }} />)}
+          {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '4rem' }} />)}
         </div>
       ) : brands.length === 0 ? (
         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', padding: '2rem', textAlign: 'center' }}>

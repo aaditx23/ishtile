@@ -15,7 +15,6 @@ const primaryBtn: React.CSSProperties = {
   alignItems: 'center',
   gap: '0.375rem',
   padding: '0.5rem 1.25rem',
-  borderRadius: '0.5rem',
   backgroundColor: 'var(--primary)',
   color: 'var(--on-primary)',
   border: 'none',
@@ -111,7 +110,6 @@ export default function AdminSettingsView() {
               <div
                 style={{
                   border: '1px solid var(--border)',
-                  borderRadius: '0.75rem',
                   padding: '1.5rem',
                   backgroundColor: 'var(--surface)',
                 }}

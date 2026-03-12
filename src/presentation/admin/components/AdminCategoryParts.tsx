@@ -39,14 +39,14 @@ export const labelStyle: React.CSSProperties = {
 
 export const primaryBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center',
-  padding: '0.5rem 1.25rem', borderRadius: '0.5rem',
+  padding: '0.5rem 1.25rem',
   backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
   border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
 };
 
 export const outlineBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center',
-  padding: '0.5rem 1.25rem', borderRadius: '0.5rem',
+  padding: '0.5rem 1.25rem',
   backgroundColor: 'transparent', color: 'var(--on-surface)',
   border: '1px solid var(--border)', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
 };
@@ -62,7 +62,7 @@ export function Badge({ active }: { active: boolean }) {
   return (
     <span style={{
       fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem',
-      borderRadius: '9999px', textTransform: 'uppercase',
+      textTransform: 'uppercase',
       backgroundColor: active ? '#d1fae5' : '#fee2e2',
       color: active ? '#065f46' : '#991b1b',
     }}>
@@ -112,7 +112,7 @@ export function Overlay({ children, onClose }: { children: React.ReactNode; onCl
       zIndex: 1000, padding: '1rem',
     }}>
       <div style={{
-        backgroundColor: 'var(--surface)', borderRadius: '0.75rem',
+        backgroundColor: 'var(--surface)',
         padding: '1.5rem', width: '100%', maxWidth: '34rem',
         maxHeight: '90vh', overflowY: 'auto',
       }}>
@@ -143,13 +143,13 @@ export function CategoryRow({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: '1px solid var(--border)', borderRadius: '0.625rem', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
+    <div style={{ border: '1px solid var(--border)', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
       {/* Main category card */}
       <div style={{ padding: '0.75rem 1rem' }}>
         {/* Row 1: Image + Name + Status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
           {cat.imageUrl && (
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+            <div style={{ width: '2.5rem', height: '2.5rem', overflow: 'hidden', flexShrink: 0 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={cat.imageUrl} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
@@ -326,14 +326,14 @@ export function CategoryModal({
           <label style={labelStyle}>Image</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {(imageFile || form.imageUrl) && (
-              <div style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: '4rem', height: '4rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imageFile ? URL.createObjectURL(imageFile) : form.imageUrl} alt="Category" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <button type="button" onClick={() => { setImageFile(null); set('imageUrl', ''); }} disabled={saving} style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Remove image">&times;</button>
+                <button type="button" onClick={() => { setImageFile(null); set('imageUrl', ''); }} disabled={saving} style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Remove image">&times;</button>
               </div>
             )}
             {!imageFile && !form.imageUrl && (
-              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}>
+              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}>
               +
               <input type="file" accept="image/*" disabled={saving} style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) setImageFile(f); }} />
             </label>

@@ -99,7 +99,6 @@ export default function AdminProductsView() {
                   alignItems:      'center',
                   gap:             '0.375rem',
                   padding:         '0.5rem 1rem',
-                  borderRadius:    '0.5rem',
                   backgroundColor: 'var(--primary)',
                   color:           'var(--on-primary)',
                   textDecoration:  'none',
@@ -132,7 +131,6 @@ export default function AdminProductsView() {
                   paddingTop:      '0.45rem',
                   paddingBottom:   '0.45rem',
                   border:          '1px solid var(--border)',
-                  borderRadius:    '0.5rem',
                   backgroundColor: 'var(--surface)',
                   color:           'var(--on-surface)',
                   fontSize:        '0.8rem',
@@ -152,13 +150,12 @@ export default function AdminProductsView() {
 
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem', borderRadius: '0.5rem' }} />)}
+                {[1,2,3,4,5].map((i) => <Skeleton key={i} style={{ height: '3.25rem' }} />)}
               </div>
             ) : (
               <div
                 style={{
                   border:          '1px solid var(--border)',
-                  borderRadius:    '0.75rem',
                   overflowX:       'auto',
                   overflowY:       'visible',
                   backgroundColor: 'var(--surface)',
@@ -199,12 +196,12 @@ export default function AdminProductsView() {
                         >
                           <td style={{ padding: '0.75rem 1rem' }}>
                             {product.imageUrls && product.imageUrls.length > 0 ? (
-                              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden' }}>
+                              <div style={{ width: '2.5rem', height: '2.5rem', overflow: 'hidden' }}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={product.imageUrls[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               </div>
                             ) : (
-                              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--surface-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>—</div>
+                              <div style={{ width: '2.5rem', height: '2.5rem', backgroundColor: 'var(--surface-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>—</div>
                             )}
                           </td>
                           <td style={{ padding: '0.75rem 1rem' }}>
@@ -228,7 +225,6 @@ export default function AdminProductsView() {
                                 textTransform:   'uppercase',
                                 letterSpacing:   '0.05em',
                                 padding:         '0.2rem 0.5rem',
-                                borderRadius:    '9999px',
                                 backgroundColor: product.isActive ? '#d1fae5' : '#fee2e2',
                                 color:           product.isActive ? '#065f46' : '#991b1b',
                               }}

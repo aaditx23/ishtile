@@ -159,7 +159,7 @@ function VariantRow({
           value={form.size}
           onChange={(e) => setForm((p) => ({ ...p, size: e.target.value }))}
           disabled={busy || disabled}
-          style={{ width: '100%', padding: '0.45rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+          style={{ width: '100%', padding: '0.45rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
         >
           <option value="" disabled hidden>Size</option>
           {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
@@ -221,7 +221,7 @@ function VariantRow({
             type="button"
             onClick={onDelete}
             disabled={!canDelete || busy || disabled}
-            style={{ height: '40px', width: '100%', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
+            style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
           >
             Remove
           </button>
@@ -314,7 +314,6 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
         <div 
           style={{ 
             border: '2px dashed var(--border)', 
-            borderRadius: '0.5rem', 
             padding: '1rem', 
             backgroundColor: 'var(--surface-muted)' 
           }}
@@ -328,7 +327,7 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
                 value={newForm.size}
                 onChange={(e) => setNewForm((p) => ({ ...p, size: e.target.value }))}
                 disabled={busy}
-                style={{ width: '100%', padding: '0.45rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                style={{ width: '100%', padding: '0.45rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
               >
                 <option value="" disabled hidden>Size</option>
                 {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
@@ -389,7 +388,6 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
             alignSelf:      'flex-start',
             background:     'none',
             border:         '2px dashed var(--border)',
-            borderRadius:   '0.5rem',
             padding:        '0.5rem 1.25rem',
             fontSize:       '0.875rem',
             fontWeight:     600,

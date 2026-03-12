@@ -22,7 +22,6 @@ const primaryBtn: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   padding: '0.5rem 1rem',
-  borderRadius: '0.5rem',
   backgroundColor: 'var(--primary)',
   color: 'var(--on-primary)',
   border: 'none',
@@ -64,7 +63,6 @@ export default function MobileAdminSettingsView({
         <div
           style={{
             border: '1px solid var(--border)',
-            borderRadius: '0.625rem',
             padding: '1rem',
             backgroundColor: 'var(--surface)',
           }}
