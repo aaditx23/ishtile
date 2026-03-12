@@ -61,7 +61,6 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
             gap:             '0.625rem',
             padding:         '0.75rem 1rem',
             border:          `1px solid ${selected === addr.id ? 'var(--primary)' : 'var(--border)'}`,
-            borderRadius:    '0.625rem',
             cursor:          disabled ? 'not-allowed' : 'pointer',
             backgroundColor: selected === addr.id ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'var(--surface)',
           }}
@@ -80,7 +79,7 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
               {addr.name && <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{addr.name}</span>}
               {addr.phone && <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>{addr.phone}</span>}
               {addr.isDefault && (
-                <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: '9999px', backgroundColor: '#d1fae5', color: '#065f46', textTransform: 'uppercase' }}>
+                <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.1rem 0.45rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)', textTransform: 'uppercase' }}>
                   Default
                 </span>
               )}
@@ -103,7 +102,6 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
           gap:             '0.625rem',
           padding:         '0.75rem 1rem',
           border:          `1px solid ${selected === 'new' ? 'var(--primary)' : 'var(--border)'}`,
-          borderRadius:    '0.625rem',
           cursor:          disabled ? 'not-allowed' : 'pointer',
           backgroundColor: selected === 'new' ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'var(--surface)',
           fontSize:        '0.875rem',

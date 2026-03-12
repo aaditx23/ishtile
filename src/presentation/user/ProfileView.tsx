@@ -76,7 +76,6 @@ export default function ProfileView() {
           <div
             style={{
               border:          '1px solid var(--border)',
-              borderRadius:    '0.75rem',
               padding:         '1.5rem',
               backgroundColor: 'var(--surface)',
             }}
@@ -88,7 +87,6 @@ export default function ProfileView() {
           <div
             style={{
               border:          '1px solid var(--border)',
-              borderRadius:    '0.75rem',
               padding:         '1.5rem',
               backgroundColor: 'var(--surface)',
             }}

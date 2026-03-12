@@ -28,7 +28,7 @@ export default function ProductMeta({ product, hidePrice, displayPrice, compareA
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Category badge */}
       {categoryName && (
-        <Badge variant="secondary" style={{ width: 'fit-content', borderRadius: '9999px', padding: '0.4rem 1rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+        <Badge variant="secondary" className="border border-input rounded-none" style={{ width: 'fit-content', padding: '0.4rem 1rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.7rem' }}>
           {categoryName}
         </Badge>
       )}
@@ -49,7 +49,7 @@ export default function ProductMeta({ product, hidePrice, displayPrice, compareA
               <span style={{ fontSize: '1rem', color: 'var(--on-surface-muted)', textDecoration: 'line-through' }}>
                 {fmt(compareAt)}
               </span>
-              <Badge style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
+              <Badge className="rounded-none" style={{ backgroundColor: 'var(--brand-gold)', color: 'var(--on-primary)', fontSize: '0.7rem' }}>
                 {Math.round((1 - price / compareAt) * 100)}% OFF
               </Badge>
             </>

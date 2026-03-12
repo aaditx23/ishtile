@@ -33,7 +33,6 @@ export default function UserMobileNavStrip({ activeHref }: UserMobileNavStripPro
               alignItems:      'center',
               padding:         '0.4rem 0.875rem',
               border:          '1px solid var(--border)',
-              borderRadius:    '0.5rem',
               fontSize:        '0.78rem',
               fontWeight:      active ? 700 : 500,
               textDecoration:  'none',

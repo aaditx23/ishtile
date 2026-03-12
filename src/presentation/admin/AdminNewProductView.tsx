@@ -179,7 +179,7 @@ export default function AdminNewProductView() {
               <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>New Product</h1>
             </div>
 
-            <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', padding: '1.5rem', backgroundColor: 'var(--surface)' }}>
+            <div style={{ border: '1px solid var(--border)', padding: '1.5rem', backgroundColor: 'var(--surface)' }}>
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Field label="Name">
@@ -199,7 +199,7 @@ export default function AdminNewProductView() {
                     set('subcategoryId', undefined);
                   }}
                   disabled={saving || catsLoading}
-                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                 >
                   {catsLoading
                     ? <option>Loading…</option>
@@ -219,7 +219,7 @@ export default function AdminNewProductView() {
                       value={form.subcategoryId ?? ''}
                       onChange={(e) => set('subcategoryId', e.target.value ? (e.target.value as unknown as number) : undefined)}
                       disabled={saving}
-                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                     >
                       <option value="">— None —</option>
                       {subcats.map((s) => (
@@ -235,7 +235,7 @@ export default function AdminNewProductView() {
                   value={form.brandId ?? ''}
                   onChange={(e) => set('brandId', e.target.value ? (e.target.value as unknown as number) : undefined)}
                   disabled={saving || catsLoading}
-                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                 >
                   <option value="">— None —</option>
                   {brands.map((b) => (
@@ -254,7 +254,7 @@ export default function AdminNewProductView() {
                 onChange={(e) => set('description', e.target.value)}
                 rows={3}
                 disabled={saving}
-                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'inherit', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', resize: 'vertical', backgroundColor: 'var(--surface)', color: 'inherit', fontFamily: 'inherit' }}
               />
             </Field>
 
@@ -266,7 +266,7 @@ export default function AdminNewProductView() {
                 {images.map((file, i) => (
                   <div
                     key={i}
-                    style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
+                    style={{ position: 'relative', width: '4rem', height: '4rem', overflow: 'hidden', border: '2px dashed var(--primary)', flexShrink: 0 }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={URL.createObjectURL(file)} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -274,7 +274,7 @@ export default function AdminNewProductView() {
                       type="button"
                       onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
                       disabled={saving}
-                      style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       aria-label="Remove image"
                     >
                       &times;
@@ -283,7 +283,7 @@ export default function AdminNewProductView() {
                 ))}
                 {/* Upload-more box */}
                 <label
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}
                 >
                   +
                   <input
@@ -318,7 +318,7 @@ export default function AdminNewProductView() {
                   type="button"
                   onClick={() => setVariants(p => [...p, { id: Date.now(), size: '', color: '', sku: form.sku ? `${form.sku}-NEW` : '', price: '', compareAtPrice: '', quantity: '' }])}
                   disabled={saving}
-                  style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.4rem 0.75rem', borderRadius: '0.5rem', backgroundColor: 'var(--surface-variant)', border: '1px solid var(--border)', cursor: 'pointer' }}
+                  style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.4rem 0.75rem', backgroundColor: 'var(--surface-variant)', border: '1px solid var(--border)', cursor: 'pointer' }}
                 >
                   + Add Variant
                 </button>
@@ -336,7 +336,7 @@ export default function AdminNewProductView() {
                         onChange={(e) => setV(v.id, 'size', e.target.value)}
                         required
                         disabled={saving}
-                        style={{ width: '100%', padding: '0.45rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                        style={{ width: '100%', padding: '0.45rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
                       >
                         <option value="" disabled hidden>Size</option>
                         {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map(sz => (
@@ -368,7 +368,7 @@ export default function AdminNewProductView() {
                         type="button"
                         onClick={() => removeV(v.id)}
                         disabled={saving || variants.length === 1}
-                        style={{ height: '40px', width: '100%', padding: '0 0.5rem', borderRadius: '0.375rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
+                        style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid var(--error-bg)', backgroundColor: 'var(--error-bg)', color: 'var(--on-error)', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
                       >
                         Remove
                       </button>

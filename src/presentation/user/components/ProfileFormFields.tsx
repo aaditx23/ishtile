@@ -46,7 +46,7 @@ export default function ProfileFormFields({
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {[1, 2, 3, 4, 5].map((i) => (
-          <Skeleton key={i} style={{ height: '2.5rem', borderRadius: '0.5rem' }} />
+          <Skeleton key={i} style={{ height: '2.5rem' }} />
         ))}
       </div>
     );
@@ -58,7 +58,7 @@ export default function ProfileFormFields({
     <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Read-only info */}
       {user.role === 'admin' && (
-        <div style={{ padding: '0.5rem 0.75rem', borderRadius: '0.5rem', backgroundColor: 'var(--surface-muted)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--brand-gold)' }}>
+        <div style={{ padding: '0.5rem 0.75rem', backgroundColor: 'var(--surface-muted)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--brand-gold)' }}>
           ADMIN
         </div>
       )}

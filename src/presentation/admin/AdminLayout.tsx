@@ -24,7 +24,6 @@ export function AdminSidebarNav({ activeHref }: { activeHref: string }) {
     <nav
       style={{
         border:          '1px solid var(--border)',
-        borderRadius:    '0.75rem',
         padding:         '0.5rem',
         backgroundColor: 'var(--surface)',
         display:         'flex',
@@ -55,7 +54,6 @@ export function AdminSidebarNav({ activeHref }: { activeHref: string }) {
               alignItems:      'center',
               gap:             '0.625rem',
               padding:         '0.6rem 0.875rem',
-              borderRadius:    '0.5rem',
               fontSize:        '0.875rem',
               fontWeight:      isActive ? 700 : 500,
               textDecoration:  'none',

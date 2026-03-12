@@ -34,7 +34,7 @@ export default function MobileAdminOrdersView({ orders, loading, pagination }: M
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} style={{ height: '5.5rem', borderRadius: '0.75rem' }} />
+              <Skeleton key={i} style={{ height: '5.5rem' }} />
             ))}
           </div>
         ) : orders.length === 0 ? (
@@ -52,7 +52,6 @@ export default function MobileAdminOrdersView({ orders, loading, pagination }: M
                 <div
                   style={{
                     border:          '1px solid var(--border)',
-                    borderRadius:    '0.75rem',
                     padding:         '0.875rem 1rem',
                     backgroundColor: 'var(--surface)',
                     display:         'flex',

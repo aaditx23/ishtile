@@ -68,6 +68,22 @@ export interface ColorScheme {
   // ── Semantic ──────────────────────────────────────────────────────────────
   destructive: string;
   onDestructive: string;
+  /** Background for error / destructive state containers. */
+  errorBg: string;
+  /** Text/icon colour inside errorBg containers. */
+  onError: string;
+  /** Background for success / active state containers. */
+  successBg: string;
+  /** Text/icon colour inside successBg containers. */
+  onSuccess: string;
+  /** Background for warning / pending state containers. */
+  warningBg: string;
+  /** Text/icon colour inside warningBg containers. */
+  onWarning: string;
+  /** Background for info / in-progress state containers. */
+  infoBg: string;
+  /** Text/icon colour inside infoBg containers. */
+  onInfo: string;
 
   // ── Product-specific ──────────────────────────────────────────────────────
   /** Warm neutral bg behind product images. */
@@ -111,9 +127,9 @@ export const LightColorScheme: ColorScheme = {
   brandGoldDeep: '#684F40',
 
   // Surfaces
-  background: '#FFFFFF',
-  surface: '#FAFAFA',
-  surfaceVariant: '#F0EDE8',
+  background: '#ffeddc',
+  surface: '#f8e8d7',
+  surfaceVariant: '#ebd4b8',
 
   // Content
   onBackground: '#1C1A19',
@@ -123,23 +139,31 @@ export const LightColorScheme: ColorScheme = {
 
   // Primary
   primary: '#1C1A19',
-  onPrimary: '#FAFAFA',
+  onPrimary: '#ffeddc',
 
   // Accent
   accent: '#A58C69',
-  onAccent: '#FFFFFF',
+  onAccent: '#ffeddc',
 
   // Components
-  border: '#E5E0D8',
-  input: '#E5E0D8',
+  border: '#E5D8C8',
+  input: '#E5D8C8',
   ring: '#A58C69',
 
   // Semantic
   destructive: '#DC2626',
-  onDestructive: '#FFFFFF',
+  onDestructive: '#ffeddc',
+  errorBg: '#fee2e2',
+  onError: '#991b1b',
+  successBg: '#d1fae5',
+  onSuccess: '#065f46',
+  warningBg: '#fef3c7',
+  onWarning: '#b45309',
+  infoBg: '#e0e7ff',
+  onInfo: '#3730a3',
 
   // Product
-  productBg: '#F0EDE8',
+  productBg: '#F0E2CC',
 };
 
 // ─── Dark ColorScheme ─────────────────────────────────────────────────────────
@@ -177,7 +201,15 @@ export const DarkColorScheme: ColorScheme = {
 
   // Semantic
   destructive: '#EF4444',
-  onDestructive: '#FFFFFF',
+  onDestructive: '#fff4ef',
+  errorBg: '#450a0a',
+  onError: '#fca5a5',
+  successBg: '#052e16',
+  onSuccess: '#6ee7b7',
+  warningBg: '#451a03',
+  onWarning: '#fde68a',
+  infoBg: '#1e1b4b',
+  onInfo: '#a5b4fc',
 
   // Product
   productBg: '#2A2826',
@@ -192,18 +224,18 @@ export const IshtileTypography: TypographyScheme = {
 };
 
 // ─── Radius (shared across themes) ───────────────────────────────────────────
-// Larger values = the modern rounded feel from the product card
+// P&Co Sharp Design: All elements have sharp corners (no rounding)
 
 export const IshtileRadius: RadiusScheme = {
   none: '0px',
-  xs: '4px',
-  sm: '8px',
-  md: '12px',
-  lg: '16px',
-  xl: '20px',
-  '2xl': '24px',
-  '3xl': '32px',
-  full: '9999px',
+  xs: '0px',
+  sm: '0px',
+  md: '0px',
+  lg: '0px',
+  xl: '0px',
+  '2xl': '0px',
+  '3xl': '0px',
+  full: '0px',
 };
 
 // ─── Theme objects (analogous to lightColorScheme / darkColorScheme in Compose)
@@ -263,6 +295,14 @@ export function toCssVars(theme: Theme): Record<string, string> {
     // ── Semantic ───────────────────────────────────────────────
     '--destructive': c.destructive,
     '--on-destructive': c.onDestructive,
+    '--error-bg': c.errorBg,
+    '--on-error': c.onError,
+    '--success-bg': c.successBg,
+    '--on-success': c.onSuccess,
+    '--warning-bg': c.warningBg,
+    '--on-warning': c.onWarning,
+    '--info-bg': c.infoBg,
+    '--on-info': c.onInfo,
 
     // ── Product ────────────────────────────────────────────────
     '--product-bg': c.productBg,

@@ -8,13 +8,13 @@ import MobileAdminSettingsView from './MobileAdminSettingsView';
 import { Input } from '@/components/ui/input';
 import { getAdminSettings, updateAdminSettings } from '@/application/adminSettings/adminSettings';
 import type { AdminSettings } from '@/domain/adminSettings/adminSettings.entity';
+import { Button } from '@/components/ui/button';
 
 const primaryBtn: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: '0.375rem',
   padding: '0.5rem 1.25rem',
-  borderRadius: '0.5rem',
   backgroundColor: 'var(--primary)',
   color: 'var(--on-primary)',
   border: 'none',
@@ -110,7 +110,6 @@ export default function AdminSettingsView() {
               <div
                 style={{
                   border: '1px solid var(--border)',
-                  borderRadius: '0.75rem',
                   padding: '1.5rem',
                   backgroundColor: 'var(--surface)',
                 }}
@@ -147,9 +146,9 @@ export default function AdminSettingsView() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                    <button type="submit" disabled={saving} style={primaryBtn}>
+                    <Button type="submit" disabled={saving} style={primaryBtn}>
                       {saving ? 'Saving...' : 'Save Settings'}
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>

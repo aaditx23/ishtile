@@ -15,6 +15,7 @@ import {
 import type { UserAddressDto, CreateAddressInput } from '@/shared/types/api.types';
 import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types/api.types';
 import type { User } from '@/domain/user/user.entity';
+import { Button } from '@/components/ui/button';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ const labelStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   width: '100%', padding: '0.5rem 0.75rem',
-  border: '1px solid var(--border)', borderRadius: '0.5rem',
+  border: '1px solid var(--border)',
   backgroundColor: 'var(--surface)', color: 'var(--on-surface)',
   fontSize: '0.875rem', outline: 'none', cursor: 'pointer',
 };
@@ -170,7 +171,7 @@ function AddressModal({
     >
       <div
         style={{
-          backgroundColor: 'var(--surface)', borderRadius: '0.75rem',
+          backgroundColor: 'var(--surface)',
           padding: '1.5rem', width: '100%', maxWidth: '32rem',
           maxHeight: '90vh', overflowY: 'auto',
         }}
@@ -240,12 +241,12 @@ function AddressModal({
           </label>
 
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-            <button type="button" onClick={onClose} disabled={saving} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', fontSize: '0.875rem' }}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={saving}>
               Cancel
-            </button>
-            <button type="submit" disabled={saving} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', border: 'none', backgroundColor: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 700 }}>
+            </Button>
+            <Button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -266,7 +267,7 @@ function AddressCard({
 }) {
   return (
     <div style={{
-      border: '1px solid var(--border)', borderRadius: '0.625rem',
+      border: '1px solid var(--border)',
       padding: '0.875rem 1rem', backgroundColor: 'var(--surface)',
       display: 'flex', flexDirection: 'column', gap: '0.25rem',
     }}>
@@ -274,7 +275,7 @@ function AddressCard({
         {address.name && <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{address.name}</span>}
         {address.phone && <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>{address.phone}</span>}
         {address.isDefault && (
-          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', backgroundColor: '#d1fae5', color: '#065f46', textTransform: 'uppercase' }}>
+          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)', textTransform: 'uppercase' }}>
             Default
           </span>
         )}
@@ -286,8 +287,8 @@ function AddressCard({
         {address.postalCode ? ` - ${address.postalCode}` : ''}
       </p>
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
-        <button onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: '#A58C69', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Edit</button>
-        <button onClick={onDelete} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--destructive)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Delete</button>
+        <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
+        <Button variant="ghost" size="sm" onClick={onDelete} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--destructive)', background: 'none', padding: 0, height: 'auto' }}>Delete</Button>
       </div>
     </div>
   );
@@ -335,12 +336,12 @@ export default function AddressManager({ user }: { user?: User | null }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h2 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Saved Addresses</h2>
-        <button
+        <Button
           onClick={() => setModal('new')}
-          style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0.4rem 0.875rem', borderRadius: '0.5rem', border: 'none', backgroundColor: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer' }}
+          style={{ fontSize: '0.8rem', fontWeight: 700, padding: '0.4rem 0.875rem', border: 'none', backgroundColor: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer' }}
         >
           + Add Address
-        </button>
+        </Button>
       </div>
 
       {loading ? (

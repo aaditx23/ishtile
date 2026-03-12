@@ -63,10 +63,9 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
       {/* ── Search row ────────────────────────────────────────────── */}
       <div style={{ display: 'flex', gap: '0.5rem' }}>
         <div style={{ position: 'relative', flex: 1 }}>
-          <FiSearch
-            size={14}
-            style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)', pointerEvents: 'none' }}
-          />
+          <div style={{ position: 'absolute', left: '0.65rem', top: '0', bottom: '0', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+            <FiSearch size={14} style={{ color: 'var(--on-surface-muted)' }} />
+          </div>
           <input
             ref={searchRef}
             key={active.search}
@@ -78,7 +77,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
             style={{
               width:           '100%',
               padding:         '0.5rem 2rem 0.5rem 2.1rem',
-              borderRadius:    '0.5rem',
               border:          '1px solid var(--border)',
               fontSize:        '0.825rem',
               backgroundColor: 'var(--surface)',
@@ -97,7 +95,7 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
         </div>
         <button
           onClick={() => push({ search: searchRef.current?.value ?? '' })}
-          style={{ padding: '0.5rem 0.65rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+          style={{ padding: '0.5rem 0.65rem', border: '1px solid var(--border)', background: 'var(--primary)', color: 'var(--on-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
           aria-label="Search"
         >
           <FiSearch size={14} />
@@ -111,7 +109,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
             alignItems:      'center',
             gap:             '0.35rem',
             padding:         '0.5rem 0.75rem',
-            borderRadius:    '0.5rem',
             border:          `1px solid ${filtersOpen || extraCount > 0 ? 'var(--brand-gold)' : 'var(--border)'}`,
             background:      filtersOpen ? 'var(--surface-variant)' : 'var(--surface)',
             fontSize:        '0.8rem',
@@ -132,9 +129,8 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
                 justifyContent:  'center',
                 width:           '1.1rem',
                 height:          '1.1rem',
-                borderRadius:    '50%',
                 backgroundColor: 'var(--brand-gold)',
-                color:           '#fff',
+                color:           'var(--on-primary)',
                 fontSize:        '0.65rem',
                 fontWeight:      700,
               }}
@@ -153,7 +149,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
             flexDirection:   'column',
             gap:             '0.75rem',
             padding:         '0.875rem',
-            borderRadius:    '0.625rem',
             border:          '1px solid var(--border)',
             backgroundColor: 'var(--surface)',
           }}
@@ -196,7 +191,6 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
                 style={{
                   width:           '100%',
                   padding:         '0.45rem 1.75rem 0.45rem 0.65rem',
-                  borderRadius:    '0.5rem',
                   border:          '1px solid var(--border)',
                   fontSize:        '0.8rem',
                   backgroundColor: 'var(--background)',
@@ -262,10 +256,9 @@ function Pill({ label, active, onClick }: { label: string; active: boolean; onCl
       style={{
         flexShrink:      0,
         padding:         '0.3rem 0.75rem',
-        borderRadius:    '999px',
         border:          `1px solid ${active ? 'var(--brand-gold)' : 'var(--border)'}`,
         backgroundColor: active ? 'var(--brand-gold)' : 'var(--surface)',
-        color:           active ? '#fff' : 'var(--on-surface)',
+        color:           active ? 'var(--on-primary)' : 'var(--on-surface)',
         fontSize:        '0.78rem',
         fontWeight:      active ? 700 : 500,
         cursor:          'pointer',

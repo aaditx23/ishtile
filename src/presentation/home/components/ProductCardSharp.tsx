@@ -3,20 +3,15 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import FavouriteButton from '@/presentation/products/[slug]/components/FavouriteButton';
 
 export interface ProductCardData {
-  id: number; // Domain ID type (Convex ID string at runtime)
+  id: number;
   slug: string;
   name: string;
   category: string;
-  /** Domain category ID — used for client-side filtering */
   categoryId?: number;
-  /** Domain brand ID — used for client-side filtering */
   brandId?: number | null;
   price: number;
   salePrice?: number;
@@ -27,7 +22,7 @@ function isValidUrl(src: string) {
   try { new URL(src); return true; } catch { return false; }
 }
 
-export default function ProductCard({ product }: { product: ProductCardData }) {
+export default function ProductCardSharp({ product }: { product: ProductCardData }) {
   const validImages = product.images.filter(isValidUrl);
   const [imgIndex, setImgIndex] = useState(0);
   const hasMany = validImages.length > 1;
@@ -45,10 +40,10 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
-    <Card className="overflow-hidden group" style={{ gap: 0, padding: 0 }}>
+    <div className="overflow-hidden group border border-input bg-surface transition-shadow hover:shadow-md">
       {/* Image area */}
-      <CardContent className="relative p-0" style={{ lineHeight: 0, display: 'flex', flexDirection: 'column' }}>
-        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-product-bg leading-none">
+      <div className="relative" style={{ lineHeight: 0 }}>
+        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-product-bg leading-none">
           {/* Sliding strip */}
           <div
             className="absolute top-0 left-0 h-full flex transition-transform duration-300 ease-in-out"
@@ -67,7 +62,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             ))}
           </div>
 
-          {/* Slide arrows — only when multiple images */}
+          {/* Slide arrows */}
           {hasMany && (
             <>
               <button
@@ -87,7 +82,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             </>
           )}
 
-          {/* Dot indicators */}
+          {/* Rectangle indicators (sharp corners) */}
           {hasMany && (
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
               {validImages.map((_, i) => (
@@ -95,7 +90,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
                   key={i}
                   style={{
                     display: 'block',
-                    width: i === imgIndex ? '16px' : '6px',
+                    width: i === imgIndex ? '20px' : '6px',
                     height: '6px',
                     backgroundColor: i === imgIndex ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                     transition: 'width 0.2s ease',
@@ -106,41 +101,48 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </Link>
 
-        {/* Favourite */}
+        {/* Favourite - sharp bookmark style */}
         <div className="absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <FavouriteButton productId={product.id} compact />
         </div>
-      </CardContent>
+      </div>
 
       {/* Info */}
-      <CardFooter className="flex flex-col items-start gap-1 sm:gap-1.5 p-2 sm:p-4" style={{padding:'1rem'}}>
-        {/* Name + category badge in one row */}
-        <div className="flex items-start justify-between w-full gap-1.5" style={{alignContent:'center'}}>
-          <Link href={`/products/${product.slug}`} className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-semibold leading-snug hover:underline underline-offset-2 line-clamp-2">
-              {product.name}
-            </p>
-          </Link>
-          <Badge variant="secondary" className="hidden sm:inline-flex text-xs px-2 py-0.5 shrink-0" style={{padding:'0.25rem'}}>
+      <div className="flex flex-col items-start gap-2 p-3 sm:p-4">
+        {/* Name */}
+        <Link href={`/products/${product.slug}`} className="w-full">
+          <h3 className="text-sm sm:text-base font-medium leading-tight hover:underline underline-offset-2 line-clamp-2 text-neutral-900">
+            {product.name}
+          </h3>
+        </Link>
+
+        {/* Category badge - sharp corners */}
+        <div className="flex items-center gap-2 w-full">
+          <span className="text-xs px-2 py-1 bg-surface-variant text-on-surface-muted border border-input">
             {product.category}
-          </Badge>
+          </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        {/* Price */}
+        <div className="flex items-center gap-2 w-full">
           {formattedSalePrice ? (
             <>
-              <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--brand-gold)' }}>{formattedPrice}</span>
-              <span className="text-xs text-muted-foreground line-through">{formattedSalePrice}</span>
+              <span className="text-sm sm:text-base font-semibold text-neutral-900">{formattedPrice}</span>
+              <span className="text-xs text-neutral-500 line-through">{formattedSalePrice}</span>
             </>
           ) : (
-            <span className="text-xs sm:text-sm font-medium">{formattedPrice}</span>
+            <span className="text-sm sm:text-base font-semibold text-neutral-900">{formattedPrice}</span>
           )}
         </div>
 
-        <Button variant="outline" size="sm" className="w-full mt-1 text-xs sm:text-sm h-7 sm:h-9" asChild>
-          <Link href={`/products/${product.slug}`}>View</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+        {/* View button - sharp corners, minimal style */}
+        <Link 
+          href={`/products/${product.slug}`}
+          className="w-full text-center text-xs sm:text-sm font-medium py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-on-primary transition-colors"
+        >
+          VIEW DETAILS
+        </Link>
+      </div>
+    </div>
   );
 }

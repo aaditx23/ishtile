@@ -19,7 +19,7 @@ function DesktopSkeleton() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {[1, 2, 3].map((i) => (
         <div key={i} style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid var(--border)' }}>
-          <Skeleton style={{ width: '88px', height: '117px', borderRadius: '0.5rem', flexShrink: 0 }} />
+          <Skeleton style={{ width: '88px', height: '117px', flexShrink: 0 }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.25rem' }}>
             <Skeleton style={{ height: '0.9rem', width: '60%' }} />
             <Skeleton style={{ height: '0.8rem', width: '30%' }} />

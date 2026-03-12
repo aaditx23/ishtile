@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import MobileFavouritesView from './MobileFavouritesView';
 import { getFavourites } from '@/application/favourite/getFavourites';
@@ -58,11 +59,11 @@ export default function FavouritesView() {
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
               {[1,2,3,4,5,6].map((i) => (
-                <Skeleton key={i} style={{ height: '220px', borderRadius: '0.75rem' }} />
+                <Skeleton key={i} style={{ height: '220px' }} />
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem', color: 'var(--on-surface-muted)', fontSize: '0.9rem' }}>
+            <div style={{ padding: '3rem', textAlign: 'center', border: '1px dashed var(--border)', color: 'var(--on-surface-muted)', fontSize: '0.9rem' }}>
               No saved items yet.
             </div>
           ) : (
@@ -72,7 +73,6 @@ export default function FavouritesView() {
                   key={fav.id}
                   style={{
                     border:          '1px solid var(--border)',
-                    borderRadius:    '0.75rem',
                     overflow:        'hidden',
                     backgroundColor: 'var(--surface)',
                     display:         'flex',
@@ -94,21 +94,20 @@ export default function FavouritesView() {
                       <p style={{ fontSize: '0.8rem', fontWeight: 600, lineHeight: 1.3 }}>{fav.productName}</p>
                     </Link>
                     <p style={{ fontSize: '0.8rem', fontWeight: 700 }}>{fmt(fav.basePrice)}</p>
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleRemove(fav.id)}
                       style={{
-                        marginTop:    'auto',
-                        background:   'none',
-                        border:       '1px solid var(--border)',
-                        borderRadius: '0.375rem',
-                        padding:      '0.3rem 0.5rem',
-                        fontSize:     '0.7rem',
-                        cursor:       'pointer',
-                        color:        'var(--destructive)',
+                        marginTop: 'auto',
+                        fontSize: '0.7rem',
+                        height: 'auto',
+                        padding: '0.3rem 0.5rem',
+                        color: 'var(--destructive)',
                       }}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}

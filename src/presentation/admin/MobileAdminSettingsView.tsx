@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { Input } from '@/components/ui/input';
 
@@ -21,7 +22,6 @@ const primaryBtn: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   padding: '0.5rem 1rem',
-  borderRadius: '0.5rem',
   backgroundColor: 'var(--primary)',
   color: 'var(--on-primary)',
   border: 'none',
@@ -63,7 +63,6 @@ export default function MobileAdminSettingsView({
         <div
           style={{
             border: '1px solid var(--border)',
-            borderRadius: '0.625rem',
             padding: '1rem',
             backgroundColor: 'var(--surface)',
           }}
@@ -97,9 +96,9 @@ export default function MobileAdminSettingsView({
               />
             </div>
 
-            <button type="submit" disabled={saving} style={primaryBtn}>
+            <Button type="submit" disabled={saving} style={primaryBtn}>
               {saving ? 'Saving...' : 'Save Settings'}
-            </button>
+            </Button>
           </form>
         </div>
       )}

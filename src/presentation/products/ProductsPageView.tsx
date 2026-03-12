@@ -20,7 +20,7 @@ function SidebarLoading() {
   return (
     <aside style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.25rem' }}>
       {[140, 100, 120, 80, 90].map((w, i) => (
-        <Skeleton key={i} style={{ height: '1.25rem', width: `${w}px`, borderRadius: '0.375rem' }} />
+        <Skeleton key={i} style={{ height: '1.25rem', width: `${w}px` }} />
       ))}
     </aside>
   );
@@ -89,13 +89,13 @@ function MobileFiltersSkeleton() {
   return (
     <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Skeleton style={{ width: '7rem', height: '1.4rem', borderRadius: '0.375rem' }} />
-        <Skeleton style={{ width: '3rem', height: '1rem', borderRadius: '0.375rem' }} />
+        <Skeleton style={{ width: '7rem', height: '1.4rem' }} />
+        <Skeleton style={{ width: '3rem', height: '1rem' }} />
       </div>
-      <Skeleton style={{ width: '100%', height: '2.25rem', borderRadius: '0.5rem' }} />
+      <Skeleton style={{ width: '100%', height: '2.25rem' }} />
       <div style={{ display: 'flex', gap: '0.4rem' }}>
         {[60, 80, 70, 90, 65].map((w, i) => (
-          <Skeleton key={i} style={{ width: `${w}px`, height: '1.8rem', borderRadius: '999px', flexShrink: 0 }} />
+          <Skeleton key={i} style={{ width: `${w}px`, height: '1.8rem', flexShrink: 0 }} />
         ))}
       </div>
     </div>

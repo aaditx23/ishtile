@@ -18,7 +18,6 @@ import type { Category } from '@/domain/category/category.entity';
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
   padding:         '1.25rem',
   backgroundColor: 'var(--surface)',
 };
@@ -78,8 +77,8 @@ export default function AdminProductEditView() {
 
             {loading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <Skeleton style={{ height: '20rem', borderRadius: '0.75rem' }} />
-                <Skeleton style={{ height: '12rem', borderRadius: '0.75rem' }} />
+                <Skeleton style={{ height: '20rem' }} />
+                <Skeleton style={{ height: '12rem' }} />
               </div>
             )}
             {notFound && !loading && <p style={{ color: 'var(--on-surface-muted)' }}>Product not found.</p>}

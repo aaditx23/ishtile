@@ -291,7 +291,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div
       style={{
         border:       '1px solid var(--border)',
-        borderRadius: '0.75rem',
         padding:      '1.25rem',
         backgroundColor: 'var(--surface)',
       }}
@@ -318,12 +317,12 @@ function CheckoutSkeleton() {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {[80, 52, 52, 52, 52].map((h, i) => (
-          <Skeleton key={i} style={{ width: '100%', height: `${h}px`, borderRadius: '0.5rem' }} />
+          <Skeleton key={i} style={{ width: '100%', height: `${h}px` }} />
         ))}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {[160, 80].map((h, i) => (
-          <Skeleton key={i} style={{ width: '100%', height: `${h}px`, borderRadius: '0.5rem' }} />
+          <Skeleton key={i} style={{ width: '100%', height: `${h}px` }} />
         ))}
       </div>
     </div>

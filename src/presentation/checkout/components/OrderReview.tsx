@@ -30,7 +30,6 @@ export default function OrderReview({ cart, promoDiscount = 0, shippingCost = 0 
               style={{
                 width:           '3rem',
                 height:          '3rem',
-                borderRadius:    '0.375rem',
                 overflow:        'hidden',
                 flexShrink:      0,
                 backgroundColor: 'var(--surface-muted)',

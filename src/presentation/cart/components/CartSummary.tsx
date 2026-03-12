@@ -18,7 +18,6 @@ export default function CartSummary({ cart }: CartSummaryProps) {
     <div
       style={{
         backgroundColor: 'var(--surface)',
-        borderRadius:    '0.75rem',
         border:          '1px solid var(--border)',
         padding:         '1.5rem',
         display:         'flex',

@@ -86,7 +86,6 @@ function PromoFormModal({
       <div
         style={{
           backgroundColor: 'var(--surface)',
-          borderRadius:    '0.75rem',
           padding:         '1.5rem',
           width:           '100%',
           maxWidth:        '32rem',
@@ -109,7 +108,7 @@ function PromoFormModal({
                 value={form.discountType}
                 onChange={(e) => setForm((p) => ({ ...p, discountType: e.target.value as 'percentage' | 'flat' }))}
                 disabled={saving}
-                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', border: '1px solid var(--border)', fontSize: '0.875rem', backgroundColor: 'var(--surface)', color: 'inherit' }}
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="flat">Flat (৳)</option>
@@ -237,7 +236,6 @@ export default function AdminPromosView() {
                   alignItems:      'center',
                   gap:             '0.375rem',
                   padding:         '0.5rem 1rem',
-                  borderRadius:    '0.5rem',
                   backgroundColor: 'var(--primary)',
                   color:           'var(--on-primary)',
                   border:          'none',
@@ -250,7 +248,7 @@ export default function AdminPromosView() {
               </button>
             </div>
 
-            <div style={{ border: '1px solid var(--border)', borderRadius: '0.75rem', overflowX: 'auto', backgroundColor: 'var(--surface)' }}>
+            <div style={{ border: '1px solid var(--border)', overflowX: 'auto', backgroundColor: 'var(--surface)' }}>
               {loading ? (
                 <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>Loading…</p>
               ) : promos.length === 0 ? (
@@ -279,7 +277,7 @@ export default function AdminPromosView() {
                           {p.currentUses}{p.maxTotalUses ? `/${p.maxTotalUses}` : ''}
                         </td>
                         <td style={{ padding: '0.6rem 0.875rem' }}>
-                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2', color: p.isActive ? '#065f46' : '#991b1b', textTransform: 'uppercase' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: p.isActive ? 'var(--success-bg)' : 'var(--error-bg)', color: p.isActive ? 'var(--on-success)' : 'var(--on-error)', textTransform: 'uppercase' }}>
                             {p.isActive ? 'Active' : 'Off'}
                           </span>
                         </td>

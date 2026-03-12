@@ -22,7 +22,6 @@ const fmtD = (s: string) => new Date(s).toLocaleDateString('en-GB', { day: 'nume
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
   padding:         '1.25rem',
   backgroundColor: 'var(--surface)',
 };
@@ -67,7 +66,6 @@ function BarChart({ data }: { data: DailySalesDto[] }) {
                 minWidth:     '8px',
                 maxWidth:     '28px',
                 height:       `${Math.max(pct * 100, 2)}%`,
-                borderRadius: '3px 3px 0 0',
                 backgroundColor: 'var(--brand-gold)',
                 opacity:      0.85,
               }}
@@ -144,11 +142,11 @@ export default function AnalyticsView() {
             {loading ? (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)}
+                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '5rem' }} />)}
                 </div>
-                <Skeleton style={{ height: '10rem', borderRadius: '0.75rem' }} />
+                <Skeleton style={{ height: '10rem' }} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '14rem', borderRadius: '0.75rem' }} />)}
+                  {[1,2].map((i) => <Skeleton key={i} style={{ height: '14rem' }} />)}
                 </div>
               </>
             ) : (

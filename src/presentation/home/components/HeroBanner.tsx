@@ -202,7 +202,6 @@ export default function HeroBanner() {
             style={{
               width:           i === current ? '1.5rem' : '0.45rem',
               height:          '0.45rem',
-              borderRadius:    '9999px',
               backgroundColor: i === current ? 'var(--brand-gold)' : 'rgba(255,255,255,0.5)',
               border:          'none',
               padding:         0,

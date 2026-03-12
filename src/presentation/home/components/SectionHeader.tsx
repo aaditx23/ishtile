@@ -8,8 +8,7 @@ interface SectionHeaderProps {
 export default function SectionHeader({ title, viewAllHref }: SectionHeaderProps) {
   return (
     <div
-      className="px-6 md:px-12"
-      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding:'1rem'}}
+      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '1rem clamp(1rem, 5vw, 3rem)' }}
     >
       <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgb(163,163,163)' }}>
         {title}

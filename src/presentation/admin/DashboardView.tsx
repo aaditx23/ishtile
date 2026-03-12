@@ -43,7 +43,7 @@ export default function DashboardView() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
               {loading || !stats ? (
-                [1,2,3,4,5,6].map((i) => <Skeleton key={i} style={{ height: '5rem', borderRadius: '0.75rem' }} />)
+                [1,2,3,4,5,6].map((i) => <Skeleton key={i} style={{ height: '5rem' }} />)
               ) : (
                 <>
                   <StatCard label="Today's Orders"  value={stats.todayOrders}       accent />

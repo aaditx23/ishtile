@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import UserMobileNavStrip from './components/UserMobileNavStrip';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import type { FavouriteDto } from '@/shared/types/api.types';
 
 interface MobileFavouritesViewProps {
@@ -32,18 +33,17 @@ export default function MobileFavouritesView({
       {loading ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
           {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} style={{ height: '220px', borderRadius: '0.75rem' }} />
+            <Skeleton key={i} style={{ height: '220px' }} />
           ))}
         </div>
       ) : items.length === 0 ? (
         <div
           style={{
-            padding:      '3rem',
-            textAlign:    'center',
-            border:       '1px dashed var(--border)',
-            borderRadius: '0.75rem',
-            color:        'var(--on-surface-muted)',
-            fontSize:     '0.9rem',
+            padding:   '3rem',
+            textAlign: 'center',
+            border:    '1px dashed var(--border)',
+            color:     'var(--on-surface-muted)',
+            fontSize:  '0.9rem',
           }}
         >
           No saved items yet.
@@ -55,7 +55,6 @@ export default function MobileFavouritesView({
               key={fav.id}
               style={{
                 border:          '1px solid var(--border)',
-                borderRadius:    '0.75rem',
                 overflow:        'hidden',
                 backgroundColor: 'var(--surface)',
                 display:         'flex',
@@ -77,21 +76,20 @@ export default function MobileFavouritesView({
                   <p style={{ fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.3 }}>{fav.productName}</p>
                 </Link>
                 <p style={{ fontSize: '0.8rem', fontWeight: 700 }}>{fmt(fav.basePrice)}</p>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => onRemove(fav.id)}
                   style={{
-                    marginTop:    'auto',
-                    background:   'none',
-                    border:       '1px solid var(--border)',
-                    borderRadius: '0.375rem',
-                    padding:      '0.3rem 0.5rem',
-                    fontSize:     '0.7rem',
-                    cursor:       'pointer',
-                    color:        'var(--destructive)',
+                    marginTop: 'auto',
+                    fontSize: '0.7rem',
+                    height: 'auto',
+                    padding: '0.3rem 0.5rem',
+                    color: 'var(--destructive)',
                   }}
                 >
                   Remove
-                </button>
+                </Button>
               </div>
             </div>
           ))}

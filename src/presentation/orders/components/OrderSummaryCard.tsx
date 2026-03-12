@@ -19,7 +19,6 @@ function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode 
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
-  borderRadius:    '0.75rem',
   padding:         '1.25rem',
   backgroundColor: 'var(--surface)',
   display:         'flex',

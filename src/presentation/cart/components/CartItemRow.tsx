@@ -62,7 +62,7 @@ export default function CartItemRow({ item, onUpdate }: CartItemRowProps) {
     >
       {/* Image */}
       <Link href={`/products/${item.variantSku}`} style={{ flexShrink: 0 }}>
-        <div style={{ width: '88px', height: '117px', borderRadius: '0.5rem', overflow: 'hidden', backgroundColor: 'var(--surface-variant)', position: 'relative' }}>
+        <div style={{ width: '88px', height: '117px', overflow: 'hidden', backgroundColor: 'var(--surface-variant)', position: 'relative' }}>
           {item.imageUrl ? (
             <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="88px" />
           ) : (

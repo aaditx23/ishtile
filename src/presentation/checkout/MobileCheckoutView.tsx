@@ -18,7 +18,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div style={{
       backgroundColor: 'var(--surface)',
       border:          '1px solid var(--border)',
-      borderRadius:    '0.875rem',
       padding:         '1rem 1.25rem',
     }}>
       <p style={{
@@ -42,7 +41,7 @@ function MobileCheckoutSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '0 1rem' }}>
       {[120, 200, 60, 160].map((h, i) => (
-        <Skeleton key={i} style={{ width: '100%', height: `${h}px`, borderRadius: '0.875rem' }} />
+        <Skeleton key={i} style={{ width: '100%', height: `${h}px` }} />
       ))}
     </div>
   );
@@ -85,7 +84,6 @@ function PlaceOrderBar({
         disabled={!canSubmit}
         style={{
           padding:         '0.75rem 2rem',
-          borderRadius:    '9999px',
           border:          'none',
           backgroundColor: canSubmit ? 'var(--primary)' : 'var(--border)',
           color:           canSubmit ? 'var(--on-primary)' : 'var(--on-surface-muted)',
@@ -151,7 +149,7 @@ export default function MobileCheckoutView({
     return (
       <div style={{ padding: '0 0 6rem' }}>
         <div style={{ padding: '0.75rem 1rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Skeleton style={{ width: '1.5rem', height: '1.5rem', borderRadius: '50%' }} />
+          <Skeleton style={{ width: '1.5rem', height: '1.5rem' }} />
           <Skeleton style={{ width: '6rem', height: '1.25rem' }} />
         </div>
         <MobileCheckoutSkeleton />
@@ -174,7 +172,7 @@ export default function MobileCheckoutView({
           href="/cart"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '2rem', height: '2rem', borderRadius: '50%',
+            width: '2rem', height: '2rem',
             border: '1px solid var(--border)', backgroundColor: 'var(--surface)',
             color: 'var(--on-surface)', textDecoration: 'none', fontSize: '1rem',
             flexShrink: 0,
@@ -221,7 +219,6 @@ export default function MobileCheckoutView({
             alignItems:      'center',
             gap:             '0.75rem',
             padding:         '0.75rem 1rem',
-            borderRadius:    '0.625rem',
             border:          `1.5px solid ${codConfirmed ? 'var(--primary)' : 'var(--border)'}`,
             backgroundColor: codConfirmed ? 'color-mix(in srgb, var(--primary) 6%, transparent)' : 'transparent',
             cursor:          'pointer',

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   createCategory,
   updateCategory,
@@ -38,14 +39,14 @@ export const labelStyle: React.CSSProperties = {
 
 export const primaryBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center',
-  padding: '0.5rem 1.25rem', borderRadius: '0.5rem',
+  padding: '0.5rem 1.25rem',
   backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
   border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
 };
 
 export const outlineBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center',
-  padding: '0.5rem 1.25rem', borderRadius: '0.5rem',
+  padding: '0.5rem 1.25rem',
   backgroundColor: 'transparent', color: 'var(--on-surface)',
   border: '1px solid var(--border)', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
 };
@@ -61,9 +62,9 @@ export function Badge({ active }: { active: boolean }) {
   return (
     <span style={{
       fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem',
-      borderRadius: '9999px', textTransform: 'uppercase',
-      backgroundColor: active ? '#d1fae5' : '#fee2e2',
-      color: active ? '#065f46' : '#991b1b',
+      textTransform: 'uppercase',
+      backgroundColor: active ? 'var(--success-bg)' : 'var(--error-bg)',
+      color: active ? 'var(--on-success)' : 'var(--on-error)',
     }}>
       {active ? 'Active' : 'Off'}
     </span>
@@ -79,18 +80,26 @@ export function ActionLinks({
 }) {
   return (
     <div style={{ display: 'flex', gap: '0.75rem' }}>
-      <button onClick={onEdit} style={actionBtn('#A58C69')}>Edit</button>
-      <button
+      <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={deleteDisabled ? undefined : onDelete}
         title={deleteDisabled ? 'Cannot delete: category has products' : undefined}
+        disabled={deleteDisabled}
         style={{
-          ...actionBtn(deleteDisabled ? 'var(--on-surface-muted)' : 'var(--destructive)'),
+          fontSize: '0.72rem',
+          fontWeight: 600,
+          color: deleteDisabled ? 'var(--on-surface-muted)' : 'var(--destructive)',
+          background: 'none',
+          padding: 0,
+          height: 'auto',
           cursor: deleteDisabled ? 'not-allowed' : 'pointer',
           opacity: deleteDisabled ? 0.45 : 1,
         }}
       >
         Delete
-      </button>
+      </Button>
     </div>
   );
 }
@@ -103,7 +112,7 @@ export function Overlay({ children, onClose }: { children: React.ReactNode; onCl
       zIndex: 1000, padding: '1rem',
     }}>
       <div style={{
-        backgroundColor: 'var(--surface)', borderRadius: '0.75rem',
+        backgroundColor: 'var(--surface)',
         padding: '1.5rem', width: '100%', maxWidth: '34rem',
         maxHeight: '90vh', overflowY: 'auto',
       }}>
@@ -134,13 +143,13 @@ export function CategoryRow({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: '1px solid var(--border)', borderRadius: '0.625rem', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
+    <div style={{ border: '1px solid var(--border)', overflow: 'hidden', backgroundColor: 'var(--surface)' }}>
       {/* Main category card */}
       <div style={{ padding: '0.75rem 1rem' }}>
         {/* Row 1: Image + Name + Status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
           {cat.imageUrl && (
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.375rem', overflow: 'hidden', flexShrink: 0 }}>
+            <div style={{ width: '2.5rem', height: '2.5rem', overflow: 'hidden', flexShrink: 0 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={cat.imageUrl} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
@@ -161,25 +170,22 @@ export function CategoryRow({
         {/* Row 2: Slug + Subcategory count + Expand button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: 'var(--on-surface-muted)' }}>
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.slug}</span>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setOpen(o => !o)}
             style={{
               padding: '0.2rem 0.5rem',
-              border: '1px solid var(--border)',
-              borderRadius: '0.375rem',
               backgroundColor: open ? 'var(--surface-variant)' : 'transparent',
               fontSize: '0.7rem',
               fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
+              height: 'auto',
               color: 'var(--on-surface-muted)',
               flexShrink: 0,
             }}
           >
             {cat.subcategories.length} sub {open ? '▲' : '▼'}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -214,23 +220,23 @@ export function CategoryRow({
               </div>
             </div>
           ))}
-          <button
+          <Button
+            variant="ghost"
             onClick={() => onAddSub(cat)}
             style={{
               display: 'block',
               width: '100%',
-              textAlign: 'left',
+              justifyContent: 'flex-start',
               padding: '0.6rem 1rem',
               fontSize: '0.7rem',
               fontWeight: 600,
               color: 'var(--brand-gold)',
               background: 'none',
-              border: 'none',
-              cursor: 'pointer',
+              height: 'auto',
             }}
           >
             + Add Subcategory
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -320,14 +326,14 @@ export function CategoryModal({
           <label style={labelStyle}>Image</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {(imageFile || form.imageUrl) && (
-              <div style={{ position: 'relative', width: '4rem', height: '4rem', borderRadius: '0.375rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: '4rem', height: '4rem', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imageFile ? URL.createObjectURL(imageFile) : form.imageUrl} alt="Category" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <button type="button" onClick={() => { setImageFile(null); set('imageUrl', ''); }} disabled={saving} style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', borderRadius: '9999px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Remove image">&times;</button>
+                <button type="button" onClick={() => { setImageFile(null); set('imageUrl', ''); }} disabled={saving} style={{ position: 'absolute', top: '2px', right: '2px', width: '1.1rem', height: '1.1rem', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.65rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Remove image">&times;</button>
               </div>
             )}
             {!imageFile && !form.imageUrl && (
-              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '0.375rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}>
+              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}>
               +
               <input type="file" accept="image/*" disabled={saving} style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) setImageFile(f); }} />
             </label>
@@ -335,8 +341,8 @@ export function CategoryModal({
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-          <button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</button>
-          <button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</button>
+          <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
     </Overlay>
@@ -421,8 +427,8 @@ export function SubcategoryModal({
           <Input value={form.description} onChange={e => set('description', e.target.value)} disabled={saving} />
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-          <button type="button" onClick={onClose} disabled={saving} style={outlineBtn}>Cancel</button>
-          <button type="submit" disabled={saving} style={primaryBtn}>{saving ? 'Saving…' : 'Save'}</button>
+          <Button type="button" variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
       </form>
     </Overlay>

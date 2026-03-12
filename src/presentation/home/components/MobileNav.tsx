@@ -88,7 +88,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
                 <NavigationMenuLink
                   active={isLinkActive(link.href)}
                   onClick={onClose}
-                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                 >
                   {link.label}
                 </NavigationMenuLink>
@@ -114,7 +114,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
                     <NavigationMenuLink
                       active={isLinkActive(link.href)}
                       onClick={onClose}
-                      className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                      className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                     >
                       {link.label}
                     </NavigationMenuLink>
@@ -141,7 +141,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
                   <NavigationMenuLink
                     active={pathname === '/admin' || pathname.startsWith('/admin/')}
                     onClick={onClose}
-                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                   >
                     Dashboard
                   </NavigationMenuLink>
