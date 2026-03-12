@@ -130,7 +130,7 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
                 width:           '1.1rem',
                 height:          '1.1rem',
                 backgroundColor: 'var(--brand-gold)',
-                color:           '#fff',
+                color:           'var(--on-primary)',
                 fontSize:        '0.65rem',
                 fontWeight:      700,
               }}
@@ -258,7 +258,7 @@ function Pill({ label, active, onClick }: { label: string; active: boolean; onCl
         padding:         '0.3rem 0.75rem',
         border:          `1px solid ${active ? 'var(--brand-gold)' : 'var(--border)'}`,
         backgroundColor: active ? 'var(--brand-gold)' : 'var(--surface)',
-        color:           active ? '#fff' : 'var(--on-surface)',
+        color:           active ? 'var(--on-primary)' : 'var(--on-surface)',
         fontSize:        '0.78rem',
         fontWeight:      active ? 700 : 500,
         cursor:          'pointer',

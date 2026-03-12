@@ -277,7 +277,7 @@ export default function AdminPromosView() {
                           {p.currentUses}{p.maxTotalUses ? `/${p.maxTotalUses}` : ''}
                         </td>
                         <td style={{ padding: '0.6rem 0.875rem' }}>
-                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2', color: p.isActive ? '#065f46' : '#991b1b', textTransform: 'uppercase' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: p.isActive ? 'var(--success-bg)' : 'var(--error-bg)', color: p.isActive ? 'var(--on-success)' : 'var(--on-error)', textTransform: 'uppercase' }}>
                             {p.isActive ? 'Active' : 'Off'}
                           </span>
                         </td>

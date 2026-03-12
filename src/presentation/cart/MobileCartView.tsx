@@ -148,8 +148,8 @@ function MobileCartItem({ item, onUpdate }: { item: CartItem; onUpdate: () => vo
               style={{
                 width: '2rem', height: '2rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: 'rgba(239,68,68,0.09)', border: 'none',
-                cursor: 'pointer', color: '#ef4444', flexShrink: 0,
+                backgroundColor: 'color-mix(in srgb, var(--destructive) 9%, transparent)', border: 'none',
+                cursor: 'pointer', color: 'var(--destructive)', flexShrink: 0,
               }}
             >
               <FiTrash2 size={13} />

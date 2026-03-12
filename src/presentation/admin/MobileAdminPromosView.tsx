@@ -90,8 +90,8 @@ export default function MobileAdminPromosView({
                       textTransform:   'uppercase',
                       letterSpacing:   '0.05em',
                       padding:         '0.2rem 0.5rem',
-                      backgroundColor: p.isActive ? '#d1fae5' : '#fee2e2',
-                      color:           p.isActive ? '#065f46' : '#991b1b',
+                      backgroundColor: p.isActive ? 'var(--success-bg)' : 'var(--error-bg)',
+                      color:           p.isActive ? 'var(--on-success)' : 'var(--on-error)',
                       flexShrink:      0,
                     }}
                   >

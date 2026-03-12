@@ -106,12 +106,12 @@ function BatchProgressModal({
                 {item.status === 'downloading' && (
                   <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>
                 )}
-                {item.status === 'done'  && <span style={{ color: '#22c55e' }}>✓</span>}
-                {item.status === 'error' && <span style={{ color: '#ef4444' }}>✕</span>}
+                {item.status === 'done'  && <span style={{ color: 'var(--on-success)' }}>✓</span>}
+                {item.status === 'error' && <span style={{ color: 'var(--destructive)' }}>✕</span>}
               </span>
               <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>#{item.orderNumber}</span>
               {item.status === 'error' && (
-                <span style={{ fontSize: '0.72rem', color: '#ef4444', marginLeft: 'auto' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--destructive)', marginLeft: 'auto' }}>
                   {item.error ?? 'Failed'}
                 </span>
               )}

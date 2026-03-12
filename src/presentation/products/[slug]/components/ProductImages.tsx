@@ -55,14 +55,14 @@ export default function ProductImages({ images, productName }: ProductImagesProp
           <>
             <button
               onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-surface/75 hover:bg-surface rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
               aria-label="Previous image"
             >
               <ChevronLeft size={20} className="text-gray-800" />
             </button>
             <button
               onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface/75 hover:bg-surface rounded-full w-9 h-9 flex items-center justify-center shadow-sm transition"
               aria-label="Next image"
             >
               <ChevronRight size={20} className="text-gray-800" />
@@ -77,7 +77,7 @@ export default function ProductImages({ images, productName }: ProductImagesProp
                     display: 'block',
                     width:  i === active ? '16px' : '6px',
                     height: '6px',
-                    backgroundColor: i === active ? '#fff' : 'rgba(255,255,255,0.5)',
+                    backgroundColor: i === active ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                     transition: 'width 0.2s ease',
                     cursor: 'pointer',
                   }}

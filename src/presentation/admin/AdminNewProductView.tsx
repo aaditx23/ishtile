@@ -368,7 +368,7 @@ export default function AdminNewProductView() {
                         type="button"
                         onClick={() => removeV(v.id)}
                         disabled={saving || variants.length === 1}
-                        style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
+                        style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid var(--error-bg)', backgroundColor: 'var(--error-bg)', color: 'var(--on-error)', fontSize: '0.75rem', fontWeight: 600, cursor: variants.length === 1 ? 'not-allowed' : 'pointer', opacity: variants.length === 1 ? 0.5 : 1 }}
                       >
                         Remove
                       </button>

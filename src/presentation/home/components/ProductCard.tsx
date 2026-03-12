@@ -48,7 +48,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
     <Card className="overflow-hidden group" style={{ gap: 0, padding: 0 }}>
       {/* Image area */}
       <CardContent className="relative p-0" style={{ lineHeight: 0, display: 'flex', flexDirection: 'column' }}>
-        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-neutral-100 leading-none">
+        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden rounded-sm bg-product-bg leading-none">
           {/* Sliding strip */}
           <div
             className="absolute top-0 left-0 h-full flex transition-transform duration-300 ease-in-out"
@@ -72,14 +72,14 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             <>
               <button
                 onClick={prev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={16} className="text-gray-800" />
               </button>
               <button
                 onClick={next}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
                 <ChevronRight size={16} className="text-gray-800" />
@@ -97,7 +97,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
                     display: 'block',
                     width: i === imgIndex ? '16px' : '6px',
                     height: '6px',
-                    backgroundColor: i === imgIndex ? '#fff' : 'rgba(255,255,255,0.5)',
+                    backgroundColor: i === imgIndex ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                     transition: 'width 0.2s ease',
                   }}
                 />

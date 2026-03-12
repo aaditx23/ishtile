@@ -113,7 +113,7 @@ export default function ProductImagesSharp({ images, productName }: ProductImage
                 prev();
                 scrollToImage(active - 1 < 0 ? count - 1 : active - 1);
               }}
-              className="absolute left-1/2 top-4 -translate-x-1/2 bg-white/70 hover:bg-white w-9 h-9 flex items-center justify-center shadow-sm transition border border-neutral-900"
+              className="absolute left-1/2 top-4 -translate-x-1/2 bg-surface/70 hover:bg-surface w-9 h-9 flex items-center justify-center shadow-sm transition border border-brand-dark"
               aria-label="Previous image"
               style={{ zIndex: 10 }}
             >
@@ -124,7 +124,7 @@ export default function ProductImagesSharp({ images, productName }: ProductImage
                 next();
                 scrollToImage((active + 1) % count);
               }}
-              className="absolute left-1/2 bottom-4 -translate-x-1/2 bg-white/70 hover:bg-white w-9 h-9 flex items-center justify-center shadow-sm transition border border-neutral-900"
+              className="absolute left-1/2 bottom-4 -translate-x-1/2 bg-surface/70 hover:bg-surface w-9 h-9 flex items-center justify-center shadow-sm transition border border-brand-dark"
               aria-label="Next image"
               style={{ zIndex: 10 }}
             >
@@ -151,7 +151,7 @@ export default function ProductImagesSharp({ images, productName }: ProductImage
                     display: 'block',
                     width: '6px',
                     height: i === active ? '20px' : '6px',
-                    backgroundColor: i === active ? '#fff' : 'rgba(255,255,255,0.5)',
+                    backgroundColor: i === active ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                     transition: 'height 0.2s ease',
                     cursor: 'pointer',
                     border: '1px solid rgba(0,0,0,0.1)',
@@ -183,14 +183,14 @@ export default function ProductImagesSharp({ images, productName }: ProductImage
             <>
               <button
                 onClick={prev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white w-9 h-9 flex items-center justify-center shadow-sm transition border border-neutral-900"
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-surface/75 hover:bg-surface w-9 h-9 flex items-center justify-center shadow-sm transition border border-brand-dark"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={20} className="text-gray-800" />
               </button>
               <button
                 onClick={next}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/75 hover:bg-white w-9 h-9 flex items-center justify-center shadow-sm transition border border-neutral-900"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface/75 hover:bg-surface w-9 h-9 flex items-center justify-center shadow-sm transition border border-brand-dark"
                 aria-label="Next image"
               >
                 <ChevronRight size={20} className="text-gray-800" />
@@ -205,7 +205,7 @@ export default function ProductImagesSharp({ images, productName }: ProductImage
                       display: 'block',
                       width: i === active ? '20px' : '6px',
                       height: '6px',
-                      backgroundColor: i === active ? '#fff' : 'rgba(255,255,255,0.5)',
+                      backgroundColor: i === active ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                       transition: 'width 0.2s ease',
                       cursor: 'pointer',
                       border: '1px solid rgba(0,0,0,0.1)',

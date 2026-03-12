@@ -48,6 +48,14 @@
   --color-secondary-foreground:var(--secondary-foreground);
   --color-muted:               var(--muted);
   --color-destructive:         var(--destructive);
+  --color-error-bg:            var(--error-bg);
+  --color-on-error:            var(--on-error);
+  --color-success-bg:          var(--success-bg);
+  --color-on-success:          var(--on-success);
+  --color-warning-bg:          var(--warning-bg);
+  --color-on-warning:          var(--on-warning);
+  --color-info-bg:             var(--info-bg);
+  --color-on-info:             var(--on-info);
   --color-border:              var(--border);
   --color-input:               var(--input);
   --color-ring:                var(--ring);

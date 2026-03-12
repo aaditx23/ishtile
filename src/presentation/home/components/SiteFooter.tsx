@@ -106,7 +106,7 @@ export default function SiteFooter() {
                   asChild
                   variant="ghost"
                   size="icon"
-                  className="w-8 h-8 rounded-full bg-neutral-800 text-neutral-400 hover:bg-[#A58C69] hover:text-white"
+                  className="w-8 h-8 rounded-full bg-neutral-800 text-neutral-400 hover:bg-brand-gold hover:text-on-primary"
                   aria-label={label}
                 >
                   <a href={href} target="_blank" rel="noopener noreferrer">

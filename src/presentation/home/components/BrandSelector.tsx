@@ -120,7 +120,7 @@ export default function BrandSelector({ brands, selected, onSelect }: BrandSelec
       {showLeft && (
         <button
           onClick={() => scroll('left')}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
           aria-label="Scroll left"
         >
           <ChevronLeft size={20} className="text-gray-800" />
@@ -131,7 +131,7 @@ export default function BrandSelector({ brands, selected, onSelect }: BrandSelec
       {showRight && (
         <button
           onClick={() => scroll('right')}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 transition-opacity"
           aria-label="Scroll right"
         >
           <ChevronRight size={20} className="text-gray-800" />

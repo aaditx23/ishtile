@@ -225,8 +225,8 @@ export default function AdminProductsView() {
                                 textTransform:   'uppercase',
                                 letterSpacing:   '0.05em',
                                 padding:         '0.2rem 0.5rem',
-                                backgroundColor: product.isActive ? '#d1fae5' : '#fee2e2',
-                                color:           product.isActive ? '#065f46' : '#991b1b',
+                                backgroundColor: product.isActive ? 'var(--success-bg)' : 'var(--error-bg)',
+                                color:           product.isActive ? 'var(--on-success)' : 'var(--on-error)',
                               }}
                             >
                               {product.isActive ? 'Active' : 'Inactive'}

@@ -28,7 +28,7 @@ export default function NewsletterForm() {
       <Button
         type="submit"
         size="sm"
-        className="rounded-l-none rounded-r-full bg-[#A58C69] hover:bg-[#8f6f4a] text-white text-xs uppercase tracking-widest shrink-0 h-9"
+        className="rounded-l-none rounded-r-full bg-brand-gold hover:bg-brand-gold-hover text-on-primary text-xs uppercase tracking-widest shrink-0 h-9"
         style={{ padding: '0.5rem' }}
       >
         Join

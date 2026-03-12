@@ -79,7 +79,7 @@ export default function AddressPicker({ onSelect, disabled }: AddressPickerProps
               {addr.name && <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{addr.name}</span>}
               {addr.phone && <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>{addr.phone}</span>}
               {addr.isDefault && (
-                <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.1rem 0.45rem', backgroundColor: '#d1fae5', color: '#065f46', textTransform: 'uppercase' }}>
+                <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.1rem 0.45rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)', textTransform: 'uppercase' }}>
                   Default
                 </span>
               )}

@@ -74,10 +74,10 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <div style={{ width: '3.5rem', height: '3.5rem', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1rem', color: '#dc2626', fontWeight: 700 }}>
+        <div style={{ width: '3.5rem', height: '3.5rem', backgroundColor: 'var(--error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1rem', color: 'var(--destructive)', fontWeight: 700 }}>
           ✕
         </div>
-        <p style={{ color: '#ef4444', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+        <p style={{ color: 'var(--destructive)', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
           Invalid Reset Link
         </p>
         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
@@ -93,7 +93,7 @@ function ResetPasswordForm() {
   if (success) {
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <div style={{ width: '3.5rem', height: '3.5rem', backgroundColor: 'var(--brand-gold-light, #fef3c7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1rem', color: '#16a34a', fontWeight: 700 }}>
+        <div style={{ width: '3.5rem', height: '3.5rem', backgroundColor: 'var(--success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1rem', color: 'var(--on-success)', fontWeight: 700 }}>
           ✓
         </div>
         <p style={{ color: 'var(--foreground)', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
@@ -154,9 +154,9 @@ function ResetPasswordForm() {
       </div>
 
       {error && (
-        <div style={{ padding: '0.875rem', backgroundColor: '#fee2e2', border: '1px solid #fecaca', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-          <span style={{ color: '#dc2626', fontSize: '1.125rem', fontWeight: 700, lineHeight: 1 }}>⚠</span>
-          <p style={{ fontSize: '0.8125rem', color: '#991b1b', margin: 0, lineHeight: 1.5, flex: 1 }}>{error}</p>
+        <div style={{ padding: '0.875rem', backgroundColor: 'var(--error-bg)', border: '1px solid var(--on-error)', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <span style={{ color: 'var(--destructive)', fontSize: '1.125rem', fontWeight: 700, lineHeight: 1 }}>⚠</span>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--on-error)', margin: 0, lineHeight: 1.5, flex: 1 }}>{error}</p>
         </div>
       )}
 

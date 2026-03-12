@@ -40,10 +40,10 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
   const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
-    <div className="overflow-hidden group border border-input bg-white transition-shadow hover:shadow-md">
+    <div className="overflow-hidden group border border-input bg-surface transition-shadow hover:shadow-md">
       {/* Image area */}
       <div className="relative" style={{ lineHeight: 0 }}>
-        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-neutral-100 leading-none">
+        <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-product-bg leading-none">
           {/* Sliding strip */}
           <div
             className="absolute top-0 left-0 h-full flex transition-transform duration-300 ease-in-out"
@@ -67,14 +67,14 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
             <>
               <button
                 onClick={prev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={16} className="text-gray-800" />
               </button>
               <button
                 onClick={next}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full w-7 h-7 flex items-center justify-center shadow transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10"
                 aria-label="Next image"
               >
                 <ChevronRight size={16} className="text-gray-800" />
@@ -92,7 +92,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
                     display: 'block',
                     width: i === imgIndex ? '20px' : '6px',
                     height: '6px',
-                    backgroundColor: i === imgIndex ? '#fff' : 'rgba(255,255,255,0.5)',
+                    backgroundColor: i === imgIndex ? 'var(--surface)' : 'color-mix(in srgb, var(--surface) 50%, transparent)',
                     transition: 'width 0.2s ease',
                   }}
                 />
@@ -118,7 +118,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
 
         {/* Category badge - sharp corners */}
         <div className="flex items-center gap-2 w-full">
-          <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-700 border border-input">
+          <span className="text-xs px-2 py-1 bg-surface-variant text-on-surface-muted border border-input">
             {product.category}
           </span>
         </div>
@@ -138,7 +138,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
         {/* View button - sharp corners, minimal style */}
         <Link 
           href={`/products/${product.slug}`}
-          className="w-full text-center text-xs sm:text-sm font-medium py-2 border border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
+          className="w-full text-center text-xs sm:text-sm font-medium py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-on-primary transition-colors"
         >
           VIEW DETAILS
         </Link>

@@ -221,7 +221,7 @@ function VariantRow({
             type="button"
             onClick={onDelete}
             disabled={!canDelete || busy || disabled}
-            style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
+            style={{ height: '40px', width: '100%', padding: '0 0.5rem', border: '1px solid var(--error-bg)', backgroundColor: 'var(--error-bg)', color: 'var(--on-error)', fontSize: '0.75rem', fontWeight: 600, cursor: (!canDelete || disabled) ? 'not-allowed' : 'pointer', opacity: (!canDelete || disabled) ? 0.5 : 1 }}
           >
             Remove
           </button>

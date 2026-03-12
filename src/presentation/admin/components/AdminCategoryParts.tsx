@@ -63,8 +63,8 @@ export function Badge({ active }: { active: boolean }) {
     <span style={{
       fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem',
       textTransform: 'uppercase',
-      backgroundColor: active ? '#d1fae5' : '#fee2e2',
-      color: active ? '#065f46' : '#991b1b',
+      backgroundColor: active ? 'var(--success-bg)' : 'var(--error-bg)',
+      color: active ? 'var(--on-success)' : 'var(--on-error)',
     }}>
       {active ? 'Active' : 'Off'}
     </span>
@@ -80,7 +80,7 @@ export function ActionLinks({
 }) {
   return (
     <div style={{ display: 'flex', gap: '0.75rem' }}>
-      <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: '#A58C69', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
+      <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
       <Button
         variant="ghost"
         size="sm"

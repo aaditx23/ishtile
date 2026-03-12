@@ -54,7 +54,7 @@ export default function FavouriteButton({ productId, initialFavId = null, compac
         borderRadius:    '50%',
         border:          'none',
         backgroundColor: isFav ? 'var(--brand-gold)' : 'rgba(60,60,60,0.7)',
-        color:           '#fff',
+        color:           'var(--on-primary)',
         display:         'flex',
         alignItems:      'center',
         justifyContent:  'center',

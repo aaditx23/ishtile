@@ -275,7 +275,7 @@ function AddressCard({
         {address.name && <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{address.name}</span>}
         {address.phone && <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>{address.phone}</span>}
         {address.isDefault && (
-          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: '#d1fae5', color: '#065f46', textTransform: 'uppercase' }}>
+          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)', textTransform: 'uppercase' }}>
             Default
           </span>
         )}
@@ -287,7 +287,7 @@ function AddressCard({
         {address.postalCode ? ` - ${address.postalCode}` : ''}
       </p>
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
-        <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: '#A58C69', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
+        <Button variant="ghost" size="sm" onClick={onEdit} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--brand-gold)', background: 'none', padding: 0, height: 'auto' }}>Edit</Button>
         <Button variant="ghost" size="sm" onClick={onDelete} style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--destructive)', background: 'none', padding: 0, height: 'auto' }}>Delete</Button>
       </div>
     </div>
