@@ -54,7 +54,7 @@ function CategoryCard({ label, image, bg = 'var(--surface-variant)', selected, o
           src={image}
           alt={label}
           fill
-          style={{ objectFit: 'contain', objectPosition: 'center' }}
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
           sizes="(max-width: 768px) 150px, 20vw"
         />
       )}

@@ -159,7 +159,7 @@ export default function RegisterView() {
           </span>
         </Link>
 
-        <div style={{ backgroundColor: 'var(--surface)', borderRadius: '1rem', padding: '2rem', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
+        <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem', textAlign: 'center' }}>
             Create Account
           </h1>

@@ -97,7 +97,6 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
                     display: 'block',
                     width: i === imgIndex ? '16px' : '6px',
                     height: '6px',
-                    borderRadius: '9999px',
                     backgroundColor: i === imgIndex ? '#fff' : 'rgba(255,255,255,0.5)',
                     transition: 'width 0.2s ease',
                   }}

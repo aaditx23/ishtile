@@ -134,7 +134,6 @@ export default function LoginView() {
         <div
           style={{
             backgroundColor: 'var(--surface)',
-            borderRadius:    '1rem',
             padding:         '2rem',
             boxShadow:       '0 2px 16px rgba(0,0,0,0.06)',
             border:          '1px solid var(--border)',

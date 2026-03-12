@@ -41,7 +41,7 @@ export default function ProductGrid({ items }: ProductGridProps) {
     return (
       <div
         className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5"
-        style={{ padding: '2rem 1rem', columnGap: '0.5rem', rowGap: '1.25rem' }}
+        style={{ padding: '2rem clamp(1rem, 5vw, 3rem)', columnGap: '0.5rem', rowGap: '1.25rem' }}
       >
         {Array.from({ length: 8 }).map((_, i) => (
           <ProductCardSkeleton key={i} />
@@ -57,7 +57,7 @@ export default function ProductGrid({ items }: ProductGridProps) {
   return (
     <div
       className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 transition-opacity duration-300"
-      style={{ padding: '2rem 1rem', columnGap: '0.5rem', rowGap: '1.25rem', opacity: visible ? 1 : 0 }}
+      style={{ padding: '2rem clamp(1rem, 5vw, 3rem)', columnGap: '0.5rem', rowGap: '1.25rem', opacity: visible ? 1 : 0 }}
     >
       {items.map((product) => (
         <ProductCardSharp key={product.id} product={product} />

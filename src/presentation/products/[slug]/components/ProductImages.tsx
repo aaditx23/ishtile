@@ -26,7 +26,6 @@ export default function ProductImages({ images, productName }: ProductImagesProp
           width: '100%',
           aspectRatio: '3/4',
           backgroundColor: 'var(--surface-variant)',
-          borderRadius: '0.75rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -42,7 +41,7 @@ export default function ProductImages({ images, productName }: ProductImagesProp
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {/* Main image */}
-      <div style={{ position: 'relative', width: '100%', aspectRatio: '3/4', borderRadius: '0.75rem', overflow: 'hidden', backgroundColor: 'var(--surface-variant)' }}>
+      <div style={{ position: 'relative', width: '100%', aspectRatio: '3/4', overflow: 'hidden', backgroundColor: 'var(--surface-variant)' }}>
         <Image
           src={images[active]}
           alt={`${productName} — image ${active + 1}`}
@@ -78,7 +77,6 @@ export default function ProductImages({ images, productName }: ProductImagesProp
                     display: 'block',
                     width:  i === active ? '16px' : '6px',
                     height: '6px',
-                    borderRadius: '9999px',
                     backgroundColor: i === active ? '#fff' : 'rgba(255,255,255,0.5)',
                     transition: 'width 0.2s ease',
                     cursor: 'pointer',
@@ -102,7 +100,6 @@ export default function ProductImages({ images, productName }: ProductImagesProp
                 flexShrink:   0,
                 width:        '72px',
                 height:       '96px',
-                borderRadius: '0.5rem',
                 overflow:     'hidden',
                 position:     'relative',
                 border:       i === active ? '2px solid var(--brand-gold)' : '2px solid transparent',
