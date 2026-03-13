@@ -8,7 +8,7 @@ import type { Cart, CartItem } from '@/domain/cart/cart.entity';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapCartItem(item: any): CartItem {
   return {
-    id:             asId(item._id),
+    id:             asId(item.id ?? item._id),
     variantId:      asId(item.variantId),
     quantity:       item.quantity,
     productName:    item.productName ?? '',
@@ -25,7 +25,7 @@ function mapCartItem(item: any): CartItem {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapCart(res: any): Cart {
   return {
-    id:         asId(res.cartId ?? res._id ?? 'cart'),
+    id:         asId(res.id ?? res.cartId ?? res._id ?? 'cart'),
     userId:     asId(res.userId ?? ''),
     items:      (res.items ?? []).map(mapCartItem),
     subtotal:   res.subtotal ?? 0,
