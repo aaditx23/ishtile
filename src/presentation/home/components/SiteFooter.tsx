@@ -1,16 +1,9 @@
 import Link from 'next/link';
-import { FiInstagram, FiFacebook, FiTwitter, FiYoutube } from 'react-icons/fi';
+import { FiInstagram, FiFacebook, FiMessageCircle } from 'react-icons/fi';
 import { Separator } from '@/components/ui/separator';
 import { Marquee } from '@/components/ui/marquee';
 import { getCategories } from '@/application/category/getCategories';
 import { getBrands } from '@/application/brand/getBrands';
-
-const socialLinks = [
-  { label: 'Instagram', href: 'https://instagram.com', Icon: FiInstagram },
-  { label: 'Facebook',  href: 'https://facebook.com',  Icon: FiFacebook },
-  { label: 'Twitter',   href: 'https://twitter.com',   Icon: FiTwitter },
-  { label: 'YouTube',   href: 'https://youtube.com',   Icon: FiYoutube },
-];
 
 function FooterColumn({
   title,
@@ -48,6 +41,18 @@ function FooterColumn({
 export default async function SiteFooter() {
   let categoryLinks: { label: string; href: string }[] = [];
   let brandLinks: { label: string; href: string }[] = [];
+
+  const facebookUrl = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL || 'https://facebook.com';
+  const instagramUrl = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL || 'https://instagram.com';
+  const whatsappNumberRaw = process.env.NEXT_PUBLIC_SOCIAL_WHATSAPP_NUMBER || '';
+  const whatsappNumber = whatsappNumberRaw.replace(/\D/g, '');
+  const whatsappUrl = whatsappNumber ? `https://wa.me/${whatsappNumber}` : 'https://wa.me/';
+
+  const socialLinks = [
+    { label: 'Facebook', href: facebookUrl, Icon: FiFacebook },
+    { label: 'Instagram', href: instagramUrl, Icon: FiInstagram },
+    { label: 'WhatsApp', href: whatsappUrl, Icon: FiMessageCircle },
+  ];
 
   try {
     const [categories, brands] = await Promise.all([
