@@ -80,6 +80,7 @@ export const ENDPOINTS = {
 
   // ─── Admin ────────────────────────────────────────────────────────────────
   admin: {
+    createAdmin: `/api/admin/create-admin`,
     analytics: {
       dashboard: `${API_BASE}/admin/analytics/dashboard`,
       dailySales: `${API_BASE}/admin/analytics/daily-sales`,

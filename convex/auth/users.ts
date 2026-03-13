@@ -182,12 +182,13 @@ export const updateMe = mutation({
 
 export const createAdmin = mutation({
   args: {
-    phone: v.string(),
+    phone: v.optional(v.string()),
     email: v.string(),
+    username: v.string(),
     passwordHash: v.string(),
     fullName: v.optional(v.string()),
   },
-  handler: async (ctx, { phone, email, passwordHash, fullName }) => {
+  handler: async (ctx, { phone, email, username, passwordHash, fullName }) => {
     // Check if admin already exists
     const existingByEmail = await ctx.db
       .query("users")
@@ -198,18 +199,30 @@ export const createAdmin = mutation({
       throw new Error("An account with this email already exists");
     }
 
-    const existingByPhone = await ctx.db
+    if (phone) {
+      const existingByPhone = await ctx.db
+        .query("users")
+        .withIndex("by_phone", (q) => q.eq("phone", phone))
+        .first();
+
+      if (existingByPhone) {
+        throw new Error("An account with this phone already exists");
+      }
+    }
+
+    const existingByUsername = await ctx.db
       .query("users")
-      .withIndex("by_phone", (q) => q.eq("phone", phone))
+      .withIndex("by_username", (q) => q.eq("username", username))
       .first();
 
-    if (existingByPhone) {
-      throw new Error("An account with this phone already exists");
+    if (existingByUsername) {
+      throw new Error("Username already taken");
     }
 
     const userId = await ctx.db.insert("users", {
       phone,
       email,
+      username,
       fullName: fullName || "Admin",
       passwordHash,
       role: "admin",
