@@ -1,32 +1,9 @@
 import Link from 'next/link';
 import { FiInstagram, FiFacebook, FiTwitter, FiYoutube } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Marquee } from '@/components/ui/marquee';
-import NewsletterForm from './NewsletterForm';
-
-const shopLinks = [
-  { label: "Men's",       href: '/collections/men' },
-  { label: "Women's",     href: '/collections/women' },
-  { label: 'Unisex',      href: '/collections/unisex' },
-  { label: 'New Arrivals',href: '/collections/new-arrivals' },
-  { label: 'Sale',        href: '/collections/sale' },
-];
-
-const companyLinks = [
-  { label: 'About',       href: '/pages/about' },
-  { label: 'Manifesto',   href: '/pages/manifesto' },
-  { label: 'Journal',     href: '/blogs/journal' },
-  { label: 'Lookbook',    href: '/blogs/lookbook' },
-];
-
-const helpLinks = [
-  { label: 'FAQ',          href: '/pages/faq' },
-  { label: 'Shipping',     href: '/pages/shipping' },
-  { label: 'Returns',      href: '/pages/returns' },
-  { label: 'Size Guide',   href: '/pages/size-guide' },
-  { label: 'Contact Us',   href: '/pages/contact' },
-];
+import { getCategories } from '@/application/category/getCategories';
+import { getBrands } from '@/application/brand/getBrands';
 
 const socialLinks = [
   { label: 'Instagram', href: 'https://instagram.com', Icon: FiInstagram },
@@ -35,7 +12,15 @@ const socialLinks = [
   { label: 'YouTube',   href: 'https://youtube.com',   Icon: FiYoutube },
 ];
 
-function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
+function FooterColumn({
+  title,
+  links,
+  seeMoreHref,
+}: {
+  title: string;
+  links: { label: string; href: string }[];
+  seeMoreHref?: string;
+}) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white">{title}</p>
@@ -51,20 +36,46 @@ function FooterColumn({ title, links }: { title: string; links: { label: string;
           </li>
         ))}
       </ul>
+      {seeMoreHref && (
+        <Link href={seeMoreHref} className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-400 hover:text-white transition-colors duration-150">
+          See more
+        </Link>
+      )}
     </div>
   );
 }
 
-export default function SiteFooter() {
+export default async function SiteFooter() {
+  let categoryLinks: { label: string; href: string }[] = [];
+  let brandLinks: { label: string; href: string }[] = [];
+
+  try {
+    const [categories, brands] = await Promise.all([
+      getCategories({ activeOnly: true, includeSubcategories: false }),
+      getBrands({ activeOnly: true }),
+    ]);
+
+    categoryLinks = categories
+      .slice(0, 4)
+      .map((category) => ({ label: category.name, href: `/products?category=${encodeURIComponent(category.slug)}` }));
+
+    brandLinks = brands
+      .slice(0, 4)
+      .map((brand) => ({ label: brand.name, href: `/products?brand=${encodeURIComponent(brand.slug)}` }));
+  } catch {
+    categoryLinks = [];
+    brandLinks = [];
+  }
+
   return (
     <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>
       {/* Brand Motto Marquee */}
       <div style={{ padding: '3rem 0', overflow: 'hidden' }}>
         <Marquee duration={40} pauseOnHover>
-          <span 
-            style={{ 
-              fontSize: 'clamp(1.5rem, 6vw, 4rem)', 
-              fontWeight: 900, 
+          <span
+            style={{
+              fontSize: 'clamp(1.5rem, 6vw, 4rem)',
+              fontWeight: 900,
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
               color: 'white',
@@ -82,7 +93,7 @@ export default function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
 
           {/* Brand column */}
-          <div className="col-span-2 md:col-span-1 flex flex-col gap-6">
+          <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <Link href="/" aria-label="Home">
               <span className="text-2xl font-black uppercase tracking-widest text-white">
                 Ishtile
@@ -91,36 +102,30 @@ export default function SiteFooter() {
             <p className="text-sm text-neutral-400 leading-relaxed max-w-[200px]">
               A mindset for purposeful style. Quality clothing for everyone.
             </p>
-            {/* Newsletter */}
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white">
-                Stay in the loop
-              </p>
-              <NewsletterForm />
-            </div>
-            {/* Socials */}
-            <div className="flex gap-3">
-              {socialLinks.map(({ label, href, Icon }) => (
-                <Button
-                  key={label}
-                  asChild
-                  variant="ghost"
-                  size="icon"
-                  className="w-8 h-8 rounded-full bg-neutral-800 text-neutral-400 hover:bg-brand-gold hover:text-on-primary"
-                  aria-label={label}
-                >
-                  <a href={href} target="_blank" rel="noopener noreferrer">
-                    <Icon size={15} />
-                  </a>
-                </Button>
-              ))}
-            </div>
           </div>
 
           {/* Nav columns */}
-          <FooterColumn title="Shop"    links={shopLinks} />
-          <FooterColumn title="Company" links={companyLinks} />
-          <FooterColumn title="Help"    links={helpLinks} />
+          <FooterColumn title="Categories" links={categoryLinks} seeMoreHref="/products" />
+          <FooterColumn title="Brands" links={brandLinks} seeMoreHref="/products" />
+
+          <div className="flex flex-col gap-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white">Social Media</p>
+            <ul className="flex flex-col gap-2.5">
+              {socialLinks.map(({ label, href, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-neutral-400 hover:text-white transition-colors duration-150 inline-flex items-center gap-2"
+                  >
+                    <Icon size={14} />
+                    <span>{label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -132,12 +137,12 @@ export default function SiteFooter() {
           © {new Date().getFullYear()} Ishtile. All rights reserved.
         </p>
         <div className="flex gap-2">
-          <Button asChild variant="link" size="sm" className="text-xs text-neutral-500 hover:text-white px-0 h-auto">
-            <Link href="/pages/privacy">Privacy Policy</Link>
-          </Button>
-          <Button asChild variant="link" size="sm" className="text-xs text-neutral-500 hover:text-white px-0 h-auto">
-            <Link href="/pages/terms">Terms of Use</Link>
-          </Button>
+          <Link href="/pages/privacy" className="text-xs text-neutral-500 hover:text-white transition-colors duration-150">
+            Privacy Policy
+          </Link>
+          <Link href="/pages/terms" className="text-xs text-neutral-500 hover:text-white transition-colors duration-150">
+            Terms of Use
+          </Link>
         </div>
       </div>
     </footer>
