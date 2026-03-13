@@ -29,6 +29,7 @@ function RegisterForm() {
   const [username, setUsername]   = useState('');
   const [fullName, setFullName]   = useState('');
   const [password, setPassword]   = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPwd, setShowPwd]     = useState(false);
   const [loading, setLoading]     = useState(false);
 
@@ -42,6 +43,11 @@ function RegisterForm() {
       return;
     }
     
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     try {
       await authConvexService.register({
@@ -69,7 +75,6 @@ function RegisterForm() {
           placeholder="01XXXXXXXXX"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          required
           autoFocus
         />
       </div>
@@ -127,6 +132,17 @@ function RegisterForm() {
             {showPwd ? <FiEyeOff size={16} /> : <FiEye size={16} />}
           </button>
         </div>
+      </div>
+
+      <div>
+        <label style={labelStyle}>Confirm Password</label>
+        <Input
+          type={showPwd ? 'text' : 'password'}
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
       </div>
 
       <Button type="submit" className="w-full tracking-widest uppercase" disabled={loading}>

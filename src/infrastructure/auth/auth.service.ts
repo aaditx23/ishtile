@@ -16,7 +16,7 @@ import type { UserDto } from '@/shared/types/api.types';
 // ─── Request payloads ─────────────────────────────────────────────────────────
 
 export interface RegisterPayload {
-  phone: string;
+  phone?: string;
   email: string;
   username: string;
   fullName: string;
@@ -91,14 +91,16 @@ export const authConvexService = {
    * Returns a minimal UserDto (id is the Convex userId string cast to number).
    */
   async register(payload: RegisterPayload): Promise<UserDto> {
-    validatePhone(payload.phone);
+    if (payload.phone?.trim()) {
+      validatePhone(payload.phone);
+    }
     validateEmail(payload.email);
     if (!payload.username.trim()) throw new Error('Username is required.');
     if (!payload.fullName.trim()) throw new Error('Full name is required.');
     if (!payload.password) throw new Error('Password is required.');
 
     const { token } = await postJson<{ token: string }>('/api/auth/register', {
-      phone: payload.phone.replace(/[\s\-]/g, ''),
+      phone: payload.phone?.trim() ? payload.phone.replace(/[\s\-]/g, '') : undefined,
       email: payload.email.trim(),
       username: payload.username.trim(),
       fullName: payload.fullName.trim(),
@@ -109,7 +111,7 @@ export const authConvexService = {
     // Return a stub UserDto — the app re-fetches full user via userRepository.getMe()
     return {
       id: 0 as unknown as number,
-      phone: payload.phone,
+      phone: payload.phone ?? '',
       email: payload.email,
       username: payload.username,
       fullName: payload.fullName,

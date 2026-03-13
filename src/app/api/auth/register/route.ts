@@ -41,7 +41,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const passwordHash = await bcrypt.hash(password, 12);
 
     const result = await convex.mutation(api.auth.users.register, {
-      phone,
+      phone: phone?.trim() ? phone : undefined,
       email,
       username,
       fullName,
