@@ -1,14 +1,14 @@
 import type { Cart } from '@/domain/cart/cart.entity';
 
 interface OrderReviewProps {
-  cart:            Cart;
-  promoDiscount?:  number;
-  shippingCost?:   number;
+  cart:           Cart;
+  promoDiscount?: number;
+  shippingCost:   number;
 }
 
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
-export default function OrderReview({ cart, promoDiscount = 0, shippingCost = 0 }: OrderReviewProps) {
+export default function OrderReview({ cart, promoDiscount = 0, shippingCost }: OrderReviewProps) {
   const total = cart.subtotal - promoDiscount + shippingCost;
 
   return (
@@ -71,7 +71,7 @@ export default function OrderReview({ cart, promoDiscount = 0, shippingCost = 0 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
         <Row label={`Subtotal (${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''})`} value={fmt(cart.subtotal)} />
         {promoDiscount > 0 && <Row label="Promo discount" value={`− ${fmt(promoDiscount)}`} highlight />}
-        <Row label="Shipping" value={shippingCost > 0 ? fmt(shippingCost) : 'Free'} />
+        <Row label="Shipping" value={fmt(shippingCost)} />
         <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
         <Row label="Total" value={fmt(total)} bold />
       </div>

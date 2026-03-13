@@ -14,6 +14,7 @@ import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
 import { getAdminOrders } from '@/application/order/getAdminOrders';
 import { generateMemo } from '@/application/order/generateMemo';
+import { confirmOrderWithDelivery } from '@/application/order/confirmOrderWithDelivery';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
@@ -147,6 +148,230 @@ function BatchProgressModal({
   );
 }
 
+// ─── Batch Pathao delivery modal ──────────────────────────────────────────────
+
+type PathaoItemStatus = 'pending' | 'processing' | 'done' | 'error' | 'skipped';
+
+interface PathaoItem {
+  id:          number;
+  orderNumber: string;
+  status:      PathaoItemStatus;
+  error?:      string;
+  consignmentId?: string;
+}
+
+function BatchPathaoModal({
+  orders,
+  itemWeight,
+  onClose,
+}: {
+  orders:     Order[];
+  itemWeight: number;
+  onClose:    () => void;
+}) {
+  const [items, setItems]     = useState<PathaoItem[]>(() =>
+    orders.map((o) => ({ id: o.id, orderNumber: o.orderNumber, status: 'pending' })),
+  );
+  const [started, setStarted] = useState(false);
+  const [done, setDone]       = useState(false);
+
+  const allSettled = items.every((i) => ['done', 'error', 'skipped'].includes(i.status));
+
+  const runBatch = async (currentItems: PathaoItem[], currentOrders: Order[]) => {
+    setStarted(true);
+    for (let i = 0; i < currentItems.length; i++) {
+      setItems((prev) => prev.map((it, idx) => idx === i ? { ...it, status: 'processing' } : it));
+      const order = currentOrders[i];
+      if (order.status !== 'new') {
+        setItems((prev) => prev.map((it, idx) => idx === i ? { ...it, status: 'skipped', error: `Status: ${order.status}` } : it));
+        continue;
+      }
+      try {
+        const result = await confirmOrderWithDelivery(order.id, {
+          deliveryMode: 'pathao',
+          itemWeight,
+          itemQuantity: order.items?.reduce((s, item) => s + item.quantity, 0),
+          deliveryType: 'Normal Delivery',
+          amountToCollect: order.total,
+        });
+        setItems((prev) => prev.map((it, idx) =>
+          idx === i ? { ...it, status: 'done', consignmentId: result.consignmentId } : it,
+        ));
+      } catch (err) {
+        setItems((prev) => prev.map((it, idx) =>
+          idx === i
+            ? { ...it, status: 'error', error: err instanceof Error ? err.message : 'Failed' }
+            : it,
+        ));
+      }
+    }
+    setDone(true);
+  };
+
+  const iconFor = (s: PathaoItemStatus) => {
+    if (s === 'pending')    return <span style={{ color: '#aaa' }}>○</span>;
+    if (s === 'processing') return <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>;
+    if (s === 'done')       return <span style={{ color: '#22c55e' }}>✓</span>;
+    if (s === 'error')      return <span style={{ color: '#ef4444' }}>✕</span>;
+    if (s === 'skipped')    return <span style={{ color: '#f59e0b' }}>–</span>;
+    return null;
+  };
+
+  const doneCount = items.filter((i) => i.status === 'done').length;
+
+  return (
+    <div
+      style={{
+        position:        'fixed',
+        inset:           0,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        display:         'flex',
+        alignItems:      'center',
+        justifyContent:  'center',
+        zIndex:          9999,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'var(--surface)',
+          borderRadius:    '0.875rem',
+          padding:         '1.75rem',
+          width:           '100%',
+          maxWidth:        '32rem',
+          boxShadow:       '0 8px 32px rgba(0,0,0,0.18)',
+          display:         'flex',
+          flexDirection:   'column',
+          gap:             '1rem',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>
+            📦 Create Pathao Deliveries
+          </h2>
+          {started && (
+            <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
+              {doneCount} / {items.length} booked
+            </span>
+          )}
+        </div>
+
+        {!started && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <p style={{ fontSize: '0.82rem', color: 'var(--on-surface-muted)', margin: 0 }}>
+              All {orders.length} selected orders will be sent to Pathao using Normal Delivery with weight {itemWeight} kg each.
+              Orders that are not in &ldquo;new&rdquo; status will be skipped.
+            </p>
+          </div>
+        )}
+
+        {started && (
+          <>
+            <div style={{ height: 4, borderRadius: 4, background: 'var(--border)', overflow: 'hidden' }}>
+              <div
+                style={{
+                  height:    '100%',
+                  borderRadius: 4,
+                  width:     `${(doneCount / items.length) * 100}%`,
+                  background: 'var(--brand-gold, #b8860b)',
+                  transition: 'width 0.3s',
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '16rem', overflowY: 'auto' }}>
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display:      'flex',
+                    alignItems:   'center',
+                    gap:          '0.6rem',
+                    padding:      '0.35rem 0.6rem',
+                    borderRadius: '0.4rem',
+                    background:   item.status === 'processing' ? 'var(--surface-muted, #f4f4f4)' : 'transparent',
+                    fontSize:     '0.82rem',
+                  }}
+                >
+                  <span style={{ width: 18, textAlign: 'center', flexShrink: 0 }}>
+                    {iconFor(item.status)}
+                  </span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>#{item.orderNumber}</span>
+                  {item.consignmentId && (
+                    <span style={{ fontSize: '0.7rem', color: 'var(--on-surface-muted)', marginLeft: 'auto' }}>
+                      {item.consignmentId}
+                    </span>
+                  )}
+                  {(item.status === 'error' || item.status === 'skipped') && (
+                    <span style={{ fontSize: '0.72rem', color: item.status === 'error' ? '#ef4444' : '#f59e0b', marginLeft: 'auto' }}>
+                      {item.error}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+          {!started && (
+            <>
+              <button
+                onClick={onClose}
+                style={{
+                  padding:      '0.5rem 1rem',
+                  background:   'transparent',
+                  border:       '1px solid var(--border)',
+                  borderRadius: '0.5rem',
+                  fontWeight:   600,
+                  fontSize:     '0.82rem',
+                  cursor:       'pointer',
+                  color:        'var(--on-surface)',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => runBatch(items, orders)}
+                style={{
+                  padding:      '0.5rem 1.25rem',
+                  background:   'var(--brand-dark, #000)',
+                  color:        '#fff',
+                  border:       'none',
+                  borderRadius: '0.5rem',
+                  fontWeight:   600,
+                  fontSize:     '0.82rem',
+                  cursor:       'pointer',
+                }}
+              >
+                Start ({orders.length})
+              </button>
+            </>
+          )}
+          {(allSettled || done) && (
+            <button
+              onClick={onClose}
+              style={{
+                padding:      '0.5rem 1.25rem',
+                background:   'var(--brand-dark, #000)',
+                color:        '#fff',
+                border:       'none',
+                borderRadius: '0.5rem',
+                fontWeight:   600,
+                fontSize:     '0.82rem',
+                cursor:       'pointer',
+              }}
+            >
+              Close
+            </button>
+          )}
+        </div>
+      </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
 export default function AdminOrdersView() {
   const searchParams                = useSearchParams();
   const page                        = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -156,8 +381,10 @@ export default function AdminOrdersView() {
   const [loading, setLoading]       = useState(true);
 
   // ── selection state ─────────────────────────────────────────────────────────
-  const [selected, setSelected]           = useState<Set<number>>(new Set());
-  const [downloadItems, setDownloadItems] = useState<DownloadItem[] | null>(null);
+  const [selected, setSelected]             = useState<Set<number>>(new Set());
+  const [downloadItems, setDownloadItems]   = useState<DownloadItem[] | null>(null);
+  const [batchPathaoOrders, setBatchPathao] = useState<Order[] | null>(null);
+  const BATCH_ITEM_WEIGHT                   = 0.5; // kg default for batch
 
   useEffect(() => {
     setLoading(true);
@@ -250,24 +477,47 @@ export default function AdminOrdersView() {
               <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Orders</h1>
 
               {selected.size > 0 && (
-                <button
-                  onClick={handleBatchDownload}
-                  style={{
-                    padding:      '0.45rem 1rem',
-                    background:   'var(--brand-dark, #000)',
-                    color:        '#fff',
-                    border:       'none',
-                    borderRadius: '0.5rem',
-                    fontWeight:   600,
-                    fontSize:     '0.8rem',
-                    cursor:       'pointer',
-                    display:      'flex',
-                    alignItems:   'center',
-                    gap:          '0.4rem',
-                  }}
-                >
-                  ↓ Download Memos ({selected.size})
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={handleBatchDownload}
+                    style={{
+                      padding:      '0.45rem 1rem',
+                      background:   'var(--brand-dark, #000)',
+                      color:        '#fff',
+                      border:       'none',
+                      borderRadius: '0.5rem',
+                      fontWeight:   600,
+                      fontSize:     '0.8rem',
+                      cursor:       'pointer',
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '0.4rem',
+                    }}
+                  >
+                    ↓ Download Memos ({selected.size})
+                  </button>
+                  <button
+                    onClick={() => {
+                      const toConfirm = orders.filter((o) => selected.has(o.id));
+                      setBatchPathao(toConfirm);
+                    }}
+                    style={{
+                      padding:      '0.45rem 1rem',
+                      background:   '#1d4ed8',
+                      color:        '#fff',
+                      border:       'none',
+                      borderRadius: '0.5rem',
+                      fontWeight:   600,
+                      fontSize:     '0.8rem',
+                      cursor:       'pointer',
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '0.4rem',
+                    }}
+                  >
+                    📦 Pathao Delivery ({selected.size})
+                  </button>
+                </div>
               )}
             </div>
 
@@ -383,6 +633,15 @@ export default function AdminOrdersView() {
         <BatchProgressModal
           items={downloadItems}
           onClose={() => { setDownloadItems(null); setSelected(new Set()); }}
+        />
+      )}
+
+      {/* ── Batch Pathao delivery modal ──────────────────────────────────── */}
+      {batchPathaoOrders && (
+        <BatchPathaoModal
+          orders={batchPathaoOrders}
+          itemWeight={BATCH_ITEM_WEIGHT}
+          onClose={() => { setBatchPathao(null); setSelected(new Set()); }}
         />
       )}
     </ShopLayout>

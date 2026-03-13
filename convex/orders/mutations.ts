@@ -161,9 +161,9 @@ export const createOrder = mutation({
       promoDiscount = promoResult.discount;
     }
 
-    // ── 6. Calculate total ───────────────────────────────────────────────────
+    // ── 6. Shipping cost (fixed manual model) ──────────────────────────────
     const shippingCost = await calculateShippingCost(ctx, shippingFields.shippingCity);
-    const total = subtotal - promoDiscount + shippingCost;
+    const total        = subtotal - promoDiscount + shippingCost;
 
     // ── 7. Create order ──────────────────────────────────────────────────────
     const orderNumber = generateOrderNumber();
@@ -269,6 +269,11 @@ export const updateOrderStatus = mutation({
   handler: async (ctx, { orderId, status, adminNotes, adminUserId }) => {
     const order = await ctx.db.get(orderId);
     if (!order) throw new Error("Order not found");
+
+    // Pathao orders are status-controlled by webhooks only
+    if (order.deliveryMode === "pathao") {
+      throw new Error("Cannot manually update status: order is handled by Pathao courier");
+    }
 
     const oldStatus = order.status;
 
@@ -428,3 +433,53 @@ async function updateProductSummaryHelper(ctx: any, orderId: any) {
     }
   }
 }
+
+// ─── Set delivery mode (admin — called from confirm endpoint) ─────────────────
+
+export const setDeliveryMode = mutation({
+  args: {
+    orderId:      v.id("orders"),
+    deliveryMode: v.union(v.literal("manual"), v.literal("pathao")),
+    shippingCost: v.optional(v.number()),
+    adminUserId:  v.id("users"),
+  },
+  handler: async (ctx, { orderId, deliveryMode, shippingCost, adminUserId }) => {
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+    // Pathao is a permanent assignment — cannot revert to manual
+    if (order.deliveryMode === "pathao") throw new Error("Cannot revert courier delivery to manual");
+    // Allow: first confirmation (status=new) OR manual→pathao upgrade
+    const isUpgrade = order.deliveryMode === "manual" && deliveryMode === "pathao";
+    if (order.status !== "new" && !isUpgrade) throw new Error("Order already confirmed in this mode");
+
+    const now = Date.now();
+    const patch: Record<string, unknown> = {
+      deliveryMode,
+      status: "confirmed",
+      confirmedAt: now,
+    };
+
+    if (shippingCost !== undefined) {
+      patch.shippingCost = shippingCost;
+      patch.total        = order.subtotal - order.promoDiscount + shippingCost;
+    }
+
+    await ctx.db.patch(orderId, patch);
+
+    await ctx.db.insert("auditLogs", {
+      userId:      adminUserId,
+      actionType:  "status_change",
+      entityType:  "order",
+      entityId:    orderId,
+      oldValue:    JSON.stringify({ status: "new" }),
+      newValue:    JSON.stringify({ status: "confirmed", deliveryMode }),
+      description: `Order ${order.orderNumber} confirmed with ${deliveryMode} delivery`,
+    });
+
+    // Update analytics
+    await updateDailySummaryHelper(ctx, now);
+    await updateProductSummaryHelper(ctx, orderId);
+
+    return { success: true };
+  },
+});

@@ -83,15 +83,14 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
         <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
           {SHOP_LINKS.map((link) => (
             <NavigationMenuItem key={link.href} className="w-full">
-              <Link href={link.href} legacyBehavior passHref>
-                <NavigationMenuLink
-                  active={isLinkActive(link.href)}
-                  onClick={onClose}
-                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                >
-                  {link.label}
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink
+                asChild
+                active={isLinkActive(link.href)}
+                onClick={onClose}
+                className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+              >
+                <Link href={link.href}>{link.label}</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
@@ -109,15 +108,14 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
             <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
               {USER_LINKS.map((link) => (
                 <NavigationMenuItem key={link.href} className="w-full">
-                  <Link href={link.href} legacyBehavior passHref>
-                    <NavigationMenuLink
-                      active={isLinkActive(link.href)}
-                      onClick={onClose}
-                      className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                    >
-                      {link.label}
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink
+                    asChild
+                    active={isLinkActive(link.href)}
+                    onClick={onClose}
+                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                  >
+                    <Link href={link.href}>{link.label}</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
@@ -136,15 +134,14 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
           <NavigationMenu orientation="vertical" viewport={false}>
             <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
               <NavigationMenuItem className="w-full">
-                <Link href="/admin" legacyBehavior passHref>
-                  <NavigationMenuLink
-                    active={pathname === '/admin' || pathname.startsWith('/admin/')}
-                    onClick={onClose}
-                    className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
-                  >
-                    Dashboard
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  asChild
+                  active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                  onClick={onClose}
+                  className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] rounded-lg data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
+                >
+                  <Link href="/admin">Dashboard</Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

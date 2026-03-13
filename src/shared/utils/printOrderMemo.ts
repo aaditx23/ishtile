@@ -266,7 +266,7 @@ export function printOrderMemo(order: Order): void {
   <div class="totals">
     <div class="totals-row"><span>Subtotal</span><span>${fmt(order.subtotal)}</span></div>
     ${order.promoDiscount > 0 ? `<div class="totals-row"><span>Promo discount</span><span>− ${fmt(order.promoDiscount)}</span></div>` : ''}
-    <div class="totals-row"><span>Shipping</span><span>${order.shippingCost > 0 ? fmt(order.shippingCost) : 'Free'}</span></div>
+    <div class="totals-row"><span>${order.status === 'new' ? 'Delivery Fee' : 'Shipping'}</span><span>${order.status === 'new' ? 'Pending' : fmt(order.shippingCost)}</span></div>
     <hr class="totals-divider"/>
     <div class="totals-total"><span>Total</span><span>${fmt(order.total)}</span></div>
     <p class="totals-payment">${order.isPaid ? '✓ Payment received' : 'Payment due on delivery'}</p>

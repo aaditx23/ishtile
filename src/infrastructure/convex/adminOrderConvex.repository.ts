@@ -2,7 +2,7 @@ import { convex } from './convexClient';
 import { asId, fromId, buildPagination } from './convexHelpers';
 import { api } from '../../../convex/_generated/api';
 import { requireConvexUserId } from './convexAuth';
-import type { Order, OrderItem } from '@/domain/order/order.entity';
+import type { Order, OrderItem, Shipment } from '@/domain/order/order.entity';
 import type { UpdateOrderStatusPayload } from '@/domain/order/admin-order.repository';
 import type { ListOrdersParams, PaginatedOrders } from '@/domain/order/order.repository';
 
@@ -14,6 +14,27 @@ function mapOrderItem(item: any): OrderItem {
     unitPrice: item.unitPrice, quantity: item.quantity, lineTotal: item.lineTotal,
   };
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapShipment(s: any): Shipment {
+  return {
+    id:                  asId(s._id),
+    orderId:             asId(s.orderId),
+    consignmentId:       s.consignmentId ?? null,
+    deliveryFee:         s.deliveryFee,
+    itemWeight:          s.itemWeight,
+    itemQuantity:        s.itemQuantity,
+    deliveryType:        s.deliveryType,
+    specialInstructions: s.specialInstructions ?? null,
+    pathaoStatus:        s.pathaoStatus ?? null,
+    status:              s.status,
+    statusUpdateTime:    s.statusUpdateTime ?? null,
+    deliveryProvider:    s.deliveryProvider,
+    trackingData:        s.trackingData ?? null,
+    createdAt:           new Date(s._creationTime).toISOString(),
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapOrder(o: any): Order {
   return {
@@ -22,11 +43,17 @@ function mapOrder(o: any): Order {
     shippingCost: o.shippingCost, total: o.total,
     shippingName: o.shippingName, shippingPhone: o.shippingPhone,
     shippingAddress: o.shippingAddress, shippingCity: o.shippingCity,
-    shippingPostalCode: o.shippingPostalCode ?? null,
+    shippingPostalCode:  o.shippingPostalCode ?? null,
+    shippingAddressLine: o.shippingAddressLine ?? null,
+    shippingCityId:      o.shippingCityId ?? null,
+    shippingZoneId:      o.shippingZoneId ?? null,
+    shippingAreaId:      o.shippingAreaId ?? null,
     customerNotes: o.customerNotes ?? null, adminNotes: o.adminNotes ?? null,
     isPaid: o.isPaid, paymentMethod: 'cod',
+    deliveryMode: o.deliveryMode ?? null,
     createdAt: new Date(o._creationTime).toISOString(),
-    items: o.items ? o.items.map(mapOrderItem) : undefined,
+    items:    o.items    ? o.items.map(mapOrderItem)    : undefined,
+    shipment: o.shipment ? mapShipment(o.shipment)      : null,
   };
 }
 

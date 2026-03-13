@@ -29,6 +29,14 @@ export const shipmentTables = {
     errorMessage:     v.optional(v.string()),
     pickedUpAt:       v.optional(v.number()),
     deliveredAt:      v.optional(v.number()),
+    // Extended Pathao fields
+    itemQuantity:         v.optional(v.number()),
+    deliveryType:         v.optional(v.number()),
+    specialInstructions:  v.optional(v.string()),
+    pathaoStatus:         v.optional(v.string()),
+    statusUpdateTime:     v.optional(v.number()),
+    deliveryProvider:     v.optional(v.string()),
+    trackingData:         v.optional(v.string()),
   })
     .index('by_order',       ['orderId'])
     .index('by_consignment', ['consignmentId']),

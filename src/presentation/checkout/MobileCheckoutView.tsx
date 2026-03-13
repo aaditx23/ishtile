@@ -200,7 +200,11 @@ export default function MobileCheckoutView({
 
         {/* Order summary */}
         <Section title="Order Summary">
-          <OrderReview cart={cart} promoDiscount={promoDiscount} shippingCost={shippingCost} />
+          <OrderReview
+            cart={cart}
+            promoDiscount={promoDiscount}
+            shippingCost={shippingCost}
+          />
         </Section>
 
         {/* Promo */}

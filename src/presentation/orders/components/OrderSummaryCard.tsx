@@ -39,6 +39,8 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
   const orderDate = new Date(order.createdAt).toLocaleDateString('en-GB', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
+  const shippingLabel = 'Shipping';
+  const shippingValue = fmt(order.shippingCost);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -71,7 +73,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
               value={<span style={{ color: 'var(--brand-gold)' }}>− {fmt(order.promoDiscount)}</span>}
             />
           )}
-          <Row label="Shipping" value={order.shippingCost > 0 ? fmt(order.shippingCost) : 'Free'} />
+          <Row label={shippingLabel} value={shippingValue} />
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
           <Row label={<strong>Total</strong>} value={<strong>{fmt(order.total)}</strong>} />
           <Row label="Payment" value={order.isPaid ? '✓ Paid' : 'Cash on Delivery'} />

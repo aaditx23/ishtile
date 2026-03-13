@@ -31,8 +31,8 @@ export const orderTables = {
     confirmedAt:         v.optional(v.number()),
     shippedAt:           v.optional(v.number()),
     deliveredAt:         v.optional(v.number()),
-    cancelledAt:         v.optional(v.number()),
-  })
+    cancelledAt:         v.optional(v.number()),    // Dual delivery system fields
+    deliveryMode:         v.optional(v.union(v.literal('manual'), v.literal('pathao'))),  })
     .index('by_user',        ['userId'])
     .index('by_status',      ['status'])
     .index('by_orderNumber', ['orderNumber']),

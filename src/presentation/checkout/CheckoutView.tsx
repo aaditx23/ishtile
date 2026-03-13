@@ -45,39 +45,7 @@ export default function CheckoutView() {
   const [codConfirmed, setCodConfirmed] = useState(false);
   const [showNewForm, setShowNewForm]   = useState(false);
   const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
-  const [shippingCost, setShippingCost] = useState(0);
-
-  // Fetch admin settings on mount
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const settings = await getAdminSettings();
-        setAdminSettings(settings);
-      } catch {
-        // Use defaults if fetch fails
-        setAdminSettings({
-          insideDhakaShippingCost: 60,
-          outsideDhakaShippingCost: 120,
-        });
-      }
-    };
-    fetchSettings();
-  }, []);
-
-  // Calculate shipping cost whenever city changes
-  useEffect(() => {
-    if (!adminSettings || !fields.cityName) {
-      setShippingCost(0);
-      return;
-    }
-    
-    const isDhaka = fields.cityName.toLowerCase().trim() === 'dhaka';
-    const cost = isDhaka 
-      ? adminSettings.insideDhakaShippingCost 
-      : adminSettings.outsideDhakaShippingCost;
-    
-    setShippingCost(cost);
-  }, [fields.cityName, adminSettings]);
+  const [shippingCost, setShippingCost]   = useState(0);
 
   const fetchCart = useCallback(async () => {
     setCartLoading(true);
@@ -93,6 +61,41 @@ export default function CheckoutView() {
   }, [router]);
 
   useEffect(() => { fetchCart(); }, [fetchCart]);
+
+  // Load admin shipping settings for manual shipping fee
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getAdminSettings();
+        setAdminSettings(settings);
+      } catch {
+        // Fallback to safe defaults if settings cannot be loaded
+        setAdminSettings({ insideDhakaShippingCost: 60, outsideDhakaShippingCost: 120 });
+      }
+    };
+    loadSettings();
+  }, []);
+
+  // Recalculate shipping cost when city or settings change
+  useEffect(() => {
+    if (!adminSettings) {
+      setShippingCost(0);
+      return;
+    }
+
+    const city = fields.cityName.trim().toLowerCase();
+    if (!city) {
+      setShippingCost(0);
+      return;
+    }
+
+    const isDhaka = city === 'dhaka';
+    const cost    = isDhaka
+      ? adminSettings.insideDhakaShippingCost
+      : adminSettings.outsideDhakaShippingCost;
+
+    setShippingCost(cost);
+  }, [fields.cityName, adminSettings]);
 
   const handlePromoApply = (result: PromoValidationDto, code: string) => {
     setPromoResult(result);
@@ -129,6 +132,7 @@ export default function CheckoutView() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+
     setSubmitting(true);
     try {
       const order = await createOrder({

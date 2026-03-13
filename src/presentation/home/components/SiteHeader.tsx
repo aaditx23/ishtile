@@ -129,15 +129,14 @@ export default function SiteHeader() {
               <NavigationMenuList className="gap-2">
                 {SHOP_LINKS.map((link) => (
                   <NavigationMenuItem key={link.href}>
-                    <Link href={link.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        active={isLinkActive(link.href)}
-                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
-                        style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
-                      >
-                        {link.label}
-                      </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink
+                      asChild
+                      active={isLinkActive(link.href)}
+                      className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                      style={{ paddingLeft: '0.5rem', paddingRight: '0.5rem' }}
+                    >
+                      <Link href={link.href}>{link.label}</Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
                 
@@ -146,15 +145,14 @@ export default function SiteHeader() {
                     <div className="w-px h-4 bg-white/20 mx-3" />
                     {USER_LINKS.map((link) => (
                       <NavigationMenuItem key={link.href}>
-                        <Link href={link.href} legacyBehavior passHref>
-                          <NavigationMenuLink
-                            active={isLinkActive(link.href)}
-                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
-                            style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}  
-                          >
-                            {link.label}
-                          </NavigationMenuLink>
-                        </Link>
+                        <NavigationMenuLink
+                          asChild
+                          active={isLinkActive(link.href)}
+                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                          style={{ paddingLeft: '0.5rem', paddingRight: '0.5rem' }}
+                        >
+                          <Link href={link.href}>{link.label}</Link>
+                        </NavigationMenuLink>
                       </NavigationMenuItem>
                     ))}
                   </>
@@ -164,15 +162,14 @@ export default function SiteHeader() {
                   <>
                     <div className="w-px h-4 bg-white/20 mx-3" />
                     <NavigationMenuItem>
-                      <Link href="/admin" legacyBehavior passHref>
-                        <NavigationMenuLink
-                          active={pathname === '/admin' || pathname.startsWith('/admin/')}
-                          style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
-                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
-                        >
-                          Dashboard
-                        </NavigationMenuLink>
-                      </Link>
+                      <NavigationMenuLink
+                        asChild
+                        active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                        style={{ paddingLeft: '0.5rem', paddingRight: '0.5rem' }}
+                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
+                      >
+                        <Link href="/admin">Dashboard</Link>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                   </>
                 )}

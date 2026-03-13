@@ -10,10 +10,12 @@ import { AdminSidebarNav } from './AdminLayout';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
 import OrderStatusSelector from './components/OrderStatusSelector';
+import DeliveryModeConfirmPanel from './components/DeliveryModeConfirmPanel';
+import CourierDeliveryCard from './components/CourierDeliveryCard';
 import { Button } from '@/components/ui/button';
 import { getAdminOrder } from '@/application/order/getAdminOrder';
 import { generateMemo } from '@/application/order/generateMemo';
-import type { Order } from '@/domain/order/order.entity';
+import type { Order, Shipment } from '@/domain/order/order.entity';
 
 const sectionStyle: React.CSSProperties = {
   border:          '1px solid var(--border)',
@@ -61,6 +63,64 @@ export default function AdminOrderDetailView() {
       .finally(() => setLoading(false));
   }, [params.id]);
 
+  // ─── Right-column: delivery section ───────────────────────────────────────
+
+  function renderDeliverySection() {
+    if (!order) return null;
+
+    const isPathao = order.deliveryMode === 'pathao';
+
+    const reloadOrder = () => {
+      const reloadId = params.id as unknown as number;
+      getAdminOrder(reloadId)
+        .then((refreshed) => { if (refreshed) setOrder(refreshed); })
+        .catch(() => {});
+    };
+
+    return (
+      <>
+        {/* Delivery mode selector — always visible */}
+        <div style={sectionStyle}>
+          <p style={headingStyle}>Delivery Mode</p>
+          <DeliveryModeConfirmPanel
+            order={order}
+            onOrderConfirmed={reloadOrder}
+          />
+        </div>
+
+        {/* Pathao courier card — shown once shipment exists */}
+        {isPathao && order.shipment && (
+          <div style={sectionStyle}>
+            <p style={headingStyle}>Pathao Courier</p>
+            <CourierDeliveryCard
+              shipment={order.shipment}
+              onStatusSync={(updated) =>
+                setOrder((o) =>
+                  o ? { ...o, shipment: o.shipment ? { ...o.shipment, ...updated } as Shipment : null } : o,
+                )
+              }
+            />
+          </div>
+        )}
+
+        {/* Status — only for manual delivery; Pathao orders auto-update via webhook */}
+        {order.deliveryMode === 'manual' && (
+          <div style={sectionStyle}>
+            <p style={headingStyle}>Update Status</p>
+            <OrderStatusSelector
+              key={order.status}
+              orderId={order.id}
+              currentStatus={order.status}
+              onStatusChange={(s, adminNotes) =>
+                setOrder((o) => o ? { ...o, status: s, ...(adminNotes !== null ? { adminNotes } : {}) } : o)
+              }
+            />
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <ShopLayout>
       {/* Mobile-only nav */}
@@ -105,13 +165,8 @@ export default function AdminOrderDetailView() {
             {order && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <OrderSummaryCard order={order} />
-                <div style={sectionStyle}>
-                  <p style={headingStyle}>Update Status</p>
-                  <OrderStatusSelector
-                    orderId={order.id}
-                    currentStatus={order.status}
-                    onStatusChange={(s, adminNotes) => setOrder((o) => o ? { ...o, status: s, ...(adminNotes !== null ? { adminNotes } : {}) } : o)}
-                  />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {renderDeliverySection()}
                 </div>
               </div>
             )}

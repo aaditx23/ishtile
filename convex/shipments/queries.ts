@@ -35,3 +35,13 @@ export const listShipments = query({
     return { items, total, page, pageSize };
   },
 });
+
+export const getActivePathaoStore = query({
+  args: {},
+  handler: async (ctx) => {
+    return ctx.db
+      .query("pathaoStores")
+      .withIndex("by_isActive", (q) => q.eq("isActive", true))
+      .first();
+  },
+});
