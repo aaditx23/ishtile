@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { FiInstagram, FiFacebook, FiMessageCircle } from 'react-icons/fi';
 import { Separator } from '@/components/ui/separator';
 import { Marquee } from '@/components/ui/marquee';
@@ -38,9 +41,9 @@ function FooterColumn({
   );
 }
 
-export default async function SiteFooter() {
-  let categoryLinks: { label: string; href: string }[] = [];
-  let brandLinks: { label: string; href: string }[] = [];
+export default function SiteFooter() {
+  const [categoryLinks, setCategoryLinks] = useState<{ label: string; href: string }[]>([]);
+  const [brandLinks, setBrandLinks] = useState<{ label: string; href: string }[]>([]);
 
   const facebookUrl = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL || 'https://facebook.com';
   const instagramUrl = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL || 'https://instagram.com';
@@ -54,23 +57,42 @@ export default async function SiteFooter() {
     { label: 'WhatsApp', href: whatsappUrl, Icon: FiMessageCircle },
   ];
 
-  try {
-    const [categories, brands] = await Promise.all([
-      getCategories({ activeOnly: true, includeSubcategories: false }),
-      getBrands({ activeOnly: true }),
-    ]);
+  useEffect(() => {
+    let isMounted = true;
 
-    categoryLinks = categories
-      .slice(0, 4)
-      .map((category) => ({ label: category.name, href: `/products?category=${encodeURIComponent(category.slug)}` }));
+    const fetchFooterData = async () => {
+      try {
+        const [categories, brands] = await Promise.all([
+          getCategories({ activeOnly: true, includeSubcategories: false }),
+          getBrands({ activeOnly: true }),
+        ]);
 
-    brandLinks = brands
-      .slice(0, 4)
-      .map((brand) => ({ label: brand.name, href: `/products?brand=${encodeURIComponent(brand.slug)}` }));
-  } catch {
-    categoryLinks = [];
-    brandLinks = [];
-  }
+        if (!isMounted) return;
+
+        setCategoryLinks(
+          categories
+            .slice(0, 4)
+            .map((category) => ({ label: category.name, href: `/products?category=${encodeURIComponent(category.slug)}` })),
+        );
+
+        setBrandLinks(
+          brands
+            .slice(0, 4)
+            .map((brand) => ({ label: brand.name, href: `/products?brand=${encodeURIComponent(brand.slug)}` })),
+        );
+      } catch {
+        if (!isMounted) return;
+        setCategoryLinks([]);
+        setBrandLinks([]);
+      }
+    };
+
+    fetchFooterData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>

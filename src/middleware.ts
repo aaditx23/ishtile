@@ -42,15 +42,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect authenticated users from auth routes to home
-  if (isAuthRoute && isAuthenticated) {
-    // Check if there's a 'next' parameter to redirect to
-    const nextParam = request.nextUrl.searchParams.get('next');
-    const redirectUrl = nextParam && nextParam.startsWith('/') 
-      ? new URL(nextParam, request.url)
-      : new URL('/', request.url);
-    return NextResponse.redirect(redirectUrl);
-  }
+  // Never block access to auth routes from middleware — the login/register
+  // pages handle "already authenticated" state client-side. A stale
+  // Ishtile_sess cookie (JWT expired but cookie still alive) would otherwise
+  // trap users in a redirect loop they can never escape.
 
   return NextResponse.next();
 }

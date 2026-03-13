@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { authConvexService } from '@/infrastructure/auth/authConvex.service';
+import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -28,6 +29,18 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd]   = useState(false);
   const [loading, setLoading]   = useState(false);
+
+  useEffect(() => {
+    const token = tokenStore.getRefresh();
+    if (token) {
+      // Real token exists — already logged in, redirect away
+      router.replace(next.startsWith('/') ? next : '/');
+    } else {
+      // No real token but stale session cookie may exist — clear it
+      tokenStore.clearAll();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
