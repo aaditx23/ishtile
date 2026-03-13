@@ -174,7 +174,7 @@ function ResetPasswordForm({ fromProfile }: { fromProfile: boolean }) {
   );
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordClient() {
   const searchParams  = useSearchParams();
   const fromParam     = (searchParams.get('from') ?? '').toLowerCase();
   const redirectParam = (searchParams.get('redirectTo') ?? '').toLowerCase();
@@ -194,9 +194,7 @@ export default function ResetPasswordPage() {
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem', textAlign: 'center' }}>
             Reset Password
           </h1>
-          <Suspense>
-            <ResetPasswordForm fromProfile={fromProfile} />
-          </Suspense>
+          <ResetPasswordForm fromProfile={fromProfile} />
         </div>
 
         {!fromProfile && (
@@ -209,5 +207,13 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordClient />
+    </Suspense>
   );
 }
