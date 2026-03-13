@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { authConvexService } from '@/infrastructure/auth/authConvex.service';
+import { authConvexService } from '@/infrastructure/auth/auth.service';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
 const labelStyle: React.CSSProperties = {
