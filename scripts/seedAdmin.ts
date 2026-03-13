@@ -26,6 +26,7 @@ if (!CONVEX_URL) {
 const ADMIN_EMAIL = 'admin@yopmail.com';
 const ADMIN_PHONE = '+8801700000000';
 const ADMIN_PASSWORD = 'admin123';
+const ADMIN_USERNAME = 'admin';
 
 async function seedAdmin() {
   const client = new ConvexHttpClient(CONVEX_URL!);
@@ -40,6 +41,7 @@ async function seedAdmin() {
     const result = await client.mutation(api.auth.users.createAdmin, {
       phone: ADMIN_PHONE,
       email: ADMIN_EMAIL,
+      username: ADMIN_USERNAME,
       passwordHash,
       fullName: 'Admin User',
     });

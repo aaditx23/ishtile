@@ -13,6 +13,8 @@ interface MobileProfileViewProps {
   form:     UpdateUserPayload;
   patch:    (key: keyof UpdateUserPayload) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onPasswordReset: () => void;
+  sendingReset: boolean;
 }
 
 export default function MobileProfileView({
@@ -22,6 +24,8 @@ export default function MobileProfileView({
   form,
   patch,
   onSubmit,
+  onPasswordReset,
+  sendingReset,
 }: MobileProfileViewProps) {
   return (
     <div style={{ padding: '1.25rem 1rem' }}>
@@ -49,6 +53,42 @@ export default function MobileProfileView({
           patch={patch}
           onSubmit={onSubmit}
         />
+      </div>
+
+      <div
+        style={{
+          border:          '1px solid var(--border)',
+          padding:         '1.25rem',
+          backgroundColor: 'var(--surface)',
+          marginTop:       '1.25rem',
+        }}
+      >
+        <h2 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.5rem' }}>Change Password</h2>
+        <p style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)', marginBottom: '0.75rem' }}>
+          We’ll email you a secure reset link.
+        </p>
+        <button
+          type="button"
+          onClick={onPasswordReset}
+          disabled={sendingReset}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            padding: '0.5rem 1.25rem',
+            backgroundColor: 'var(--primary)',
+            color: 'var(--on-primary)',
+            border: 'none',
+            cursor: sendingReset ? 'not-allowed' : 'pointer',
+            opacity: sendingReset ? 0.7 : 1,
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            width: '100%',
+            justifyContent: 'center',
+          }}
+        >
+          {sendingReset ? 'Sending…' : 'Send Reset Link'}
+        </button>
       </div>
 
       <div

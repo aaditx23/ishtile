@@ -61,13 +61,43 @@ export default function ProfileView() {
     }
   };
 
+  const [sendingReset, setSendingReset] = useState(false);
+  const handlePasswordReset = async () => {
+    if (!user?.email) {
+      toast.error('Please add an email address to your profile first.');
+      return;
+    }
+    setSendingReset(true);
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, redirectTo: 'profile' }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        toast.error(data.message ?? 'Failed to send reset email.');
+      } else {
+        toast.success('Reset link sent. Check your email.');
+      }
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setSendingReset(false);
+    }
+  };
+
   const formProps = { user, loading, saving, form, patch, onSubmit: handleSubmit };
 
   return (
     <ShopLayout>
       {/* Mobile: full-width vertical layout */}
       <div className="block lg:hidden">
-        <MobileProfileView {...formProps} />
+        <MobileProfileView
+          {...formProps}
+          onPasswordReset={handlePasswordReset}
+          sendingReset={sendingReset}
+        />
       </div>
 
       {/* Desktop: centered card */}
@@ -82,6 +112,39 @@ export default function ProfileView() {
           >
             <h1 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem' }}>My Profile</h1>
             <ProfileFormFields {...formProps} />
+          </div>
+
+          <div
+            style={{
+              border:          '1px solid var(--border)',
+              padding:         '1.5rem',
+              backgroundColor: 'var(--surface)',
+            }}
+          >
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Change Password</h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)', marginBottom: '1rem' }}>
+              We’ll email you a secure link to reset your password.
+            </p>
+            <button
+              type="button"
+              onClick={handlePasswordReset}
+              disabled={sendingReset}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.5rem 1.25rem',
+                backgroundColor: 'var(--primary)',
+                color: 'var(--on-primary)',
+                border: 'none',
+                cursor: sendingReset ? 'not-allowed' : 'pointer',
+                opacity: sendingReset ? 0.7 : 1,
+                fontSize: '0.8rem',
+                fontWeight: 700,
+              }}
+            >
+              {sendingReset ? 'Sending…' : 'Send Reset Link'}
+            </button>
           </div>
 
           <div

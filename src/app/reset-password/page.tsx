@@ -17,7 +17,7 @@ const labelStyle: React.CSSProperties = {
   marginBottom:  '0.4rem',
 };
 
-function ResetPasswordForm() {
+function ResetPasswordForm({ fromProfile }: { fromProfile: boolean }) {
   const searchParams  = useSearchParams();
   const router        = useRouter();
   const token         = searchParams.get('token') ?? '';
@@ -62,7 +62,9 @@ function ResetPasswordForm() {
         setError(data.message ?? 'Something went wrong.');
       } else {
         setSuccess(true);
-        setTimeout(() => router.push('/login'), 2500);
+        if (!fromProfile) {
+          setTimeout(() => router.push('/login'), 2500);
+        }
       }
     } catch {
       setError('Network error. Please try again.');
@@ -100,8 +102,13 @@ function ResetPasswordForm() {
           Password Updated!
         </p>
         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem' }}>
-          Redirecting to login…
+          {fromProfile ? 'You can return to your profile.' : 'Redirecting to login…'}
         </p>
+        {fromProfile && (
+          <Link href="/profile" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
+            Back to profile →
+          </Link>
+        )}
       </div>
     );
   }
@@ -168,6 +175,11 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
+  const searchParams  = useSearchParams();
+  const fromParam     = (searchParams.get('from') ?? '').toLowerCase();
+  const redirectParam = (searchParams.get('redirectTo') ?? '').toLowerCase();
+  const fromProfile   = fromParam === 'profile' || redirectParam === 'profile';
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--background)', padding: '2rem 1rem' }}>
       <div style={{ width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -183,16 +195,18 @@ export default function ResetPasswordPage() {
             Reset Password
           </h1>
           <Suspense>
-            <ResetPasswordForm />
+            <ResetPasswordForm fromProfile={fromProfile} />
           </Suspense>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
-          Remember your password?{' '}
-          <Link href="/login" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
-            Sign in →
-          </Link>
-        </p>
+        {!fromProfile && (
+          <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--on-surface-muted)' }}>
+            Remember your password?{' '}
+            <Link href="/login" style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
+              Sign in →
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

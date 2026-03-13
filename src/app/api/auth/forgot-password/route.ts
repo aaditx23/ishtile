@@ -16,6 +16,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body = await req.json();
     const email: string = (body?.email ?? '').trim().toLowerCase();
+    const redirectTo: string = (body?.redirectTo ?? '').trim().toLowerCase();
 
     if (!email) {
       return NextResponse.json(
@@ -55,7 +56,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-    const resetLink = `${appUrl}/reset-password?token=${rawToken}`;
+    const redirectParam = redirectTo === 'profile' ? '&from=profile' : '';
+    const resetLink = `${appUrl}/reset-password?token=${rawToken}${redirectParam}`;
 
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;">
