@@ -65,6 +65,13 @@ function BarChart({ data }: { data: DailySalesDto[] }) {
 
 interface MobileAdminAnalyticsViewProps {
   loading:         boolean;
+  selectedMonth: number;
+  selectedYear: number;
+  selectedMonthLabel: string;
+  monthOptions: Array<{ value: number; label: string }>;
+  yearOptions: number[];
+  onMonthChange: (value: number) => void;
+  onYearChange: (value: number) => void;
   totalRevenue:    number;
   totalOrders:     number;
   dailySales:      DailySalesDto[];
@@ -74,6 +81,13 @@ interface MobileAdminAnalyticsViewProps {
 
 export default function MobileAdminAnalyticsView({
   loading,
+  selectedMonth,
+  selectedYear,
+  selectedMonthLabel,
+  monthOptions,
+  yearOptions,
+  onMonthChange,
+  onYearChange,
   totalRevenue,
   totalOrders,
   dailySales,
@@ -88,6 +102,38 @@ export default function MobileAdminAnalyticsView({
 
       <div style={{ padding: '0 1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Analytics</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          <select
+            value={selectedMonth}
+            onChange={(e) => onMonthChange(Number(e.target.value))}
+            style={{
+              width: '100%',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--surface)',
+              padding: '0.55rem 0.7rem',
+              fontSize: '0.85rem',
+            }}
+          >
+            {monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+          <select
+            value={selectedYear}
+            onChange={(e) => onYearChange(Number(e.target.value))}
+            style={{
+              width: '100%',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--surface)',
+              padding: '0.55rem 0.7rem',
+              fontSize: '0.85rem',
+            }}
+          >
+            {yearOptions.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
 
         {loading ? (
           <>
@@ -103,18 +149,18 @@ export default function MobileAdminAnalyticsView({
             {/* Stat cards */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <div style={sectionStyle}>
-                <p style={{ ...headingStyle, marginBottom: '0.25rem' }}>Revenue (30d)</p>
+                <p style={{ ...headingStyle, marginBottom: '0.25rem' }}>Revenue ({selectedMonthLabel})</p>
                 <p style={{ fontSize: '1.25rem', fontWeight: 800 }}>{fmt(totalRevenue)}</p>
               </div>
               <div style={sectionStyle}>
-                <p style={{ ...headingStyle, marginBottom: '0.25rem' }}>Orders (30d)</p>
+                <p style={{ ...headingStyle, marginBottom: '0.25rem' }}>Orders ({selectedMonthLabel})</p>
                 <p style={{ fontSize: '1.25rem', fontWeight: 800 }}>{totalOrders}</p>
               </div>
             </div>
 
             {/* Bar chart */}
             <div style={sectionStyle}>
-              <p style={headingStyle}>Daily Revenue (last 30 days)</p>
+              <p style={headingStyle}>Daily Revenue ({selectedMonthLabel})</p>
               <BarChart data={dailySales} />
             </div>
 

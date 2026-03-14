@@ -17,6 +17,21 @@ interface AnalyticsData {
   promoSales:   PromoSalesDto[];
 }
 
+const MONTH_OPTIONS = [
+  { value: 1, label: 'January' },
+  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },
+  { value: 4, label: 'April' },
+  { value: 5, label: 'May' },
+  { value: 6, label: 'June' },
+  { value: 7, label: 'July' },
+  { value: 8, label: 'August' },
+  { value: 9, label: 'September' },
+  { value: 10, label: 'October' },
+  { value: 11, label: 'November' },
+  { value: 12, label: 'December' },
+] as const;
+
 const fmt  = (n: number) => `৳${n.toLocaleString('en-BD')}`;
 const fmtD = (s: string) => new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
@@ -92,15 +107,26 @@ function BarChart({ data }: { data: DailySalesDto[] }) {
 export default function AnalyticsView() {
   const [data, setData]       = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const now = new Date();
+  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear());
+
+  const yearOptions = Array.from({ length: 6 }, (_, i) => now.getFullYear() - i);
+  const selectedMonthLabel = `${MONTH_OPTIONS[selectedMonth - 1]?.label ?? 'Month'} ${selectedYear}`;
 
   useEffect(() => {
-    const end   = new Date().toISOString().slice(0, 10);
-    const start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    setLoading(true);
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+    const endDate = new Date(selectedYear, selectedMonth, 0);
+
+    const start = startDate.toISOString().slice(0, 10);
+    const end = endDate.toISOString().slice(0, 10);
+
     Promise.all([getDailySales(start, end), getProductSales(10), getPromoSales(10)])
       .then(([dailySales, productSales, promoSales]) => setData({ dailySales, productSales, promoSales }))
       .catch(() => toast.error('Failed to load analytics.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const totalRevenue = (data?.dailySales ?? []).reduce((s, d) => s + d.totalRevenue, 0);
   const totalOrders  = (data?.dailySales ?? []).reduce((s, d) => s + d.totalOrders, 0);
@@ -113,6 +139,13 @@ export default function AnalyticsView() {
       <div className="block lg:hidden">
         <MobileAdminAnalyticsView
           loading={loading}
+          selectedYear={selectedYear}
+          selectedMonth={selectedMonth}
+          yearOptions={yearOptions}
+          monthOptions={MONTH_OPTIONS.map((m) => ({ value: m.value, label: m.label }))}
+          onMonthChange={setSelectedMonth}
+          onYearChange={setSelectedYear}
+          selectedMonthLabel={selectedMonthLabel}
           totalRevenue={totalRevenue}
           totalOrders={totalOrders}
           dailySales={dailySales}
@@ -137,7 +170,39 @@ export default function AnalyticsView() {
 
         <main>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Analytics</h1>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  style={{
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--surface)',
+                    padding: '0.45rem 0.7rem',
+                    fontSize: '0.82rem',
+                  }}
+                >
+                  {MONTH_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  style={{
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--surface)',
+                    padding: '0.45rem 0.7rem',
+                    fontSize: '0.82rem',
+                  }}
+                >
+                  {yearOptions.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             {loading ? (
               <>
@@ -154,8 +219,8 @@ export default function AnalyticsView() {
                 {/* Summary row */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
                   {[
-                    { label: 'Total Revenue (30d)', value: fmt(totalRevenue) },
-                    { label: 'Total Orders (30d)',  value: totalOrders },
+                    { label: `Total Revenue (${selectedMonthLabel})`, value: fmt(totalRevenue) },
+                    { label: `Total Orders (${selectedMonthLabel})`,  value: totalOrders },
                   ].map(({ label, value }) => (
                     <div key={label} style={{ ...sectionStyle, padding: '1rem' }}>
                       <p style={{ ...headingStyle, marginBottom: '0.375rem' }}>{label}</p>
@@ -166,7 +231,7 @@ export default function AnalyticsView() {
 
                 {/* Daily revenue bar chart */}
                 <div style={sectionStyle}>
-                  <p style={headingStyle}>Daily Revenue (last 30 days)</p>
+                  <p style={headingStyle}>Daily Revenue ({selectedMonthLabel})</p>
                   <BarChart data={dailySales} />
                 </div>
 
