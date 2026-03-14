@@ -14,12 +14,12 @@ import { POST as createCheckoutPathaoOrderRoute } from '../src/app/api/pathao/ch
 import { POST as pathaoWebhookRoute } from '../src/app/api/webhooks/pathao/route';
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 const webhookSecret = process.env.PATHAO_WEBHOOK_SECRET;
 
 const requiredEnv = [
   'NEXT_PUBLIC_CONVEX_URL',
-  'NEXT_PUBLIC_BASE_URL',
+  'NEXT_PUBLIC_APP_URL',
   'JWT_SECRET',
   'PATHAO_WEBHOOK_SECRET',
   'PATHAO_CLIENT_ID',

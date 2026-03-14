@@ -54,10 +54,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
     }
 
-    const appUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? '').trim();
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? '').trim();
     if (!appUrl) {
       return NextResponse.json(
-        { success: false, message: 'NEXT_PUBLIC_BASE_URL is not configured' },
+        { success: false, message: 'NEXT_PUBLIC_APP_URL is not configured' },
         { status: 500 },
       );
     }
