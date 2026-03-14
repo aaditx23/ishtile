@@ -66,6 +66,7 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
 
   const pathaoStatus = normalizeStatus(order.pathaoStatus);
   const isPersistedPathaoMode = (order.deliveryMode ?? 'manual') === 'pathao';
+  const hasPathaoConsignment = Boolean(order.pathaoConsignmentId);
 
   const handleSaveMode = async () => {
     setSavingMode(true);
@@ -250,28 +251,34 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
               </p>
             )}
 
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handleCreateParcel} disabled={creating || !isPersistedPathaoMode}>
-                {creating ? 'Creating...' : 'Create Pathao Parcel'}
-              </Button>
-              <Button variant="outline" onClick={handleRefreshStatus} disabled={refreshing || !order.pathaoConsignmentId}>
-                {refreshing ? 'Refreshing...' : 'Refresh Pathao Status'}
-              </Button>
-              <Button variant="destructive" onClick={handleCancelPathao} disabled={savingMode}>
-                Cancel Delivery
-              </Button>
-              {order.pathaoConsignmentId && (
-                <Button asChild variant="secondary">
-                  <a
-                    href={`https://merchant.pathao.com/tracking?consignment_id=${encodeURIComponent(order.pathaoConsignmentId)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open Tracking
-                  </a>
+            {isPersistedPathaoMode && (
+              <div className="flex flex-wrap gap-2">
+                {!hasPathaoConsignment && (
+                  <Button onClick={handleCreateParcel} disabled={creating}>
+                    {creating ? 'Creating...' : 'Create Pathao Parcel'}
+                  </Button>
+                )}
+                {hasPathaoConsignment && (
+                  <Button variant="outline" onClick={handleRefreshStatus} disabled={refreshing}>
+                    {refreshing ? 'Refreshing...' : 'Refresh Pathao Status'}
+                  </Button>
+                )}
+                <Button variant="destructive" onClick={handleCancelPathao} disabled={savingMode}>
+                  Cancel Order
                 </Button>
-              )}
-            </div>
+                {hasPathaoConsignment && (
+                  <Button asChild variant="secondary">
+                    <a
+                      href={`https://merchant.pathao.com/tracking?consignment_id=${encodeURIComponent(order.pathaoConsignmentId!)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open Tracking
+                    </a>
+                  </Button>
+                )}
+              </div>
+            )}
             {!isPersistedPathaoMode && (
               <p className="text-xs text-muted-foreground">
                 Save delivery mode as Pathao before creating a parcel.
