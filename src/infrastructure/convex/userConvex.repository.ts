@@ -39,6 +39,7 @@ export class UserConvexRepository implements UserRepository {
       userId:   userId as any,
       fullName: payload.fullName,
       email:    payload.email,
+      username: payload.username,
     });
     // Re-fetch to return updated user
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

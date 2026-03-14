@@ -29,12 +29,19 @@ const USER_LINKS = [
 interface MobileNavProps {
   isAuth: boolean;
   isAdmin: boolean;
+  username?: string | null;
   pathname: string;
   isLinkActive: (href: string) => boolean;
   onClose: () => void;
 }
 
-export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: MobileNavProps) {
+function getProfileLabel(username?: string | null): string {
+  const normalized = username?.trim();
+  if (!normalized) return 'Profile';
+  return `${normalized}'s profile`;
+}
+
+export function MobileNav({ isAuth, isAdmin, username, pathname, isLinkActive, onClose }: MobileNavProps) {
   const handleLogout = () => {
     tokenStore.clearAll();
     window.location.href = '/';
@@ -116,7 +123,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
                       onClick={onClose}
                       className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                     >
-                      {link.label}
+                      {link.href === '/profile' ? getProfileLabel(username) : link.label}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

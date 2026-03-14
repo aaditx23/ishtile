@@ -30,6 +30,12 @@ const USER_LINKS = [
   { label: 'Favourites', href: '/favourites' },
 ];
 
+function getProfileLabel(username?: string | null): string {
+  const normalized = username?.trim();
+  if (!normalized) return 'Profile';
+  return `${normalized}'s profile`;
+}
+
 /* ─── SiteHeader ───────────────────────────────────────────────────────────── */
 
 export default function SiteHeader() {
@@ -116,6 +122,7 @@ export default function SiteHeader() {
                   <MobileNav
                     isAuth={isAuth}
                     isAdmin={isAdmin}
+                    username={isAuth ? auth.user.username : null}
                     pathname={pathname}
                     isLinkActive={isLinkActive}
                     onClose={closeMobile}
@@ -152,7 +159,7 @@ export default function SiteHeader() {
                             className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
                             style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           >
-                            {link.label}
+                            {link.href === '/profile' ? getProfileLabel(auth.user.username) : link.label}
                           </Link>
                         </NavigationMenuLink>
                       </NavigationMenuItem>
