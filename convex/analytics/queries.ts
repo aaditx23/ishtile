@@ -28,7 +28,7 @@ export const getDashboardStats = query({
     const todayRevenue = todayOrders.reduce((s, o) => s + o.total, 0);
 
     const statusCounts: Record<string, number> = {
-      new: 0,
+      pending: 0,
       confirmed: 0,
       shipped: 0,
       delivered: 0,

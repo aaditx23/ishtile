@@ -16,10 +16,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { getCart } from '@/application/cart/getCart';
 import { createOrder } from '@/application/checkout/createOrder';
-import { getAdminSettings } from '@/application/adminSettings/adminSettings';
+import { getCheckoutShippingCost } from '@/application/checkout/getCheckoutShippingCost';
 import type { Cart } from '@/domain/cart/cart.entity';
 import type { PromoValidationDto } from '@/shared/types/api.types';
-import type { AdminSettings } from '@/domain/adminSettings/adminSettings.entity';
+import { getAddressLengthError } from '@/shared/utils/addressValidation';
+import { getPhone11DigitError, isValidPhone11Digits } from '@/shared/utils/phoneValidation';
 
 const EMPTY_FIELDS: ShippingFields = {
   name:       '',
@@ -44,40 +45,30 @@ export default function CheckoutView() {
   const [submitting, setSubmitting]     = useState(false);
   const [codConfirmed, setCodConfirmed] = useState(false);
   const [showNewForm, setShowNewForm]   = useState(false);
-  const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
   const [shippingCost, setShippingCost] = useState(0);
 
-  // Fetch admin settings on mount
+  // Fetch shipping quote from backend whenever city changes.
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const settings = await getAdminSettings();
-        setAdminSettings(settings);
-      } catch {
-        // Use defaults if fetch fails
-        setAdminSettings({
-          insideDhakaShippingCost: 60,
-          outsideDhakaShippingCost: 120,
-        });
-      }
-    };
-    fetchSettings();
-  }, []);
-
-  // Calculate shipping cost whenever city changes
-  useEffect(() => {
-    if (!adminSettings || !fields.cityName) {
+    if (!fields.cityName) {
       setShippingCost(0);
       return;
     }
-    
-    const isDhaka = fields.cityName.toLowerCase().trim() === 'dhaka';
-    const cost = isDhaka 
-      ? adminSettings.insideDhakaShippingCost 
-      : adminSettings.outsideDhakaShippingCost;
-    
-    setShippingCost(cost);
-  }, [fields.cityName, adminSettings]);
+
+    let cancelled = false;
+    const loadShippingCost = async () => {
+      try {
+        const cost = await getCheckoutShippingCost(fields.cityName);
+        if (!cancelled) setShippingCost(cost);
+      } catch {
+        if (!cancelled) setShippingCost(0);
+      }
+    };
+
+    void loadShippingCost();
+    return () => {
+      cancelled = true;
+    };
+  }, [fields.cityName]);
 
   const fetchCart = useCallback(async () => {
     setCartLoading(true);
@@ -118,8 +109,9 @@ export default function CheckoutView() {
 
   const canSubmit =
     fields.name.trim() &&
-    fields.phone.trim() &&
+    isValidPhone11Digits(fields.phone.trim()) &&
     fields.address.trim() &&
+    !getAddressLengthError(fields.address) &&
     fields.cityId != null &&
     fields.zoneId != null &&
     fields.areaId != null &&
@@ -128,6 +120,16 @@ export default function CheckoutView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const phoneError = getPhone11DigitError(fields.phone);
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
+    const addressError = getAddressLengthError(fields.address);
+    if (addressError) {
+      toast.error(addressError);
+      return;
+    }
     if (!canSubmit) return;
     setSubmitting(true);
     try {
@@ -142,6 +144,7 @@ export default function CheckoutView() {
         shippingAreaId:      fields.areaId!,
         ...(fields.postalCode.trim() ? { shippingPostalCode: fields.postalCode.trim() } : {}),
         paymentMethod:       'cod',
+        deliveryMode:        'manual',
         ...(promoCode ? { promoCode } : {}),
         ...(fields.notes.trim() ? { customerNotes: fields.notes.trim() } : {}),
       });

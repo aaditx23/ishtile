@@ -35,3 +35,33 @@ export const listShipments = query({
     return { items, total, page, pageSize };
   },
 });
+
+export const getActivePathaoStore = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_isActive", (q) => q.eq("isActive", true))
+      .first();
+  },
+});
+
+export const getPathaoStoreByStoreId = query({
+  args: {
+    storeId: v.number(),
+  },
+  handler: async (ctx, { storeId }) => {
+    return await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_storeId", (q) => q.eq("storeId", storeId))
+      .first();
+  },
+});
+
+export const listPathaoStores = query({
+  args: {},
+  handler: async (ctx) => {
+    const stores = await ctx.db.query("pathaoStores").collect();
+    return stores.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});

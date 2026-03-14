@@ -45,7 +45,7 @@ export default function ProfileFormFields({
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {[1, 2, 3, 4, 5].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <Skeleton key={i} style={{ height: '2.5rem' }} />
         ))}
       </div>
@@ -67,24 +67,25 @@ export default function ProfileFormFields({
         <Input value={form.fullName ?? ''} onChange={patch('fullName')} placeholder="Your name" disabled={saving} />
       </Field>
 
+      <Field label="Username">
+        <Input value={form.username ?? ''} onChange={patch('username')} placeholder="username" maxLength={10} disabled={saving} />
+      </Field>
+
       <Field label="Phone Number">
-        <Input type="tel" value={form.phone ?? ''} onChange={patch('phone')} placeholder="01XXXXXXXXX" disabled={saving} />
+        <Input
+          type="tel"
+          value={form.phone ?? ''}
+          onChange={patch('phone')}
+          placeholder="01XXXXXXXXX"
+          inputMode="numeric"
+          maxLength={11}
+          pattern="[0-9]{11}"
+          disabled={saving}
+        />
       </Field>
 
       <Field label="Email">
         <Input type="email" value={form.email ?? ''} onChange={patch('email')} placeholder="your@email.com" disabled={saving} />
-      </Field>
-
-      <Field label="Address">
-        <Input value={form.addressLine ?? ''} onChange={patch('addressLine')} placeholder="House / road / area" disabled={saving} />
-      </Field>
-
-      <Field label="City">
-        <Input value={form.city ?? ''} onChange={patch('city')} placeholder="Dhaka" disabled={saving} />
-      </Field>
-
-      <Field label="Postal Code">
-        <Input value={form.postalCode ?? ''} onChange={patch('postalCode')} placeholder="1205" disabled={saving} />
       </Field>
 
       <Button type="submit" disabled={saving} className="w-full">

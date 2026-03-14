@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { Input } from '@/components/ui/input';
+import PathaoStoreManagementPanel from './components/PathaoStoreManagementPanel';
 
 interface MobileAdminSettingsViewProps {
   formData: {
@@ -194,6 +195,8 @@ export default function MobileAdminSettingsView({
               </Button>
             </form>
           </div>
+
+          <PathaoStoreManagementPanel />
         </div>
       )}
     </div>

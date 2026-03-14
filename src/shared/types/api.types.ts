@@ -186,11 +186,13 @@ export interface CartDto {
 // ─── Order ────────────────────────────────────────────────────────────────────
 
 export type OrderStatus =
-  | 'new'
+  | 'pending'
   | 'confirmed'
   | 'shipped'
   | 'delivered'
   | 'cancelled';
+
+export type DeliveryMode = 'manual' | 'pathao';
 
 export interface OrderItemDto {
   id: number;
@@ -208,6 +210,11 @@ export interface OrderDto {
   orderNumber: string;
   userId: number;
   status: OrderStatus;
+  deliveryMode: DeliveryMode;
+  pathaoConsignmentId?: string | null;
+  pathaoStatus?: string | null;
+  pathaoPrice?: number | null;
+  pathaoRawPayload?: unknown;
   subtotal: number;
   promoDiscount: number;
   shippingCost: number;

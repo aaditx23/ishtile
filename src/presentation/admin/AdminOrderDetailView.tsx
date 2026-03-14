@@ -10,6 +10,7 @@ import { AdminSidebarNav } from './AdminLayout';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard';
 import OrderStatusSelector from './components/OrderStatusSelector';
+import DeliveryManagementCard from './components/DeliveryManagementCard';
 import { Button } from '@/components/ui/button';
 import { getAdminOrder } from '@/application/order/getAdminOrder';
 import { generateMemo } from '@/application/order/generateMemo';
@@ -104,12 +105,24 @@ export default function AdminOrderDetailView() {
             {order && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <OrderSummaryCard order={order} />
-                <div style={sectionStyle}>
-                  <p style={headingStyle}>Update Status</p>
-                  <OrderStatusSelector
-                    orderId={order.id}
-                    currentStatus={order.status}
-                    onStatusChange={(s, adminNotes) => setOrder((o) => o ? { ...o, status: s, ...(adminNotes !== null ? { adminNotes } : {}) } : o)}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={sectionStyle}>
+                    <p style={headingStyle}>Update Status</p>
+                    {order.deliveryMode === 'pathao' ? (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)' }}>
+                        Order status is automatically managed by Pathao.
+                      </p>
+                    ) : (
+                      <OrderStatusSelector
+                        orderId={order.id}
+                        currentStatus={order.status}
+                        onStatusChange={(s, adminNotes) => setOrder((o) => o ? { ...o, status: s, ...(adminNotes !== null ? { adminNotes } : {}) } : o)}
+                      />
+                    )}
+                  </div>
+                  <DeliveryManagementCard
+                    order={order}
+                    onOrderChange={(next) => setOrder(next)}
                   />
                 </div>
               </div>

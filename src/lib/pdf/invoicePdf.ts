@@ -271,7 +271,7 @@ export async function generateMemoPDF(data: MemoData): Promise<Buffer> {
 
       // company info (centred)
       doc.fontSize(8).font('Helvetica').fillColor('#555555')
-         .text('+880 1700-000000  |  +880 1800-000000', L + 165, y, {
+         .text('+8801607999061', L + 165, y, {
            width: 215, align: 'center', lineBreak: false,
          });
       doc.text('ishtile.com', L + 165, y + 13, {

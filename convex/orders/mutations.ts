@@ -1,3 +1,11 @@
+// Allowed order statuses for type safety
+type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "assigned"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 /**
  * Orders — mutations
  * Mirrors: POST /api/v1/orders (create) + PATCH /api/v1/orders/{id}/status (admin)
@@ -59,6 +67,7 @@ async function calculateShippingCost(
 export const createOrder = mutation({
   args: {
     userId: v.id("users"),
+    deliveryMode: v.optional(v.union(v.literal("manual"), v.literal("pathao"))),
     promoCode: v.optional(v.string()),
     shippingName: v.string(),
     shippingPhone: v.string(),
@@ -72,7 +81,7 @@ export const createOrder = mutation({
     customerNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { userId, promoCode, ...shippingFields } = args;
+    const { userId, promoCode, deliveryMode, ...shippingFields } = args;
 
     // ── 1. Load cart ──────────────────────────────────────────────────────────
     const cart = await ctx.db
@@ -171,7 +180,9 @@ export const createOrder = mutation({
     const orderId = await ctx.db.insert("orders", {
       orderNumber,
       userId,
-      status: "new",
+      status: "pending",
+      deliveryMode: deliveryMode ?? "manual",
+      pathaoParcelCreated: false,
       subtotal,
       promoDiscount,
       shippingCost,
@@ -249,15 +260,237 @@ export const createOrder = mutation({
   },
 });
 
+export const updateDeliveryMode = mutation({
+  args: {
+    orderId: v.id("orders"),
+    deliveryMode: v.union(v.literal("manual"), v.literal("pathao")),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { orderId, deliveryMode, adminUserId }) => {
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+
+    let patch: Record<string, unknown>;
+
+    if (deliveryMode === "manual") {
+      // Switching Pathao → Manual: clear all Pathao management fields so
+      // the admin regains manual status control.
+      patch = {
+        deliveryMode: "manual",
+        pathaoConsignmentId: undefined,
+        pathaoStatus: undefined,
+        pathaoParcelCreated: false,
+        pathaoPrice: undefined,
+        pathaoRawPayload: undefined,
+      };
+    } else {
+      // Switching Manual → Pathao: just set the mode.
+      patch = { deliveryMode: "pathao" };
+    }
+
+    await ctx.db.patch(orderId, patch);
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "delivery_mode_change",
+      entityType: "order",
+      entityId: orderId,
+      oldValue: JSON.stringify({ deliveryMode: order.deliveryMode ?? "manual" }),
+      newValue: JSON.stringify({ deliveryMode }),
+      description: `Order ${order.orderNumber}: delivery mode ${order.deliveryMode ?? "manual"} -> ${deliveryMode}`,
+    });
+
+    return { success: true };
+  },
+});
+
+export const createPathaoParcel = mutation({
+  args: {
+    orderId: v.id("orders"),
+    consignmentId: v.string(),
+    pathaoStatus: v.string(),
+    pathaoPrice: v.optional(v.number()),
+    rawPayload: v.optional(v.any()),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { orderId, consignmentId, pathaoStatus, pathaoPrice, rawPayload, adminUserId }) => {
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+    if ((order.deliveryMode ?? "manual") !== "pathao") {
+      throw new Error("Cannot create Pathao parcel while delivery mode is manual");
+    }
+    if (order.pathaoConsignmentId || order.pathaoParcelCreated) {
+      throw new Error("Parcel already exists for this order");
+    }
+
+    await ctx.db.patch(orderId, {
+      deliveryMode: "pathao",
+      pathaoParcelCreated: true,
+      pathaoConsignmentId: consignmentId,
+      pathaoStatus,
+      pathaoPrice,
+      pathaoRawPayload: rawPayload,
+    });
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "create",
+      entityType: "pathao_parcel",
+      entityId: orderId,
+      description: `Pathao parcel created for order ${order.orderNumber} (${consignmentId})`,
+    });
+
+    return { success: true };
+  },
+});
+
+export const updateOrderFromWebhook = mutation({
+  args: {
+    consignmentId: v.string(),
+    pathaoStatus: v.string(),
+    status: v.optional(v.union(
+      v.literal("confirmed"),
+      v.literal("shipped"),
+      v.literal("delivered"),
+      v.literal("cancelled"),
+    )),
+    rawPayload: v.optional(v.any()),
+  },
+  handler: async (ctx, { consignmentId, pathaoStatus, status, rawPayload }) => {
+    const order = await ctx.db
+      .query("orders")
+      .withIndex("by_consignment", (q) => q.eq("pathaoConsignmentId", consignmentId))
+      .first();
+
+    if (!order) return { success: true, skipped: true, reason: "order_not_found" };
+    if ((order.deliveryMode ?? "manual") !== "pathao") {
+      return { success: true, skipped: true, reason: "manual_order" };
+    }
+
+    const currentStatus = (order.pathaoStatus ?? "").trim().toLowerCase();
+    const incomingStatus = pathaoStatus.trim().toLowerCase();
+    if (currentStatus && currentStatus === incomingStatus) {
+      return { success: true, skipped: true, reason: "status_unchanged" };
+    }
+
+    const normalized = pathaoStatus.trim().toLowerCase();
+    let nextOrderStatus: OrderStatus | null = null;
+    if (status) {
+      nextOrderStatus = status as OrderStatus;
+    } else if (normalized.includes("order_created") || normalized.includes("created") || normalized.includes("confirmed")) {
+      nextOrderStatus = "confirmed";
+    } else if (normalized.includes("order_assigned") || normalized.includes("assigned")) {
+      nextOrderStatus = "confirmed";
+    } else if (
+      normalized.includes("order_picked") ||
+      normalized.includes("picked") ||
+      normalized.includes("pickup") ||
+      normalized.includes("transit")
+    ) {
+      nextOrderStatus = "shipped";
+    } else if (normalized.includes("order_delivered") || normalized.includes("delivered")) {
+      nextOrderStatus = "delivered";
+    } else if (normalized.includes("return") || normalized.includes("cancel")) {
+      nextOrderStatus = "cancelled";
+    }
+
+    const patch: Record<string, unknown> = {
+      pathaoStatus,
+      pathaoRawPayload: rawPayload,
+    };
+
+    if (nextOrderStatus && order.status !== "delivered" && order.status !== "cancelled") {
+      patch.status = nextOrderStatus;
+      if (nextOrderStatus === "confirmed" && !order.confirmedAt) patch.confirmedAt = Date.now();
+      if (nextOrderStatus === "shipped") patch.shippedAt = Date.now();
+      if (nextOrderStatus === "delivered") patch.deliveredAt = Date.now();
+      if (nextOrderStatus === "cancelled") patch.cancelledAt = Date.now();
+    }
+
+    await ctx.db.patch(order._id, patch);
+    return { success: true, skipped: false };
+  },
+});
+
+export const updatePathaoStatus = mutation({
+  args: {
+    consignmentId: v.string(),
+    pathaoStatus: v.string(),
+    status: v.optional(v.union(
+      v.literal("confirmed"),
+      v.literal("shipped"),
+      v.literal("delivered"),
+      v.literal("cancelled"),
+    )),
+    rawPayload: v.optional(v.any()),
+  },
+  handler: async (ctx, { consignmentId, pathaoStatus, status, rawPayload }) => {
+    const order = await ctx.db
+      .query("orders")
+      .withIndex("by_consignment", (q) => q.eq("pathaoConsignmentId", consignmentId))
+      .first();
+
+    if (!order) return { success: true, skipped: true, reason: "order_not_found" };
+    if ((order.deliveryMode ?? "manual") !== "pathao") {
+      return { success: true, skipped: true, reason: "manual_order" };
+    }
+
+    const normalized = pathaoStatus.trim().toLowerCase();
+    let nextOrderStatus: OrderStatus | null = null;
+    if (status) {
+      nextOrderStatus = status as OrderStatus;
+    } else if (normalized.includes("order_created") || normalized.includes("created") || normalized.includes("confirmed")) {
+      nextOrderStatus = "confirmed";
+    } else if (normalized.includes("order_assigned") || normalized.includes("assigned")) {
+      nextOrderStatus = "confirmed";
+    } else if (
+      normalized.includes("order_picked") ||
+      normalized.includes("picked") ||
+      normalized.includes("pickup") ||
+      normalized.includes("transit")
+    ) {
+      nextOrderStatus = "shipped";
+    } else if (normalized.includes("order_delivered") || normalized.includes("delivered")) {
+      nextOrderStatus = "delivered";
+    } else if (normalized.includes("return") || normalized.includes("cancel")) {
+      nextOrderStatus = "cancelled";
+    }
+
+    const patch: Record<string, unknown> = {
+      pathaoStatus,
+      pathaoRawPayload: rawPayload,
+    };
+
+    if (nextOrderStatus && order.status !== "delivered" && order.status !== "cancelled") {
+      patch.status = nextOrderStatus;
+      if (nextOrderStatus === "confirmed" && !order.confirmedAt) patch.confirmedAt = Date.now();
+      if (nextOrderStatus === "shipped") patch.shippedAt = Date.now();
+      if (nextOrderStatus === "delivered") patch.deliveredAt = Date.now();
+      if (nextOrderStatus === "cancelled") {
+        patch.cancelledAt = Date.now();
+        // Pathao cancelled/returned the order — fall back to manual so admin regains control
+        patch.deliveryMode = "manual";
+        patch.pathaoConsignmentId = undefined;
+        patch.pathaoParcelCreated = false;
+        patch.pathaoPrice = undefined;
+        patch.pathaoRawPayload = undefined;
+      }
+    }
+
+    await ctx.db.patch(order._id, patch);
+    return { success: true, skipped: false };
+  },
+});
+
 // ─── Update order status (admin) ──────────────────────────────────────────────
 
-const ORDER_STATUS_VALUES = ["new", "confirmed", "shipped", "delivered", "cancelled"] as const;
+const ORDER_STATUS_VALUES = ["pending", "confirmed", "shipped", "delivered", "cancelled"] as const;
 
 export const updateOrderStatus = mutation({
   args: {
     orderId: v.id("orders"),
     status: v.union(
-      v.literal("new"),
+      v.literal("pending"),
       v.literal("confirmed"),
       v.literal("shipped"),
       v.literal("delivered"),
@@ -265,17 +498,28 @@ export const updateOrderStatus = mutation({
     ),
     adminNotes: v.optional(v.string()),
     adminUserId: v.id("users"),
+    // "admin" = manual admin edit (blocked for Pathao orders)
+    // "system" = internal backend (parcel creation, etc.) — always allowed
+    // "webhook" = Pathao webhook — always allowed
+    source: v.optional(v.union(v.literal("admin"), v.literal("system"), v.literal("webhook"))),
   },
-  handler: async (ctx, { orderId, status, adminNotes, adminUserId }) => {
+  handler: async (ctx, { orderId, status, adminNotes, adminUserId, source }) => {
     const order = await ctx.db.get(orderId);
     if (!order) throw new Error("Order not found");
+    // Only block manual admin edits on Pathao orders; system/webhook updates are always allowed
+    if ((order.deliveryMode ?? "manual") === "pathao" && (source ?? "admin") === "admin") {
+      throw new Error("Status managed by Pathao webhook");
+    }
+    // Prevent manual cancellation when an active Pathao parcel exists
+    if (
+      status === "cancelled" &&
+      order.pathaoConsignmentId &&
+      (source ?? "admin") === "admin"
+    ) {
+      throw new Error("Order handled by Pathao. Cancellation must come from courier.");
+    }
 
     const oldStatus = order.status;
-
-    // Basic state machine validation
-    if (oldStatus === "delivered" || oldStatus === "cancelled") {
-      throw new Error(`Cannot change status of a ${oldStatus} order`);
-    }
 
     const now = Date.now();
     const patch: Record<string, unknown> = { status };
@@ -329,7 +573,7 @@ export const updateOrderStatus = mutation({
     });
 
     // Analytics update when confirmed (update daily + product summaries)
-    if (status === "confirmed" && oldStatus === "new") {
+    if (status === "confirmed" && oldStatus === "pending") {
       await updateDailySummaryHelper(ctx, now);
       await updateProductSummaryHelper(ctx, orderId);
     }
@@ -363,7 +607,7 @@ async function updateDailySummaryHelper(ctx: any, timestampMs: number) {
   const totalDiscount = todayOrders.reduce((s: number, o: any) => s + o.promoDiscount, 0);
   const totalShipping = todayOrders.reduce((s: number, o: any) => s + o.shippingCost, 0);
 
-  const statusCounts = { new: 0, confirmed: 0, shipped: 0, delivered: 0, cancelled: 0 };
+  const statusCounts = { pending: 0, confirmed: 0, assigned: 0, shipped: 0, delivered: 0, cancelled: 0 };
   for (const o of todayOrders) (statusCounts as any)[o.status]++;
 
   const uniqueCustomers = new Set(todayOrders.map((o: any) => o.userId)).size;
@@ -379,8 +623,10 @@ async function updateDailySummaryHelper(ctx: any, timestampMs: number) {
     totalRevenue,
     totalDiscount,
     totalShipping,
-    newOrders: statusCounts.new,
+    newOrders: 0,
+    pendingOrders: statusCounts.pending,
     confirmedOrders: statusCounts.confirmed,
+    assignedOrders: statusCounts.assigned,
     shippedOrders: statusCounts.shipped,
     deliveredOrders: statusCounts.delivered,
     cancelledOrders: statusCounts.cancelled,

@@ -43,6 +43,7 @@ export const shipmentTables = {
 
   pathaoStores: defineTable({
     storeId:       v.number(),   // from Pathao API
+    name:          v.string(),
     storeName:     v.string(),
     contactNumber: v.string(),
     address:       v.string(),
@@ -50,6 +51,7 @@ export const shipmentTables = {
     zoneId:        v.number(),
     areaId:        v.number(),
     isActive:      v.boolean(),
+    createdAt:     v.number(),
   })
     .index('by_storeId',  ['storeId'])
     .index('by_isActive', ['isActive']),

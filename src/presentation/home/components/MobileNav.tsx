@@ -29,12 +29,19 @@ const USER_LINKS = [
 interface MobileNavProps {
   isAuth: boolean;
   isAdmin: boolean;
+  username?: string | null;
   pathname: string;
   isLinkActive: (href: string) => boolean;
   onClose: () => void;
 }
 
-export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: MobileNavProps) {
+function getProfileLabel(username?: string | null): string {
+  const normalized = username?.trim();
+  if (!normalized) return 'Profile';
+  return `${normalized}'s profile`;
+}
+
+export function MobileNav({ isAuth, isAdmin, username, pathname, isLinkActive, onClose }: MobileNavProps) {
   const handleLogout = () => {
     tokenStore.clearAll();
     window.location.href = '/';
@@ -65,7 +72,7 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
             variant="ghost"
             className="w-full justify-start text-white hover:bg-white/10 h-auto px-3 py-3"
           >
-            <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
+            <Link href="/login">
               <span className="text-[0.85rem] font-semibold uppercase tracking-[0.1em]">
                 Login
               </span>
@@ -84,15 +91,15 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
         <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
           {SHOP_LINKS.map((link) => (
             <NavigationMenuItem key={link.href} className="w-full">
-              <Link href={link.href} legacyBehavior passHref>
-                <NavigationMenuLink
-                  active={isLinkActive(link.href)}
+              <NavigationMenuLink asChild active={isLinkActive(link.href)}>
+                <Link
+                  href={link.href}
                   onClick={onClose}
                   className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                 >
                   {link.label}
-                </NavigationMenuLink>
-              </Link>
+                </Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
@@ -110,15 +117,15 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
             <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
               {USER_LINKS.map((link) => (
                 <NavigationMenuItem key={link.href} className="w-full">
-                  <Link href={link.href} legacyBehavior passHref>
-                    <NavigationMenuLink
-                      active={isLinkActive(link.href)}
+                  <NavigationMenuLink asChild active={isLinkActive(link.href)}>
+                    <Link
+                      href={link.href}
                       onClick={onClose}
                       className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                     >
-                      {link.label}
-                    </NavigationMenuLink>
-                  </Link>
+                      {link.href === '/profile' ? getProfileLabel(username) : link.label}
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
@@ -137,15 +144,15 @@ export function MobileNav({ isAuth, isAdmin, pathname, isLinkActive, onClose }: 
           <NavigationMenu orientation="vertical" viewport={false}>
             <NavigationMenuList className="flex-col items-stretch space-x-0 gap-0.5">
               <NavigationMenuItem className="w-full">
-                <Link href="/admin" legacyBehavior passHref>
-                  <NavigationMenuLink
-                    active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                <NavigationMenuLink asChild active={pathname === '/admin' || pathname.startsWith('/admin/')}>
+                  <Link
+                    href="/admin"
                     onClick={onClose}
                     className="block w-full px-3 py-2.5 text-[0.85rem] font-semibold uppercase tracking-[0.1em] data-[active]:bg-white/10 data-[active]:text-white hover:bg-white/5 text-neutral-300"
                   >
                     Dashboard
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

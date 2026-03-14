@@ -10,6 +10,7 @@ import { getAdminSettings, updateAdminSettings } from '@/application/adminSettin
 import { createAdmin } from '@/application/admin/createAdmin';
 import type { AdminSettings } from '@/domain/adminSettings/adminSettings.entity';
 import { Button } from '@/components/ui/button';
+import PathaoStoreManagementPanel from './components/PathaoStoreManagementPanel';
 
 const primaryBtn: React.CSSProperties = {
   display: 'inline-flex',
@@ -270,6 +271,8 @@ export default function AdminSettingsView() {
                 </div>
               </form>
             </div>
+
+            <PathaoStoreManagementPanel />
           </div>
         </main>
       </div>

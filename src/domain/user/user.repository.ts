@@ -1,6 +1,7 @@
 import type { User } from './user.entity';
 
 export interface UpdateUserPayload {
+  username?: string;
   email?: string;
   fullName?: string;
   phone?: string;

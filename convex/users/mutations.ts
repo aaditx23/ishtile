@@ -18,6 +18,11 @@ export const updateMe = mutation({
     const user = await ctx.db.get(userId);
     if (!user) throw new Error("User not found");
 
+    const normalizedUsername = patch.username?.trim();
+    if (normalizedUsername && normalizedUsername.length > 10) {
+      throw new Error("Username must be within 10 characters");
+    }
+
     if (patch.email && patch.email !== user.email) {
       const dup = await ctx.db
         .query("users")
@@ -26,10 +31,10 @@ export const updateMe = mutation({
       if (dup) throw new Error("Email is already in use");
     }
 
-    if (patch.username && patch.username !== user.username) {
+    if (normalizedUsername && normalizedUsername !== user.username) {
       const dup = await ctx.db
         .query("users")
-        .withIndex("by_username", (q) => q.eq("username", patch.username!))
+        .withIndex("by_username", (q) => q.eq("username", normalizedUsername))
         .first();
       if (dup) throw new Error("Username is already taken");
     }
@@ -37,7 +42,7 @@ export const updateMe = mutation({
     const cleaned: Record<string, unknown> = {};
     if (patch.fullName !== undefined) cleaned.fullName = patch.fullName;
     if (patch.email !== undefined) cleaned.email = patch.email;
-    if (patch.username !== undefined) cleaned.username = patch.username;
+    if (patch.username !== undefined) cleaned.username = normalizedUsername;
 
     await ctx.db.patch(userId, cleaned);
     return { success: true };

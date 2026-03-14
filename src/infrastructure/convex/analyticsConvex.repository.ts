@@ -14,7 +14,7 @@ export class AnalyticsConvexRepository {
     return {
       todayOrders:      res.todayOrders,
       todayRevenue:     res.todayRevenue,
-      pendingOrders:    res.statusCounts?.new ?? 0,
+      pendingOrders:    res.statusCounts?.pending ?? 0,
       lowStockVariants: res.lowStockCount,
       totalCustomers:   res.totalUsers,
       activePromos:     0, // not tracked in summary — fetch separately if needed

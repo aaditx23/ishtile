@@ -138,7 +138,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
         {/* View button - sharp corners, minimal style */}
         <Link 
           href={`/products/${product.slug}`}
-          className="w-full text-center text-xs sm:text-sm font-medium py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-on-primary transition-colors"
+          className="w-full text-center text-xs sm:text-sm font-medium py-2 border border-brand-dark text-brand-dark hover:bg-brand-dark hover:text-background transition-colors"
         >
           VIEW DETAILS
         </Link>

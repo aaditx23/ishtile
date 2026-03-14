@@ -18,6 +18,11 @@ export interface Order {
   orderNumber: string;
   userId: number;
   status: OrderStatus;
+  deliveryMode: 'manual' | 'pathao';
+  pathaoConsignmentId?: string | null;
+  pathaoStatus?: string | null;
+  pathaoPrice?: number | null;
+  pathaoRawPayload?: unknown;
   subtotal: number;
   promoDiscount: number;
   shippingCost: number;
@@ -25,7 +30,11 @@ export interface Order {
   shippingName: string;
   shippingPhone: string;
   shippingAddress: string;
+  shippingAddressLine?: string | null;
   shippingCity: string;
+  shippingCityId?: number | null;
+  shippingZoneId?: number | null;
+  shippingAreaId?: number | null;
   shippingPostalCode: string | null;
   customerNotes: string | null;
   adminNotes: string | null;

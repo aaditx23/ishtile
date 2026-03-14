@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { authConvexService } from '@/infrastructure/auth/auth.service';
+import { getPhone11DigitError, normalizePhoneInput } from '@/shared/utils/phoneValidation';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -35,6 +36,12 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const phoneError = getPhone11DigitError(phone);
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,7 +58,7 @@ function RegisterForm() {
     setLoading(true);
     try {
       await authConvexService.register({
-        phone,
+        phone: phone.trim(),
         email,
         username,
         fullName,
@@ -74,7 +81,10 @@ function RegisterForm() {
           type="tel"
           placeholder="01XXXXXXXXX"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(normalizePhoneInput(e.target.value))}
+          inputMode="numeric"
+          maxLength={11}
+          pattern="[0-9]{11}"
           autoFocus
         />
       </div>
