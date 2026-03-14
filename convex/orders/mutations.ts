@@ -519,11 +519,7 @@ export const updateOrderStatus = mutation({
       throw new Error("Order handled by Pathao. Cancellation must come from courier.");
     }
 
-    // Basic state machine validation
     const oldStatus = order.status;
-    if (oldStatus === "delivered" || oldStatus === "cancelled") {
-      throw new Error(`Cannot change status of a ${oldStatus} order`);
-    }
 
     const now = Date.now();
     const patch: Record<string, unknown> = { status };
