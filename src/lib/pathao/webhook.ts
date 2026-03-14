@@ -9,6 +9,7 @@ import type {
 
 const webhookHandler = new PathaoWebhookHandler({
   webhookSecret: getRequiredPathaoEnv("PATHAO_WEBHOOK_SECRET"),
+  integrationSecret: "f3992ecc-59da-4cbe-a049-a13da2018d51" // public data
 });
 
 export async function handlePathaoWebhook(

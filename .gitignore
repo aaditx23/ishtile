@@ -62,3 +62,4 @@ api_response.md
 address-and-file-api.md
 ishtile-backend
 docs
+.env.prod

@@ -46,7 +46,7 @@ function webhookResponse(payload: Record<string, unknown>, status = 202): Respon
     status,
     headers: {
       "Content-Type": "application/json",
-      "X-Pathao-Merchant-Webhook-Integration-Secret": webhookIntegrationSecret,
+      "X-Pathao-Merchant-Webhook-Integration-Secret": "f3992ecc-59da-4cbe-a049-a13da2018d51",
     },
   });
 }
