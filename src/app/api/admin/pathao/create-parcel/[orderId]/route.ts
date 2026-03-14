@@ -99,10 +99,10 @@ export async function POST(
     const recipientCity = Number(body.recipient_city ?? body.city ?? body.recipientCity ?? order.shippingCityId);
     const recipientZone = Number(body.recipient_zone ?? body.zone ?? body.recipientZone ?? order.shippingZoneId);
     const recipientArea = Number(body.recipient_area ?? body.area ?? body.recipientArea ?? order.shippingAreaId);
-    const itemQuantity = Number(body.item_quantity ?? 1);
-    const itemWeight = Number(body.item_weight ?? 1);
-    const amountToCollect = Number(body.amount_to_collect ?? order.total);
-    const specialInstruction = String(body.special_instruction ?? '');
+    const itemQuantity = Number(body.item_quantity ?? body.itemQuantity ?? 1);
+    const itemWeight = Number(body.item_weight ?? body.itemWeight ?? 1);
+    const amountToCollect = Number(body.amount_to_collect ?? body.amountToCollect ?? order.total);
+    const specialInstruction = String(body.special_instruction ?? body.specialInstruction ?? '');
     const deliveryType = Number(body.delivery_type ?? body.deliveryType ?? 48);
 
     if (![48, 12].includes(deliveryType)) {

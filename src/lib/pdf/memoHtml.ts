@@ -72,7 +72,7 @@ export function renderMemo(data: MemoData): string {
       <span class="badge ${badgeClass}">${data.paymentStatus}</span>
     </div>
     <div class="company-info">
-      <div>+880 1700-000000 &nbsp;|&nbsp; +880 1800-000000</div>
+      <div>+8801607999061</div>
       <div>ishtile.com</div>
     </div>
     <div class="invoice-info">

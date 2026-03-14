@@ -35,6 +35,9 @@ function statusVariant(status: string): 'default' | 'secondary' | 'destructive' 
 }
 
 export default function DeliveryManagementCard({ order, onOrderChange }: DeliveryManagementCardProps) {
+  const MIN_ITEM_WEIGHT_KG = 0.5;
+  const MAX_ITEM_WEIGHT_KG = 10;
+
   const [mode, setMode] = useState<'manual' | 'pathao'>(order.deliveryMode ?? 'manual');
   const [savingMode, setSavingMode] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -48,7 +51,7 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
   const [recipientZone, setRecipientZone] = useState(String(order.shippingZoneId ?? ''));
   const [recipientArea, setRecipientArea] = useState(String(order.shippingAreaId ?? ''));
   const [deliveryType, setDeliveryType] = useState(48);
-  const [itemWeight, setItemWeight] = useState('500');
+  const [itemWeight, setItemWeight] = useState('1');
   const [itemQuantity, setItemQuantity] = useState(String(order.items?.length || 1));
   const [amountToCollect, setAmountToCollect] = useState(String(order.total ?? 0));
   const [specialInstruction, setSpecialInstruction] = useState('');
@@ -107,6 +110,16 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
       return;
     }
 
+    const parsedItemWeight = Number(itemWeight);
+    if (
+      !Number.isFinite(parsedItemWeight) ||
+      parsedItemWeight < MIN_ITEM_WEIGHT_KG ||
+      parsedItemWeight > MAX_ITEM_WEIGHT_KG
+    ) {
+      toast.error(`Item weight must be between ${MIN_ITEM_WEIGHT_KG} and ${MAX_ITEM_WEIGHT_KG} kg.`);
+      return;
+    }
+
     setCreating(true);
     setServerMissingFields([]);
     try {
@@ -118,7 +131,7 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
         recipientZone: Number(recipientZone),
         recipientArea: Number(recipientArea) || undefined,
         deliveryType,
-        itemWeight: Number(itemWeight),
+        itemWeight: parsedItemWeight,
         itemQuantity: Number(itemQuantity),
         amountToCollect: Number(amountToCollect),
         specialInstruction: specialInstruction.trim() || undefined,
@@ -257,7 +270,16 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-item-weight">Item Weight</Label>
-                <Input id="pathao-item-weight" value={itemWeight} onChange={(e) => setItemWeight(e.target.value)} placeholder="Item Weight (grams)" type="number" min={1} />
+                <Input
+                  id="pathao-item-weight"
+                  value={itemWeight}
+                  onChange={(e) => setItemWeight(e.target.value)}
+                  placeholder="Item Weight (Kilograms)"
+                  type="number"
+                  min={MIN_ITEM_WEIGHT_KG}
+                  max={MAX_ITEM_WEIGHT_KG}
+                  step={0.1}
+                />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="pathao-special-instruction">Special Instruction</Label>
