@@ -49,22 +49,38 @@ function clearSessionCookie(): void {
 // ─── In-memory access token ───────────────────────────────────────────────────
 
 let _access: string | null = null;
+let _initialized = false;
+
+function isLikelyJwt(token: string): boolean {
+  const parts = token.split('.');
+  return parts.length === 3 && parts.every((part) => part.length > 0);
+}
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const tokenStore = {
   // ─── Access token (memory only) ─────────────────────────────────────────────
   getAccess(): string | null {
+    if (!_initialized && isBrowser()) {
+      _initialized = true;
+      const persistedToken = localStorage.getItem(KEYS.refresh);
+      if (persistedToken && isLikelyJwt(persistedToken)) {
+        _access = persistedToken;
+        setSessionCookie();
+      }
+    }
     return _access;
   },
 
   setAccess(token: string): void {
     _access = token;
+    _initialized = true;
     if (isBrowser()) setSessionCookie();
   },
 
   clearAccess(): void {
     _access = null;
+    _initialized = true;
   },
 
   // ─── Refresh token (localStorage) ───────────────────────────────────────────
