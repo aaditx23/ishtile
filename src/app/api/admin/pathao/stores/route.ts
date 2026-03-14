@@ -74,6 +74,32 @@ function mapRemoteStore(raw: Record<string, unknown>) {
   };
 }
 
+function buildPathaoErrorMessage(response: unknown, fallback: string): string {
+  if (!response || typeof response !== 'object') return fallback;
+
+  const root = response as Record<string, unknown>;
+  const baseMessage = typeof root.message === 'string' && root.message.trim()
+    ? root.message.trim()
+    : fallback;
+
+  const errors = root.errors;
+  if (!errors || typeof errors !== 'object') return baseMessage;
+
+  const list: string[] = [];
+  for (const value of Object.values(errors as Record<string, unknown>)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item === 'string' && item.trim()) list.push(item.trim());
+      }
+    } else if (typeof value === 'string' && value.trim()) {
+      list.push(value.trim());
+    }
+  }
+
+  if (list.length === 0) return baseMessage;
+  return `${baseMessage}: ${list.join(', ')}`;
+}
+
 function isStoreValid(remote: ReturnType<typeof mapRemoteStore>, db: Record<string, unknown>): boolean {
   const remoteName = normalizeText(remote.storeName);
   const dbName = normalizeText(db.storeName ?? db.name);
@@ -259,8 +285,18 @@ export async function POST(req: NextRequest): Promise<Response> {
       listData: null,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create Pathao store';
-    return NextResponse.json({ success: false, message, data: null, listData: null }, { status: 500 });
+    const apiError = error as {
+      statusCode?: number;
+      response?: unknown;
+      message?: string;
+    };
+    const fallback = error instanceof Error ? error.message : 'Failed to create Pathao store';
+    const message = buildPathaoErrorMessage(apiError.response, fallback);
+    const status = typeof apiError.statusCode === 'number' && apiError.statusCode >= 400
+      ? apiError.statusCode
+      : 500;
+
+    return NextResponse.json({ success: false, message, data: null, listData: null }, { status });
   }
 }
 
