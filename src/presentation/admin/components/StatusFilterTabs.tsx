@@ -1,11 +1,10 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import type { OrderStatus } from '@/shared/types/api.types';
 
-const TABS: { label: string; value: OrderStatus | 'all' }[] = [
+const TABS: { label: string; value: 'all' | 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' }[] = [
   { label: 'All',       value: 'all' },
-  { label: 'New',       value: 'new' },
+  { label: 'Pending',   value: 'pending' },
   { label: 'Confirmed', value: 'confirmed' },
   { label: 'Shipped',   value: 'shipped' },
   { label: 'Delivered', value: 'delivered' },
@@ -15,7 +14,8 @@ const TABS: { label: string; value: OrderStatus | 'all' }[] = [
 export default function StatusFilterTabs() {
   const searchParams = useSearchParams();
   const router       = useRouter();
-  const current      = searchParams.get('status') ?? 'all';
+  const currentRaw   = searchParams.get('status') ?? 'all';
+  const current      = currentRaw === 'new' ? 'pending' : currentRaw;
 
   const setStatus = (v: string) => {
     const p = new URLSearchParams(searchParams.toString());

@@ -186,7 +186,7 @@ export interface CartDto {
 // ─── Order ────────────────────────────────────────────────────────────────────
 
 export type OrderStatus =
-  | 'new'
+  | 'pending'
   | 'confirmed'
   | 'shipped'
   | 'delivered'

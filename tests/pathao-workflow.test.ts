@@ -125,6 +125,7 @@ test('Pathao workflow integration lifecycle', async () => {
     email: adminEmail,
     passwordHash: 'integration-test-hash',
     fullName: 'Pathao Test Admin',
+    username: ''
   });
 
   const buyerToken = await signToken({ userId: buyer.userId as unknown as string, role: 'buyer' });

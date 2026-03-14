@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { updateOrderStatus } from '@/application/order/updateOrderStatus';
 import type { OrderStatus } from '@/shared/types/api.types';
 
-const STATUSES: OrderStatus[] = ['new', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+const STATUSES: OrderStatus[] = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
 interface OrderStatusSelectorProps {
   orderId:         number;
@@ -28,6 +28,11 @@ export default function OrderStatusSelector({
   const [notes, setNotes]       = useState('');
   const [saving, setSaving]     = useState(false);
   const isDirty                 = status !== savedStatus;
+
+  useEffect(() => {
+    setStatus(currentStatus);
+    setSaved(currentStatus);
+  }, [currentStatus]);
 
   const handleSave = async () => {
     if (!isDirty || disabled) return;

@@ -204,3 +204,29 @@ export const updateAdminSettings = mutation({
     }
   },
 });
+
+// ─── Idempotency helpers ─────────────────────────────────────────────────────
+
+export const reserveIdempotencyKey = mutation({
+  args: {
+    key: v.string(),
+    source: v.optional(v.string()),
+  },
+  handler: async (ctx, { key, source }) => {
+    const existing = await ctx.db
+      .query("idempotencyKeys")
+      .withIndex("by_key", (q) => q.eq("key", key))
+      .first();
+
+    if (existing) {
+      return { reserved: false };
+    }
+
+    await ctx.db.insert("idempotencyKeys", {
+      key,
+      source: source ?? "pathao_webhook",
+    });
+
+    return { reserved: true };
+  },
+});

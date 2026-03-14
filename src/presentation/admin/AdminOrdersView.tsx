@@ -146,7 +146,8 @@ function BatchProgressModal({
 export default function AdminOrdersView() {
   const searchParams                = useSearchParams();
   const page                        = Math.max(1, Number(searchParams.get('page')) || 1);
-  const status                      = searchParams.get('status') as OrderStatus | null;
+  const statusParam                 = searchParams.get('status');
+  const status                      = (statusParam === 'new' ? 'pending' : statusParam) as OrderStatus | null;
   const [orders, setOrders]         = useState<Order[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading]       = useState(true);

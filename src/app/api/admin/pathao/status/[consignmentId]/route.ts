@@ -5,16 +5,31 @@ import { api } from '../../../../../../../convex/_generated/api';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+type OrderStatusForPathao = 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
-// Consistent Pathao → Order status mapping
-const PATHAO_STATUS_MAP = {
-  Pending: 'confirmed',
-  assigned: 'assigned',
+const PATHAO_STATUS_MAP: Record<string, OrderStatusForPathao> = {
+  order_created: 'confirmed',
+  created: 'confirmed',
+  confirmed: 'confirmed',
+  pending: 'confirmed',
+  order_assigned: 'confirmed',
+  assigned: 'confirmed',
+  order_picked: 'shipped',
   picked: 'shipped',
+  pickup: 'shipped',
   in_transit: 'shipped',
+  transit: 'shipped',
+  order_delivered: 'delivered',
   delivered: 'delivered',
+  order_returned: 'cancelled',
   returned: 'cancelled',
+  cancelled: 'cancelled',
+  canceled: 'cancelled',
 };
+
+function normalizePathaoStatus(raw: string): string {
+  return raw.trim().toLowerCase().replace(/\./g, '_').replace(/\s+/g, '_');
+}
 
 export async function GET(
   req: NextRequest,
@@ -34,25 +49,16 @@ export async function GET(
     }
     console.log('Order found:', order._id);
 
-    // STEP 4: Only then access fields
-    const currentPathaoStatus = order.pathaoStatus;
-
     // STEP 5: Continue refresh logic
     const info = await pathaoClient.orders.getInfo(consignmentId);
     // Fall back to the stored status if Pathao doesn't return one,
     // so the response never contains undefined.
-    const courierStatus: string = info?.data?.order_status ?? order.pathaoStatus ?? 'pending';
-    console.log('Pathao courier status:', courierStatus);
+    const courierStatusRaw: string = info?.data?.order_status ?? order.pathaoStatus ?? 'pending';
+    const courierStatus = normalizePathaoStatus(courierStatusRaw);
+    console.log('Pathao courier status:', courierStatusRaw, '->', courierStatus);
 
     // STEP 6: Map courier status
-    const map: Record<string, string> = {
-      assigned: 'confirmed',
-      picked: 'shipped',
-      in_transit: 'shipped',
-      delivered: 'delivered',
-      returned: 'cancelled',
-    };
-    const mapped = map[courierStatus as keyof typeof map];
+    const mapped = PATHAO_STATUS_MAP[courierStatus];
 
     // STEP 7: Update order (only if we have a real status from Pathao)
     if (info?.data?.order_status) {
