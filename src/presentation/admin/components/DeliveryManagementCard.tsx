@@ -72,6 +72,8 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
   const pathaoStatus = normalizeStatus(order.pathaoStatus);
   const isPersistedPathaoMode = (order.deliveryMode ?? 'manual') === 'pathao';
   const hasPathaoConsignment = Boolean(order.pathaoConsignmentId);
+  const isReturnedOrCancelled = pathaoStatus.includes('return') || pathaoStatus.includes('cancel');
+  const isDeliveryModeLocked = hasPathaoConsignment && !isReturnedOrCancelled;
 
   const handleSaveMode = async () => {
     setSavingMode(true);
@@ -200,14 +202,19 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Delivery Mode</p>
           <div className="flex gap-2">
-            <Select value={mode} onChange={(e) => setMode(e.target.value as 'manual' | 'pathao')}>
+            <Select value={mode} onChange={(e) => setMode(e.target.value as 'manual' | 'pathao')} disabled={isDeliveryModeLocked || savingMode}>
               <option value="manual">Manual Delivery</option>
               <option value="pathao">Pathao Delivery</option>
             </Select>
-            <Button onClick={handleSaveMode} disabled={savingMode || mode === order.deliveryMode}>
+            <Button onClick={handleSaveMode} disabled={isDeliveryModeLocked || savingMode || mode === order.deliveryMode}>
               {savingMode ? 'Saving...' : 'Save'}
             </Button>
           </div>
+          {isDeliveryModeLocked && (
+            <p className="text-xs text-muted-foreground">
+              Delivery mode is locked after parcel creation. It will unlock if Pathao marks the shipment as returned/cancelled.
+            </p>
+          )}
         </div>
 
         {(mode === 'pathao' || (order.deliveryMode === 'pathao' && order.pathaoConsignmentId)) && (
@@ -315,9 +322,11 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
                     {refreshing ? 'Refreshing...' : 'Refresh Pathao Status'}
                   </Button>
                 )}
-                <Button variant="destructive" onClick={handleCancelPathao} disabled={savingMode}>
-                  Cancel Order
-                </Button>
+                {!hasPathaoConsignment && (
+                  <Button variant="destructive" onClick={handleCancelPathao} disabled={savingMode}>
+                    Cancel Order
+                  </Button>
+                )}
                 {hasPathaoConsignment && (
                   <Button asChild variant="secondary">
                     <a

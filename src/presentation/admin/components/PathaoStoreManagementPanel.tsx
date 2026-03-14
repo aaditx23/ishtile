@@ -9,10 +9,13 @@ import { getZones } from '@/application/location/getZones';
 import { getAreas } from '@/application/location/getAreas';
 import type { PathaoAreaDto, PathaoCityDto, PathaoZoneDto } from '@/shared/types/api.types';
 import {
+  addPathaoStoreFromResponseToDb,
   createPathaoStoreConfig,
+  listPathaoAvailableStores,
   listPathaoStores,
   setActivePathaoStore,
   updatePathaoStoreConfig,
+  type PathaoAvailableStore,
   type PathaoStore,
   type PathaoStoreForm,
 } from '@/application/pathaoStores/pathaoStores';
@@ -51,9 +54,11 @@ const EMPTY_FORM: PathaoStoreForm = {
 
 export default function PathaoStoreManagementPanel() {
   const [stores, setStores] = useState<PathaoStore[]>([]);
+  const [availableStores, setAvailableStores] = useState<PathaoAvailableStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activatingId, setActivatingId] = useState<number | null>(null);
+  const [addingStoreId, setAddingStoreId] = useState<number | null>(null);
 
   const [form, setForm] = useState<PathaoStoreForm>(EMPTY_FORM);
   const [editingStoreId, setEditingStoreId] = useState<number | null>(null);
@@ -61,6 +66,9 @@ export default function PathaoStoreManagementPanel() {
   const [cities, setCities] = useState<PathaoCityDto[]>([]);
   const [zones, setZones] = useState<PathaoZoneDto[]>([]);
   const [areas, setAreas] = useState<PathaoAreaDto[]>([]);
+  const [rowAreas, setRowAreas] = useState<Record<number, PathaoAreaDto[]>>({});
+  const [rowAreaValue, setRowAreaValue] = useState<Record<number, number>>({});
+  const [rowAreasLoading, setRowAreasLoading] = useState<Record<number, boolean>>({});
   const [citiesLoading, setCitiesLoading] = useState(true);
   const [zonesLoading, setZonesLoading] = useState(false);
   const [areasLoading, setAreasLoading] = useState(false);
@@ -69,8 +77,12 @@ export default function PathaoStoreManagementPanel() {
   const activeStoreId = useMemo(() => stores.find((s) => s.isActive)?.storeId ?? null, [stores]);
 
   const refreshStores = async () => {
-    const rows = await listPathaoStores();
+    const [rows, available] = await Promise.all([
+      listPathaoStores(),
+      listPathaoAvailableStores(),
+    ]);
     setStores(rows);
+    setAvailableStores(available);
   };
 
   useEffect(() => {
@@ -152,13 +164,13 @@ export default function PathaoStoreManagementPanel() {
         });
         toast.success('Pathao store updated.');
       } else {
-        await createPathaoStoreConfig({
+        const result = await createPathaoStoreConfig({
           ...form,
           storeName: form.storeName.trim(),
           contactNumber: form.contactNumber.trim(),
           address: form.address.trim(),
         });
-        toast.success('Pathao store created.');
+        toast.success(result.message);
       }
 
       await refreshStores();
@@ -180,6 +192,40 @@ export default function PathaoStoreManagementPanel() {
       toast.error(err instanceof Error ? err.message : 'Failed to set active store.');
     } finally {
       setActivatingId(null);
+    }
+  };
+
+  const loadRowAreas = async (storeId: number, zoneId: number) => {
+    if (rowAreas[storeId] && rowAreas[storeId].length > 0) return;
+    setRowAreasLoading((prev) => ({ ...prev, [storeId]: true }));
+    try {
+      const options = await getAreas(zoneId);
+      setRowAreas((prev) => ({ ...prev, [storeId]: options }));
+    } catch {
+      toast.error('Failed to load areas for store.');
+    } finally {
+      setRowAreasLoading((prev) => ({ ...prev, [storeId]: false }));
+    }
+  };
+
+  const handleAddFromResponse = async (store: PathaoAvailableStore) => {
+    const needsArea = store.status === 'missing' || !store.dbAreaId;
+    const selectedAreaId = rowAreaValue[store.storeId] ?? store.dbAreaId ?? 0;
+
+    if (needsArea && !selectedAreaId) {
+      toast.error('Please select an area before adding this store.');
+      return;
+    }
+
+    setAddingStoreId(store.storeId);
+    try {
+      await addPathaoStoreFromResponseToDb(store.storeId, selectedAreaId);
+      await refreshStores();
+      toast.success('Store added to DB from Pathao response.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to add store to DB.');
+    } finally {
+      setAddingStoreId(null);
     }
   };
 
@@ -331,54 +377,108 @@ export default function PathaoStoreManagementPanel() {
         <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem' }}>Available Stores</h3>
         {loading ? (
           <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.85rem' }}>Loading stores…</p>
-        ) : stores.length === 0 ? (
-          <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.85rem' }}>No stores yet — use the form above to create one.</p>
+        ) : availableStores.length === 0 ? (
+          <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.85rem' }}>No stores returned by Pathao list response.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            {stores.map((store) => (
+            {availableStores.map((store) => {
+              const needsAreaInput = store.status === 'missing' || !store.dbAreaId;
+              const selectedAreaId = rowAreaValue[store.storeId] ?? store.dbAreaId ?? 0;
+
+              return (
               <div
                 key={store.storeId}
                 style={{
                   border: '1px solid var(--border)',
                   padding: '0.75rem',
-                  backgroundColor: store.isActive ? 'var(--surface-muted)' : 'var(--surface)',
+                  backgroundColor: store.dbIsActive ? 'var(--surface-muted)' : 'var(--surface)',
                 }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: '0.75rem' }}>
                   <div>
                     <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{store.storeName}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)' }}>
-                      Store ID: {store.storeId} • {store.contactNumber}
+                      Store ID: {store.storeId}{store.contactNumber ? ` • ${store.contactNumber}` : ''}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)' }}>
-                      {store.address}
+                      {store.storeAddress}
                     </div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--on-surface-muted)' }}>
-                      City {store.cityId} • Zone {store.zoneId} • Area {store.areaId}
+                      City {store.cityId} • Zone {store.zoneId}
                     </div>
                   </div>
 
                   <div className="flex w-full sm:w-auto" style={{ alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    {store.isActive && (
+                    {store.status === 'valid' && (
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.2rem 0.45rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)' }}>
+                        VALID
+                      </span>
+                    )}
+                    {store.status !== 'valid' && (
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.2rem 0.45rem', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', border: '1px solid var(--border)' }}>
+                        {store.status === 'missing' ? 'NOT IN DB' : 'INVALID'}
+                      </span>
+                    )}
+                    {store.dbIsActive && (
                       <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.2rem 0.45rem', backgroundColor: 'var(--success-bg)', color: 'var(--on-success)' }}>
                         ACTIVE
                       </span>
                     )}
-                    <Button type="button" variant="outline" onClick={() => startEdit(store)} disabled={saving || activatingId !== null} className="w-full sm:w-auto">
+                    <Button type="button" variant="outline" onClick={() => startEdit(stores.find((s) => s.storeId === store.storeId) ?? {
+                      storeId: store.storeId,
+                      storeName: store.storeName,
+                      contactNumber: store.contactNumber,
+                      address: store.storeAddress,
+                      cityId: store.cityId,
+                      zoneId: store.zoneId,
+                      areaId: store.dbAreaId ?? 0,
+                      isActive: store.dbIsActive,
+                      createdAt: 0,
+                    })} disabled={!store.canUse || saving || activatingId !== null} className="w-full sm:w-auto">
                       Edit
                     </Button>
                     <Button
                       type="button"
                       onClick={() => handleActivate(store.storeId)}
-                      disabled={store.storeId === activeStoreId || saving || activatingId !== null}
+                      disabled={!store.canUse || store.storeId === activeStoreId || saving || activatingId !== null}
                       className="w-full sm:w-auto"
                     >
-                      {activatingId === store.storeId ? 'Selecting…' : store.storeId === activeStoreId ? 'Selected' : 'Use This Store'}
+                      {activatingId === store.storeId ? 'Selecting…' : !store.canUse ? 'Not Usable' : store.storeId === activeStoreId ? 'Selected' : 'Use This Store'}
                     </Button>
+                    {!store.canUse && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => handleAddFromResponse(store)}
+                        disabled={addingStoreId !== null || (needsAreaInput && !selectedAreaId)}
+                        className="w-full sm:w-auto"
+                      >
+                        {addingStoreId === store.storeId ? 'Adding…' : 'Add To DB'}
+                      </Button>
+                    )}
                   </div>
                 </div>
+
+                {!store.canUse && needsAreaInput && (
+                  <div style={{ marginTop: '0.65rem' }}>
+                    <label style={{ ...labelStyle, marginBottom: '0.3rem' }}>Area (required to add to DB)</label>
+                    <select
+                      value={selectedAreaId || ''}
+                      onFocus={() => void loadRowAreas(store.storeId, store.zoneId)}
+                      onChange={(e) => setRowAreaValue((prev) => ({ ...prev, [store.storeId]: Number(e.target.value || 0) }))}
+                      disabled={Boolean(rowAreasLoading[store.storeId]) || addingStoreId === store.storeId}
+                      style={{ width: '100%', border: '1px solid var(--border)', padding: '0.55rem 0.7rem', backgroundColor: 'var(--surface)', fontSize: '0.875rem' }}
+                    >
+                      <option value="">{rowAreasLoading[store.storeId] ? 'Loading areas…' : 'Select area'}</option>
+                      {(rowAreas[store.storeId] ?? []).map((a) => (
+                        <option key={a.areaId} value={a.areaId}>{a.areaName}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

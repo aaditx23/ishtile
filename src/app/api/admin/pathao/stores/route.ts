@@ -3,7 +3,7 @@ import { ConvexHttpClient } from 'convex/browser';
 import type { Id } from '../../../../../../convex/_generated/dataModel';
 import { api } from '../../../../../../convex/_generated/api';
 import { verifyToken } from '@/lib/auth';
-import { createPathaoStore } from '@/lib/pathao';
+import { createPathaoStore, listPathaoRemoteStores } from '@/lib/pathao';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -13,6 +13,11 @@ interface CreateStoreBody {
   address?: string;
   cityId?: number;
   zoneId?: number;
+  areaId?: number;
+}
+
+interface AddStoreFromResponseBody {
+  storeId?: number;
   areaId?: number;
 }
 
@@ -41,18 +46,145 @@ function readCreatedStoreId(response: unknown): number | null {
   );
 }
 
-export async function POST(req: NextRequest): Promise<Response> {
+function normalizeText(value: unknown): string {
+  return String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function readRemoteStoreList(response: unknown): Array<Record<string, unknown>> {
+  if (!response || typeof response !== 'object') return [];
+  const root = response as Record<string, unknown>;
+  const data = root.data as Record<string, unknown> | undefined;
+  const rows = Array.isArray(data?.data)
+    ? data?.data
+    : Array.isArray(data?.stores)
+      ? data?.stores
+      : [];
+  return rows as Array<Record<string, unknown>>;
+}
+
+function mapRemoteStore(raw: Record<string, unknown>) {
+  return {
+    storeId: Number(raw.store_id ?? raw.id ?? 0),
+    storeName: String(raw.store_name ?? raw.name ?? ''),
+    storeAddress: String(raw.store_address ?? raw.address ?? ''),
+    contactNumber: String(raw.contact_number ?? ''),
+    cityId: Number(raw.city_id ?? 0),
+    zoneId: Number(raw.zone_id ?? 0),
+    isActive: Number(raw.is_active ?? 0),
+  };
+}
+
+function isStoreValid(remote: ReturnType<typeof mapRemoteStore>, db: Record<string, unknown>): boolean {
+  const remoteName = normalizeText(remote.storeName);
+  const dbName = normalizeText(db.storeName ?? db.name);
+
+  const remoteAddress = normalizeText(remote.storeAddress);
+  const dbAddress = normalizeText(db.address);
+
+  const remoteCityId = Number(remote.cityId ?? 0);
+  const dbCityId = Number(db.cityId ?? 0);
+
+  const remoteZoneId = Number(remote.zoneId ?? 0);
+  const dbZoneId = Number(db.zoneId ?? 0);
+
+  const remoteContact = normalizeText(remote.contactNumber);
+  const dbContact = normalizeText(db.contactNumber);
+  const contactMatches = remoteContact.length === 0 ? true : remoteContact === dbContact;
+
+  return (
+    remoteName === dbName
+    && remoteAddress === dbAddress
+    && remoteCityId === dbCityId
+    && remoteZoneId === dbZoneId
+    && contactMatches
+  );
+}
+
+async function requireAdmin(req: NextRequest): Promise<{ ok: true; userId: Id<'users'> } | { ok: false; response: Response }> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return {
+      ok: false,
+      response: NextResponse.json({ success: false, message: 'Unauthorized', data: null, listData: null }, { status: 401 }),
+    };
+  }
+
+  const token = authHeader.substring(7);
+  const payload = await verifyToken(token);
+  if (!payload || payload.role !== 'admin') {
+    return {
+      ok: false,
+      response: NextResponse.json({ success: false, message: 'Admin access required', data: null, listData: null }, { status: 403 }),
+    };
+  }
+
+  return { ok: true, userId: payload.userId as Id<'users'> };
+}
+
+export async function GET(req: NextRequest): Promise<Response> {
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, message: 'Unauthorized', data: null, listData: null }, { status: 401 });
+    const auth = await requireAdmin(req);
+    if (!auth.ok) return auth.response;
+
+    const remote = await listPathaoRemoteStores();
+    const remoteRows = readRemoteStoreList(remote);
+    const view = req.nextUrl.searchParams.get('view');
+
+    if (view === 'raw') {
+      return NextResponse.json({
+        success: true,
+        message: 'Pathao stores fetched',
+        data: null,
+        listData: remoteRows,
+      });
     }
 
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token);
-    if (!payload || payload.role !== 'admin') {
-      return NextResponse.json({ success: false, message: 'Admin access required', data: null, listData: null }, { status: 403 });
-    }
+    const dbRows = (await convex.query((api as any).shipments.queries.listPathaoStores, {})) as Array<Record<string, unknown>>;
+    const dbByStoreId = new Map<number, Record<string, unknown>>(dbRows.map((row) => [Number(row.storeId), row]));
+
+    const listData = remoteRows
+      .map(mapRemoteStore)
+      .filter((store) => store.storeId > 0)
+      .map((remoteStore) => {
+        const db = dbByStoreId.get(remoteStore.storeId);
+        if (!db) {
+          return {
+            ...remoteStore,
+            status: 'missing' as const,
+            isValid: false,
+            canUse: false,
+            dbAreaId: null,
+            dbIsActive: false,
+          };
+        }
+
+        const valid = isStoreValid(remoteStore, db);
+        return {
+          ...remoteStore,
+          status: valid ? ('valid' as const) : ('invalid' as const),
+          isValid: valid,
+          canUse: valid,
+          dbAreaId: Number(db.areaId ?? 0) || null,
+          dbIsActive: Boolean(db.isActive),
+        };
+      });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Pathao stores compared with DB',
+      data: null,
+      listData,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to fetch Pathao stores';
+    return NextResponse.json({ success: false, message, data: null, listData: null }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest): Promise<Response> {
+  try {
+    const auth = await requireAdmin(req);
+    if (!auth.ok) return auth.response;
 
     const body = (await req.json()) as CreateStoreBody;
 
@@ -77,12 +209,28 @@ export async function POST(req: NextRequest): Promise<Response> {
       area_id: areaId,
     });
 
+    const createdRoot = (created && typeof created === 'object')
+      ? (created as Record<string, unknown>)
+      : null;
+    const providerMessage = typeof createdRoot?.message === 'string'
+      ? createdRoot.message
+      : null;
+
     const storeId = readCreatedStoreId(created);
     if (!storeId) {
-      throw new Error('Pathao store creation succeeded but no store_id returned');
+      return NextResponse.json({
+        success: true,
+        message: providerMessage ?? 'Store created successfully, Please wait one hour for approval.',
+        data: {
+          pendingApproval: true,
+          storeId: null,
+          storeName,
+        },
+        listData: null,
+      });
     }
 
-    const adminUserId = payload.userId as Id<'users'>;
+    const adminUserId = auth.userId;
 
     await convex.mutation((api as any).shipments.mutations.createPathaoStoreRecord, {
       storeId,
@@ -97,8 +245,9 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     return NextResponse.json({
       success: true,
-      message: 'Pathao store created',
+      message: providerMessage ?? 'Pathao store created',
       data: {
+        pendingApproval: false,
         storeId,
         storeName,
         contactNumber,
@@ -111,6 +260,58 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create Pathao store';
+    return NextResponse.json({ success: false, message, data: null, listData: null }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest): Promise<Response> {
+  try {
+    const auth = await requireAdmin(req);
+    if (!auth.ok) return auth.response;
+
+    const body = (await req.json()) as AddStoreFromResponseBody;
+    const storeId = Number(body.storeId ?? 0);
+    const areaId = Number(body.areaId ?? 0);
+
+    if (!storeId || !areaId) {
+      return NextResponse.json({ success: false, message: 'storeId and areaId are required', data: null, listData: null }, { status: 400 });
+    }
+
+    const [remote, dbRows] = await Promise.all([
+      listPathaoRemoteStores(),
+      convex.query((api as any).shipments.queries.listPathaoStores, {}),
+    ]);
+
+    const remoteMatch = readRemoteStoreList(remote)
+      .map(mapRemoteStore)
+      .find((row) => row.storeId === storeId);
+
+    if (!remoteMatch) {
+      return NextResponse.json({ success: false, message: 'Store not found in Pathao response', data: null, listData: null }, { status: 404 });
+    }
+
+    const existing = (dbRows as Array<Record<string, unknown>>).find((row) => Number(row.storeId) === storeId);
+
+    await convex.mutation((api as any).shipments.mutations.createPathaoStoreRecord, {
+      storeId,
+      storeName: remoteMatch.storeName,
+      contactNumber: remoteMatch.contactNumber || String(existing?.contactNumber ?? ''),
+      address: remoteMatch.storeAddress,
+      cityId: remoteMatch.cityId,
+      zoneId: remoteMatch.zoneId,
+      areaId,
+      isActive: Boolean(existing?.isActive ?? false),
+      adminUserId: auth.userId,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Store added to DB from Pathao response',
+      data: { storeId, areaId },
+      listData: null,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to add store from response';
     return NextResponse.json({ success: false, message, data: null, listData: null }, { status: 500 });
   }
 }

@@ -91,6 +91,32 @@ export interface CreatePathaoStoreResponse {
   };
 }
 
+export interface PathaoListedStore {
+  store_id?: number;
+  id?: number;
+  store_name?: string;
+  name?: string;
+  store_address?: string;
+  address?: string;
+  is_active?: number;
+  city_id?: number;
+  zone_id?: number;
+  hub_id?: number;
+  [key: string]: unknown;
+}
+
+export interface PathaoStoreListResponse {
+  message?: string;
+  type?: string;
+  code?: number;
+  data?: {
+    data?: PathaoListedStore[];
+    stores?: PathaoListedStore[];
+    total?: number;
+    [key: string]: unknown;
+  };
+}
+
 export interface CreatePathaoOrderInput {
   store_id: number;
   merchant_order_id: string;

@@ -25,6 +25,34 @@ export interface PathaoStoreForm {
   areaId: number;
 }
 
+export interface CreatePathaoStoreResult {
+  pendingApproval: boolean;
+  storeId: number | null;
+  message: string;
+}
+
+export interface PathaoRemoteStoreTestItem {
+  storeId: number;
+  storeName: string;
+  storeAddress: string;
+  isActive: number;
+}
+
+export interface PathaoAvailableStore {
+  storeId: number;
+  storeName: string;
+  storeAddress: string;
+  contactNumber: string;
+  cityId: number;
+  zoneId: number;
+  isActive: number;
+  status: 'valid' | 'invalid' | 'missing';
+  isValid: boolean;
+  canUse: boolean;
+  dbAreaId: number | null;
+  dbIsActive: boolean;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapStore(raw: any): PathaoStore {
   return {
@@ -52,7 +80,7 @@ export async function getActivePathaoStore(): Promise<PathaoStore | null> {
   return store ? mapStore(store) : null;
 }
 
-export async function createPathaoStoreConfig(payload: PathaoStoreForm): Promise<void> {
+export async function createPathaoStoreConfig(payload: PathaoStoreForm): Promise<CreatePathaoStoreResult> {
   const token = tokenStore.getAccess();
   if (!token) throw new Error('Not authenticated');
 
@@ -70,6 +98,12 @@ export async function createPathaoStoreConfig(payload: PathaoStoreForm): Promise
   if (!res.ok || !json?.success) {
     throw new Error(json?.message ?? 'Failed to create Pathao store');
   }
+
+  return {
+    pendingApproval: Boolean(json?.data?.pendingApproval),
+    storeId: typeof json?.data?.storeId === 'number' ? json.data.storeId : null,
+    message: String(json?.message ?? 'Pathao store created'),
+  };
 }
 
 export async function updatePathaoStoreConfig(storeId: number, payload: PathaoStoreForm): Promise<void> {
@@ -96,4 +130,96 @@ export async function setActivePathaoStore(storeId: number): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     adminUserId: adminUserId as any,
   });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRemoteStore(raw: any): PathaoRemoteStoreTestItem {
+  return {
+    storeId: Number(raw.store_id ?? raw.id ?? 0),
+    storeName: String(raw.store_name ?? raw.name ?? ''),
+    storeAddress: String(raw.store_address ?? raw.address ?? ''),
+    isActive: Number(raw.is_active ?? 0),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapAvailableStore(raw: any): PathaoAvailableStore {
+  return {
+    storeId: Number(raw.storeId ?? 0),
+    storeName: String(raw.storeName ?? ''),
+    storeAddress: String(raw.storeAddress ?? ''),
+    contactNumber: String(raw.contactNumber ?? ''),
+    cityId: Number(raw.cityId ?? 0),
+    zoneId: Number(raw.zoneId ?? 0),
+    isActive: Number(raw.isActive ?? 0),
+    status: (raw.status ?? 'missing') as 'valid' | 'invalid' | 'missing',
+    isValid: Boolean(raw.isValid),
+    canUse: Boolean(raw.canUse),
+    dbAreaId: typeof raw.dbAreaId === 'number' ? raw.dbAreaId : null,
+    dbIsActive: Boolean(raw.dbIsActive),
+  };
+}
+
+export async function listPathaoRemoteStoresForTest(): Promise<PathaoRemoteStoreTestItem[]> {
+  const token = tokenStore.getAccess();
+  if (!token) throw new Error('Not authenticated');
+
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/admin/pathao/stores?view=raw`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message ?? 'Failed to fetch Pathao stores');
+  }
+
+  const rows = Array.isArray(json?.listData) ? json.listData : [];
+  const mapped: PathaoRemoteStoreTestItem[] = rows.map(mapRemoteStore);
+  return mapped.filter((row) => row.storeId > 0);
+}
+
+export async function listPathaoAvailableStores(): Promise<PathaoAvailableStore[]> {
+  const token = tokenStore.getAccess();
+  if (!token) throw new Error('Not authenticated');
+
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/admin/pathao/stores`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message ?? 'Failed to fetch compared Pathao stores');
+  }
+
+  const rows = Array.isArray(json?.listData) ? json.listData : [];
+  const mapped: PathaoAvailableStore[] = rows.map(mapAvailableStore);
+  return mapped.filter((row) => row.storeId > 0);
+}
+
+export async function addPathaoStoreFromResponseToDb(storeId: number, areaId: number): Promise<void> {
+  const token = tokenStore.getAccess();
+  if (!token) throw new Error('Not authenticated');
+
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/admin/pathao/stores`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ storeId, areaId }),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message ?? 'Failed to add store from Pathao response');
+  }
 }

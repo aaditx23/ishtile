@@ -2,6 +2,7 @@ import { pathaoClient } from "./client";
 import type {
   CreatePathaoStoreInput,
   CreatePathaoStoreResponse,
+  PathaoStoreListResponse,
   CreatePathaoOrderInput,
   CreatePathaoOrderResponse,
   PathaoOrderInfoResponse,
@@ -108,6 +109,12 @@ export async function createPathaoOrder(payload: CreatePathaoOrderInput): Promis
 export async function createPathaoStore(payload: CreatePathaoStoreInput): Promise<CreatePathaoStoreResponse> {
   const response = await withRetry(() => pathaoClient.stores.create(payload as never));
   return response as unknown as CreatePathaoStoreResponse;
+}
+
+export async function listPathaoRemoteStores(): Promise<PathaoStoreListResponse> {
+  const response = await withRetry(() => pathaoClient.stores.list());
+  console.log('[Pathao Client Test] stores.list response:', JSON.stringify(response, null, 2));
+  return response as unknown as PathaoStoreListResponse;
 }
 
 export async function getPathaoOrderInfo(consignmentId: string): Promise<PathaoOrderInfoResponse> {
