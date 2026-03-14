@@ -8,8 +8,6 @@
  * decodeTokenPayload — client-safe decode (no signature check),
  *               used to extract userId from the stored access token.
  */
-import { SignJWT, jwtVerify } from 'jose';
-
 export interface AuthTokenPayload {
   userId: string; // Convex Id<"users">
   role: 'buyer' | 'admin';
@@ -22,6 +20,7 @@ function getSecret(): Uint8Array {
 }
 
 export async function signToken(payload: AuthTokenPayload): Promise<string> {
+  const { SignJWT } = await import('jose');
   return new SignJWT({ userId: payload.userId, role: payload.role })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -31,6 +30,7 @@ export async function signToken(payload: AuthTokenPayload): Promise<string> {
 
 export async function verifyToken(token: string): Promise<AuthTokenPayload | null> {
   try {
+    const { jwtVerify } = await import('jose');
     const { payload } = await jwtVerify(token, getSecret());
     return {
       userId: payload.userId as string,

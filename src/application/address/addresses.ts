@@ -13,8 +13,10 @@ export async function createAddress(payload: CreateAddressInput): Promise<UserAd
 }
 
 export async function updateAddress(id: number, payload: UpdateAddressInput): Promise<UserAddressDto> {
-  const addressError = getAddressLengthError(payload.addressLine);
-  if (addressError) throw new Error(addressError);
+  if (typeof payload.addressLine === 'string') {
+    const addressError = getAddressLengthError(payload.addressLine);
+    if (addressError) throw new Error(addressError);
+  }
   return addressRepository.update(id, payload);
 }
 
