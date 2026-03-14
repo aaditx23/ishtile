@@ -6,8 +6,9 @@ export const orderTables = {
     orderNumber:         v.string(),   // "ORD-XXXXXXXX"
     userId:              v.id('users'),
     status:              v.union(
-                           v.literal('new'),
+                           v.literal('pending'),
                            v.literal('confirmed'),
+                           v.literal('assigned'),
                            v.literal('shipped'),
                            v.literal('delivered'),
                            v.literal('cancelled'),
@@ -16,6 +17,12 @@ export const orderTables = {
     promoDiscount:       v.number(),
     shippingCost:        v.number(),
     total:               v.number(),
+    deliveryMode:        v.union(v.literal('manual'), v.literal('pathao')),
+    pathaoParcelCreated: v.optional(v.boolean()),
+    pathaoConsignmentId: v.optional(v.string()),
+    pathaoStatus:        v.optional(v.string()),
+    pathaoPrice:         v.optional(v.number()),
+    pathaoRawPayload:    v.optional(v.any()),
     shippingName:        v.string(),
     shippingPhone:       v.string(),
     shippingAddress:     v.string(),
@@ -35,6 +42,8 @@ export const orderTables = {
   })
     .index('by_user',        ['userId'])
     .index('by_status',      ['status'])
+    .index('by_deliveryMode',['deliveryMode'])
+    .index('by_consignment', ['pathaoConsignmentId'])
     .index('by_orderNumber', ['orderNumber']),
 
   orderItems: defineTable({

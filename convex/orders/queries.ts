@@ -50,11 +50,19 @@ export const listOrders = query({
           .query("payments")
           .withIndex("by_order", (q) => q.eq("orderId", order._id))
           .first();
-        return {
+        const base = {
           ...order,
           id: order._id,
           paymentMethod: payment?.method ?? "cod",
           createdAt: order._creationTime,
+        };
+
+        if (role === "admin") return base;
+
+        return {
+          ...base,
+          pathaoStatus: undefined,
+          pathaoRawPayload: undefined,
         };
       }),
     );
@@ -93,7 +101,7 @@ export const getOrderById = query({
         .first(),
     ]);
 
-    return {
+    const result = {
       ...order,
       id: order._id,
       createdAt: order._creationTime,
@@ -101,6 +109,58 @@ export const getOrderById = query({
       paymentStatus: payment?.status ?? "pending",
       items: items.map((item) => ({ ...item, id: item._id })),
       shipment: shipment ? { ...shipment, id: shipment._id } : null,
+    };
+
+    if (role === "admin") return result;
+
+    return {
+      ...result,
+      pathaoStatus: undefined,
+      pathaoRawPayload: undefined,
+    };
+  },
+});
+
+export const getOrderByConsignmentId = query({
+  args: {
+    consignmentId: v.string(),
+  },
+  handler: async (ctx, { consignmentId }) => {
+    return await ctx.db
+      .query("orders")
+      .withIndex("by_consignment", (q) => q.eq("pathaoConsignmentId", consignmentId))
+      .first();
+  },
+});
+
+export const getOrderByOrderNumber = query({
+  args: {
+    orderNumber: v.string(),
+  },
+  handler: async (ctx, { orderNumber }) => {
+    return await ctx.db
+      .query("orders")
+      .withIndex("by_orderNumber", (q) => q.eq("orderNumber", orderNumber))
+      .first();
+  },
+});
+
+export const getCheckoutShippingCost = query({
+  args: {
+    shippingCity: v.string(),
+  },
+  handler: async (ctx, { shippingCity }) => {
+    const settings = await ctx.db.query("adminSettings").first();
+
+    const insideDhakaFee = settings?.insideDhakaShippingCost ?? 60;
+    const outsideDhakaFee = settings?.outsideDhakaShippingCost ?? 120;
+    const normalizedCity = shippingCity.trim().toLowerCase();
+    const shippingCost = normalizedCity === "dhaka" ? insideDhakaFee : outsideDhakaFee;
+
+    return {
+      insideDhakaFee,
+      outsideDhakaFee,
+      shippingCost,
     };
   },
 });

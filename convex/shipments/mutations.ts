@@ -1,3 +1,11 @@
+// Allowed order statuses for type safety
+type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "assigned"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 /**
  * Shipments — mutations
  * Mirrors: POST /api/v1/shipments (admin create) + webhook status sync
@@ -106,7 +114,7 @@ export const processWebhook = mutation({
     });
 
     // Mirror order status based on Pathao event
-    const pathaoToOrderStatus: Record<string, string> = {
+    const pathaoToOrderStatus: Record<string, OrderStatus> = {
       Delivered: "delivered",
       "Partially Delivered": "delivered",
       Returned: "cancelled",
@@ -121,9 +129,8 @@ export const processWebhook = mutation({
         order.status !== "delivered" &&
         order.status !== "cancelled"
       ) {
-        type OrderStatus = "new" | "confirmed" | "shipped" | "delivered" | "cancelled";
         await ctx.db.patch(order._id, {
-          status: orderStatus as OrderStatus,
+          status: orderStatus,
           ...(orderStatus === "delivered" && { deliveredAt: Date.now() }),
           ...(orderStatus === "cancelled" && { cancelledAt: Date.now() }),
         });
@@ -131,5 +138,45 @@ export const processWebhook = mutation({
     }
 
     return { success: true, skipped: false };
+  },
+});
+
+export const upsertPathaoStore = mutation({
+  args: {
+    storeId: v.number(),
+    name: v.string(),
+    cityId: v.number(),
+    zoneId: v.number(),
+    areaId: v.number(),
+    contactNumber: v.optional(v.string()),
+    address: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_storeId", (q) => q.eq("storeId", args.storeId))
+      .first();
+
+    const payload = {
+      storeId: args.storeId,
+      name: args.name,
+      storeName: args.name,
+      contactNumber: args.contactNumber ?? "",
+      address: args.address ?? "",
+      cityId: args.cityId,
+      zoneId: args.zoneId,
+      areaId: args.areaId,
+      isActive: args.isActive ?? true,
+      createdAt: existing?.createdAt ?? Date.now(),
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, payload);
+      return { success: true, id: existing._id };
+    }
+
+    const id = await ctx.db.insert("pathaoStores", payload);
+    return { success: true, id };
   },
 });

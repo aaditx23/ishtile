@@ -129,15 +129,15 @@ export default function SiteHeader() {
               <NavigationMenuList className="gap-2">
                 {SHOP_LINKS.map((link) => (
                   <NavigationMenuItem key={link.href}>
-                    <Link href={link.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        active={isLinkActive(link.href)}
+                    <NavigationMenuLink asChild active={isLinkActive(link.href)}>
+                      <Link
+                        href={link.href}
                         className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
                         style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                       >
                         {link.label}
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
                 
@@ -146,15 +146,15 @@ export default function SiteHeader() {
                     <div className="w-px h-4 bg-white/20 mx-3" />
                     {USER_LINKS.map((link) => (
                       <NavigationMenuItem key={link.href}>
-                        <Link href={link.href} legacyBehavior passHref>
-                          <NavigationMenuLink
-                            active={isLinkActive(link.href)}
+                        <NavigationMenuLink asChild active={isLinkActive(link.href)}>
+                          <Link
+                            href={link.href}
                             className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
-                            style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}  
+                            style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           >
                             {link.label}
-                          </NavigationMenuLink>
-                        </Link>
+                          </Link>
+                        </NavigationMenuLink>
                       </NavigationMenuItem>
                     ))}
                   </>
@@ -164,15 +164,15 @@ export default function SiteHeader() {
                   <>
                     <div className="w-px h-4 bg-white/20 mx-3" />
                     <NavigationMenuItem>
-                      <Link href="/admin" legacyBehavior passHref>
-                        <NavigationMenuLink
-                          active={pathname === '/admin' || pathname.startsWith('/admin/')}
+                      <NavigationMenuLink asChild active={pathname === '/admin' || pathname.startsWith('/admin/')}>
+                        <Link
+                          href="/admin"
                           style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
                         >
                           Dashboard
-                        </NavigationMenuLink>
-                      </Link>
+                        </Link>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                   </>
                 )}
@@ -223,7 +223,7 @@ export default function SiteHeader() {
                 className="text-white hover:bg-white/10"
                 style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, padding: '0.5rem' }}
               >
-                <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Login</Link>
+                <Link href="/login">Login</Link>
               </Button>
             )}
           </div>

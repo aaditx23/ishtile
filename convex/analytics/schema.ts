@@ -3,18 +3,21 @@ import { v } from 'convex/values';
 
 export const analyticsTables = {
   dailySalesSummary: defineTable({
-    summaryDate:     v.string(),   // "2026-03-09" ISO date
-    totalOrders:     v.number(),
-    totalRevenue:    v.number(),
-    totalDiscount:   v.number(),
-    totalShipping:   v.number(),
-    newOrders:       v.number(),
-    confirmedOrders: v.number(),
-    shippedOrders:   v.number(),
-    deliveredOrders: v.number(),
-    cancelledOrders: v.number(),
-    uniqueCustomers: v.number(),
-    newCustomers:    v.number(),
+    summaryDate:      v.string(),            // "2026-03-09" ISO date
+    totalOrders:      v.number(),
+    totalRevenue:     v.number(),
+    totalDiscount:    v.number(),
+    totalShipping:    v.number(),
+    // All status counters are optional for forward/backward compatibility
+    newOrders:        v.optional(v.number()),
+    pendingOrders:    v.optional(v.number()),
+    confirmedOrders:  v.optional(v.number()),
+    assignedOrders:   v.optional(v.number()),
+    shippedOrders:    v.optional(v.number()),
+    deliveredOrders:  v.optional(v.number()),
+    cancelledOrders:  v.optional(v.number()),
+    uniqueCustomers:  v.number(),
+    newCustomers:     v.number(),
   })
     .index('by_date', ['summaryDate']),
 

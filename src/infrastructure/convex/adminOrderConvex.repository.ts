@@ -18,10 +18,19 @@ function mapOrderItem(item: any): OrderItem {
 function mapOrder(o: any): Order {
   return {
     id: asId(o._id), orderNumber: o.orderNumber, userId: asId(o.userId),
+    deliveryMode: o.deliveryMode ?? 'manual',
+    pathaoConsignmentId: o.pathaoConsignmentId ?? null,
+    pathaoStatus: o.pathaoStatus ?? null,
+    pathaoPrice: o.pathaoPrice ?? null,
+    pathaoRawPayload: o.pathaoRawPayload,
     status: o.status, subtotal: o.subtotal, promoDiscount: o.promoDiscount,
     shippingCost: o.shippingCost, total: o.total,
     shippingName: o.shippingName, shippingPhone: o.shippingPhone,
     shippingAddress: o.shippingAddress, shippingCity: o.shippingCity,
+    shippingAddressLine: o.shippingAddressLine ?? null,
+    shippingCityId: o.shippingCityId ?? null,
+    shippingZoneId: o.shippingZoneId ?? null,
+    shippingAreaId: o.shippingAreaId ?? null,
     shippingPostalCode: o.shippingPostalCode ?? null,
     customerNotes: o.customerNotes ?? null, adminNotes: o.adminNotes ?? null,
     isPaid: o.isPaid, paymentMethod: 'cod',
@@ -81,6 +90,27 @@ export class AdminOrderConvexRepository {
       role:    'admin',
     });
     if (!res) throw new Error('Order not found after status update');
+    return mapOrder(res);
+  }
+
+  async updateDeliveryMode(orderId: number, deliveryMode: 'manual' | 'pathao'): Promise<Order> {
+    const adminUserId = requireConvexUserId();
+
+    await convex.mutation((api as any).orders.mutations.updateDeliveryMode, {
+      orderId: fromId(orderId),
+      deliveryMode,
+      adminUserId,
+    });
+
+    const res = await convex.query(api.orders.queries.getOrderById, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      orderId: fromId(orderId) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      userId: adminUserId as any,
+      role: 'admin',
+    });
+
+    if (!res) throw new Error('Order not found after delivery mode update');
     return mapOrder(res);
   }
 }
