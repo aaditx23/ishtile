@@ -15,6 +15,7 @@ import {
   PathaoParcelValidationError,
 } from '@/application/order/createPathaoParcel';
 import { refreshPathaoStatus } from '@/application/order/refreshPathaoStatus';
+import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
 
 interface DeliveryManagementCardProps {
   order: Order;
@@ -90,6 +91,12 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
 
     if (missingRequired.length) {
       toast.error(`Missing required fields: ${missingRequired.join(', ')}`);
+      return;
+    }
+
+    const addressError = getAddressLengthError(recipientAddress);
+    if (addressError) {
+      toast.error(addressError);
       return;
     }
 
@@ -196,7 +203,14 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-address">Address</Label>
-                <Input id="pathao-address" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder="Address" />
+                <Input
+                  id="pathao-address"
+                  value={recipientAddress}
+                  onChange={(e) => setRecipientAddress(e.target.value)}
+                  placeholder="Address"
+                  minLength={ADDRESS_MIN_LENGTH}
+                  maxLength={ADDRESS_MAX_LENGTH}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-city">City</Label>

@@ -6,6 +6,7 @@ import { getCities } from '@/application/location/getCities';
 import { getZones } from '@/application/location/getZones';
 import { getAreas } from '@/application/location/getAreas';
 import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types/api.types';
+import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH } from '@/shared/utils/addressValidation';
 
 // ─── ShippingFields ──────────────────────────────────────────────────────────
 
@@ -138,7 +139,13 @@ export default function ShippingForm({ values, onChange, disabled, columns = 2 }
 
       {/* Address */}
       <Field label="Address">
-        <Input placeholder="House no., road, area" {...textField('address')} required />
+        <Input
+          placeholder="House no., road, area"
+          {...textField('address')}
+          required
+          minLength={ADDRESS_MIN_LENGTH}
+          maxLength={ADDRESS_MAX_LENGTH}
+        />
       </Field>
 
       {/* City dropdown */}

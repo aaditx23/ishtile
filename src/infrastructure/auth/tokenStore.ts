@@ -49,33 +49,22 @@ function clearSessionCookie(): void {
 // ─── In-memory access token ───────────────────────────────────────────────────
 
 let _access: string | null = null;
-let _initialized = false;
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const tokenStore = {
   // ─── Access token (memory only) ─────────────────────────────────────────────
   getAccess(): string | null {
-    // Lazy initialization: restore from localStorage on first call (client-side only)
-    if (!_initialized && isBrowser()) {
-      _initialized = true;
-      const refreshToken = localStorage.getItem('Ishtile_rt');
-      if (refreshToken) {
-        _access = refreshToken;
-      }
-    }
     return _access;
   },
 
   setAccess(token: string): void {
     _access = token;
-    _initialized = true;
     if (isBrowser()) setSessionCookie();
   },
 
   clearAccess(): void {
     _access = null;
-    _initialized = true; // Don't restore again after explicit clear
   },
 
   // ─── Refresh token (localStorage) ───────────────────────────────────────────

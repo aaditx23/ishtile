@@ -16,6 +16,7 @@ import type { UserAddressDto, CreateAddressInput } from '@/shared/types/api.type
 import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types/api.types';
 import type { User } from '@/domain/user/user.entity';
 import { Button } from '@/components/ui/button';
+import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -131,8 +132,13 @@ function AddressModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const addressError = getAddressLengthError(form.addressLine);
     if (!form.addressLine.trim() || !form.cityName) {
       toast.error('Address line and city are required.');
+      return;
+    }
+    if (addressError) {
+      toast.error(addressError);
       return;
     }
     setSaving(true);
@@ -191,7 +197,15 @@ function AddressModal({
           </div>
 
           <Field label="Address Line *">
-            <Input value={form.addressLine} onChange={e => set('addressLine', e.target.value)} disabled={saving} placeholder="House no., road, area" required />
+            <Input
+              value={form.addressLine}
+              onChange={e => set('addressLine', e.target.value)}
+              disabled={saving}
+              placeholder="House no., road, area"
+              required
+              minLength={ADDRESS_MIN_LENGTH}
+              maxLength={ADDRESS_MAX_LENGTH}
+            />
           </Field>
 
           <Field label="City *">

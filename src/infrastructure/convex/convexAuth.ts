@@ -7,10 +7,21 @@
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
 import { decodeTokenPayload } from '@/lib/auth';
 
-export function getConvexUserId(): string | null {
+function getValidTokenPayload() {
   const token = tokenStore.getAccess();
   if (!token) return null;
-  return decodeTokenPayload(token)?.userId ?? null;
+
+  const payload = decodeTokenPayload(token);
+  if (!payload?.userId || !payload.role) {
+    tokenStore.clearAll();
+    return null;
+  }
+
+  return payload;
+}
+
+export function getConvexUserId(): string | null {
+  return getValidTokenPayload()?.userId ?? null;
 }
 
 export function requireConvexUserId(): string {
@@ -20,7 +31,5 @@ export function requireConvexUserId(): string {
 }
 
 export function getConvexUserRole(): 'buyer' | 'admin' | null {
-  const token = tokenStore.getAccess();
-  if (!token) return null;
-  return decodeTokenPayload(token)?.role ?? null;
+  return getValidTokenPayload()?.role ?? null;
 }

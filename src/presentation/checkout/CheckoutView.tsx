@@ -19,6 +19,7 @@ import { createOrder } from '@/application/checkout/createOrder';
 import { getCheckoutShippingCost } from '@/application/checkout/getCheckoutShippingCost';
 import type { Cart } from '@/domain/cart/cart.entity';
 import type { PromoValidationDto } from '@/shared/types/api.types';
+import { getAddressLengthError } from '@/shared/utils/addressValidation';
 
 const EMPTY_FIELDS: ShippingFields = {
   name:       '',
@@ -109,6 +110,7 @@ export default function CheckoutView() {
     fields.name.trim() &&
     fields.phone.trim() &&
     fields.address.trim() &&
+    !getAddressLengthError(fields.address) &&
     fields.cityId != null &&
     fields.zoneId != null &&
     fields.areaId != null &&
@@ -117,6 +119,11 @@ export default function CheckoutView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const addressError = getAddressLengthError(fields.address);
+    if (addressError) {
+      toast.error(addressError);
+      return;
+    }
     if (!canSubmit) return;
     setSubmitting(true);
     try {
