@@ -84,14 +84,7 @@ export async function POST(
     const recipientArea = order.shippingAreaId ? Number(order.shippingAreaId) : null;
 
     // 2) resolve store
-    const storeId = await resolvePathaoStoreId({
-      fallbackName: 'Ishtile Store',
-      fallbackPhone: recipientPhone,
-      fallbackAddress: recipientAddress,
-      fallbackCityId: recipientCity,
-      fallbackZoneId: recipientZone,
-      fallbackAreaId: recipientArea ?? recipientZone,
-    });
+    const storeId = await resolvePathaoStoreId();
 
     const baseUrl = getBaseUrl();
 

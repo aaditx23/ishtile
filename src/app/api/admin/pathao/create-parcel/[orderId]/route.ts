@@ -109,14 +109,7 @@ export async function POST(
       throw new Error('Invalid delivery type');
     }
 
-    const storeId = await resolvePathaoStoreId({
-      fallbackName: 'Ishtile Store',
-      fallbackPhone: recipientPhone,
-      fallbackAddress: recipientAddress,
-      fallbackCityId: recipientCity,
-      fallbackZoneId: recipientZone,
-      fallbackAreaId: recipientArea,
-    });
+    const storeId = await resolvePathaoStoreId();
     const baseUrl = getBaseUrl();
 
     const payloadForPathao = {

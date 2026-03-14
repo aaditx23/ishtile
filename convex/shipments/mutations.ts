@@ -18,6 +18,11 @@ type OrderStatus =
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
+async function ensureAdmin(ctx: any, userId: any) {
+  const user = await ctx.db.get(userId);
+  if (!user || user.role !== "admin") throw new Error("Admin access required");
+}
+
 // ─── Create shipment (admin) ──────────────────────────────────────────────────
 
 export const createShipment = mutation({
@@ -178,5 +183,119 @@ export const upsertPathaoStore = mutation({
 
     const id = await ctx.db.insert("pathaoStores", payload);
     return { success: true, id };
+  },
+});
+
+export const createPathaoStoreRecord = mutation({
+  args: {
+    storeId: v.number(),
+    storeName: v.string(),
+    contactNumber: v.string(),
+    address: v.string(),
+    cityId: v.number(),
+    zoneId: v.number(),
+    areaId: v.number(),
+    isActive: v.optional(v.boolean()),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    await ensureAdmin(ctx, args.adminUserId);
+
+    const existing = await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_storeId", (q) => q.eq("storeId", args.storeId))
+      .first();
+
+    const allStores = await ctx.db.query("pathaoStores").collect();
+    const shouldBeActive = args.isActive ?? allStores.length === 0;
+
+    if (shouldBeActive) {
+      for (const store of allStores) {
+        if (store.isActive) {
+          await ctx.db.patch(store._id, { isActive: false });
+        }
+      }
+    }
+
+    const payload = {
+      storeId: args.storeId,
+      name: args.storeName,
+      storeName: args.storeName,
+      contactNumber: args.contactNumber,
+      address: args.address,
+      cityId: args.cityId,
+      zoneId: args.zoneId,
+      areaId: args.areaId,
+      isActive: shouldBeActive,
+      createdAt: existing?.createdAt ?? Date.now(),
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, payload);
+      return { success: true, id: existing._id };
+    }
+
+    const id = await ctx.db.insert("pathaoStores", payload);
+    return { success: true, id };
+  },
+});
+
+export const updatePathaoStore = mutation({
+  args: {
+    storeId: v.number(),
+    storeName: v.string(),
+    contactNumber: v.string(),
+    address: v.string(),
+    cityId: v.number(),
+    zoneId: v.number(),
+    areaId: v.number(),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    await ensureAdmin(ctx, args.adminUserId);
+
+    const existing = await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_storeId", (q) => q.eq("storeId", args.storeId))
+      .first();
+    if (!existing) throw new Error("Store not found");
+
+    await ctx.db.patch(existing._id, {
+      name: args.storeName,
+      storeName: args.storeName,
+      contactNumber: args.contactNumber,
+      address: args.address,
+      cityId: args.cityId,
+      zoneId: args.zoneId,
+      areaId: args.areaId,
+    });
+
+    return { success: true };
+  },
+});
+
+export const setActivePathaoStore = mutation({
+  args: {
+    storeId: v.number(),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { storeId, adminUserId }) => {
+    await ensureAdmin(ctx, adminUserId);
+
+    const target = await ctx.db
+      .query("pathaoStores")
+      .withIndex("by_storeId", (q) => q.eq("storeId", storeId))
+      .first();
+    if (!target) throw new Error("Store not found");
+
+    const allStores = await ctx.db.query("pathaoStores").collect();
+    for (const store of allStores) {
+      const nextActive = store.storeId === storeId;
+      if (store.isActive !== nextActive) {
+        await ctx.db.patch(store._id, { isActive: nextActive });
+      }
+    }
+
+    return { success: true };
   },
 });

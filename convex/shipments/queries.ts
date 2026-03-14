@@ -57,3 +57,11 @@ export const getPathaoStoreByStoreId = query({
       .first();
   },
 });
+
+export const listPathaoStores = query({
+  args: {},
+  handler: async (ctx) => {
+    const stores = await ctx.db.query("pathaoStores").collect();
+    return stores.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});
