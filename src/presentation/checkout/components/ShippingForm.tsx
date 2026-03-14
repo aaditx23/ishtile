@@ -7,6 +7,7 @@ import { getZones } from '@/application/location/getZones';
 import { getAreas } from '@/application/location/getAreas';
 import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types/api.types';
 import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH } from '@/shared/utils/addressValidation';
+import { normalizePhoneInput } from '@/shared/utils/phoneValidation';
 
 // ─── ShippingFields ──────────────────────────────────────────────────────────
 
@@ -124,6 +125,12 @@ export default function ShippingForm({ values, onChange, disabled, columns = 2 }
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange({ [key]: e.target.value }),
   });
 
+  const phoneField = {
+    value: values.phone,
+    disabled,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange({ phone: normalizePhoneInput(e.target.value) }),
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
 
@@ -133,7 +140,15 @@ export default function ShippingForm({ values, onChange, disabled, columns = 2 }
           <Input placeholder="Rahim Uddin" {...textField('name')} required />
         </Field>
         <Field label="Phone Number">
-          <Input type="tel" placeholder="01XXXXXXXXX" {...textField('phone')} required />
+          <Input
+            type="tel"
+            placeholder="01XXXXXXXXX"
+            inputMode="numeric"
+            maxLength={11}
+            pattern="[0-9]{11}"
+            {...phoneField}
+            required
+          />
         </Field>
       </div>
 

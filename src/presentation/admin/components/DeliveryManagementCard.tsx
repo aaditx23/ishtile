@@ -16,6 +16,7 @@ import {
 } from '@/application/order/createPathaoParcel';
 import { refreshPathaoStatus } from '@/application/order/refreshPathaoStatus';
 import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
+import { getPhone11DigitError, normalizePhoneInput } from '@/shared/utils/phoneValidation';
 
 interface DeliveryManagementCardProps {
   order: Order;
@@ -97,6 +98,12 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
     const addressError = getAddressLengthError(recipientAddress);
     if (addressError) {
       toast.error(addressError);
+      return;
+    }
+
+    const phoneError = getPhone11DigitError(recipientPhone);
+    if (phoneError) {
+      toast.error(phoneError);
       return;
     }
 
@@ -199,7 +206,16 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-phone-number">Phone Number</Label>
-                <Input id="pathao-phone-number" value={recipientPhone} onChange={(e) => setRecipientPhone(e.target.value)} placeholder="Phone Number" />
+                <Input
+                  id="pathao-phone-number"
+                  value={recipientPhone}
+                  onChange={(e) => setRecipientPhone(normalizePhoneInput(e.target.value))}
+                  placeholder="Phone Number"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={11}
+                  pattern="[0-9]{11}"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-address">Address</Label>

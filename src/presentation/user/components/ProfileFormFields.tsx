@@ -72,7 +72,16 @@ export default function ProfileFormFields({
       </Field>
 
       <Field label="Phone Number">
-        <Input type="tel" value={form.phone ?? ''} onChange={patch('phone')} placeholder="01XXXXXXXXX" disabled={saving} />
+        <Input
+          type="tel"
+          value={form.phone ?? ''}
+          onChange={patch('phone')}
+          placeholder="01XXXXXXXXX"
+          inputMode="numeric"
+          maxLength={11}
+          pattern="[0-9]{11}"
+          disabled={saving}
+        />
       </Field>
 
       <Field label="Email">

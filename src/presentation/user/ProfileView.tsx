@@ -10,6 +10,7 @@ import { getProfile } from '@/application/user/getProfile';
 import { updateProfile } from '@/application/user/updateProfile';
 import type { User } from '@/domain/user/user.entity';
 import type { UpdateUserPayload } from '@/domain/user/user.repository';
+import { getPhone11DigitError } from '@/shared/utils/phoneValidation';
 
 export default function ProfileView() {
   const [user, setUser]       = useState<User | null>(null);
@@ -47,6 +48,12 @@ export default function ProfileView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const phoneError = getPhone11DigitError(form.phone ?? '');
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
 
     const username = form.username?.trim();
     if (username && username.length > 10) {

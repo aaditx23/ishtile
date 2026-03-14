@@ -17,6 +17,7 @@ import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types
 import type { User } from '@/domain/user/user.entity';
 import { Button } from '@/components/ui/button';
 import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
+import { getPhone11DigitError, normalizePhoneInput } from '@/shared/utils/phoneValidation';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -133,8 +134,13 @@ function AddressModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const addressError = getAddressLengthError(form.addressLine);
+    const phoneError = getPhone11DigitError(form.phone);
     if (!form.addressLine.trim() || !form.cityName) {
       toast.error('Address line and city are required.');
+      return;
+    }
+    if (phoneError) {
+      toast.error(phoneError);
       return;
     }
     if (addressError) {
@@ -192,7 +198,16 @@ function AddressModal({
               <Input value={form.name} onChange={e => set('name', e.target.value)} disabled={saving} placeholder="Optional" />
             </Field>
             <Field label="Phone">
-              <Input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} disabled={saving} placeholder="01XXXXXXXXX" />
+              <Input
+                type="tel"
+                value={form.phone}
+                onChange={e => set('phone', normalizePhoneInput(e.target.value))}
+                disabled={saving}
+                placeholder="01XXXXXXXXX"
+                inputMode="numeric"
+                maxLength={11}
+                pattern="[0-9]{11}"
+              />
             </Field>
           </div>
 

@@ -20,6 +20,7 @@ import { getCheckoutShippingCost } from '@/application/checkout/getCheckoutShipp
 import type { Cart } from '@/domain/cart/cart.entity';
 import type { PromoValidationDto } from '@/shared/types/api.types';
 import { getAddressLengthError } from '@/shared/utils/addressValidation';
+import { getPhone11DigitError, isValidPhone11Digits } from '@/shared/utils/phoneValidation';
 
 const EMPTY_FIELDS: ShippingFields = {
   name:       '',
@@ -108,7 +109,7 @@ export default function CheckoutView() {
 
   const canSubmit =
     fields.name.trim() &&
-    fields.phone.trim() &&
+    isValidPhone11Digits(fields.phone.trim()) &&
     fields.address.trim() &&
     !getAddressLengthError(fields.address) &&
     fields.cityId != null &&
@@ -119,6 +120,11 @@ export default function CheckoutView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const phoneError = getPhone11DigitError(fields.phone);
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
     const addressError = getAddressLengthError(fields.address);
     if (addressError) {
       toast.error(addressError);
