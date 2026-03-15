@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import CountdownBanner from './components/CountdownBanner';
 import HomeProductSection from './components/HomeProductSection';
 import HomeBrandSection from './components/HomeBrandSection';
+import CategoryExploreBlock from './components/CategoryExploreBlock';
 import HeroImageCard from './components/HeroImageCard';
 import type { ProductCardData } from './components/ProductCard';
 import type { Category } from '@/domain/category/category.entity';
@@ -103,16 +103,15 @@ interface MobileHomePageProps {
   categories: Category[];
   brands: Brand[];
   heroImages: HeroImageData[];
-  countdownTarget?: string | null;
 }
 
-export default function MobileHomePage({ products, categories, brands, heroImages, countdownTarget = null }: MobileHomePageProps) {
+export default function MobileHomePage({ products, categories, brands, heroImages }: MobileHomePageProps) {
   return (
     <div>
       <MobileHeroBanner heroImages={heroImages} />
-      <CountdownBanner targetDate={countdownTarget} />
-      <HomeProductSection products={products} categories={categories} />
-      <HomeBrandSection products={products} brands={brands} />
+      <HomeProductSection products={products} />
+      <CategoryExploreBlock categories={categories} />
+      <HomeBrandSection brands={brands} />
     </div>
   );
 }

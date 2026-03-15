@@ -1,7 +1,7 @@
 import HeroBanner from './components/HeroBanner';
-import CountdownBanner from './components/CountdownBanner';
 import HomeProductSection from './components/HomeProductSection';
 import HomeBrandSection from './components/HomeBrandSection';
+import CategoryExploreBlock from './components/CategoryExploreBlock';
 import MobileHomePage from './MobileHomePage';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import type { ProductCardData } from './components/ProductCard';
@@ -14,23 +14,22 @@ interface HomePageProps {
   categories: Category[];
   brands: Brand[];
   heroImages: HeroImageData[];
-  countdownTarget?: string | null;
 }
 
-export default function HomePage({ products, categories, brands, heroImages, countdownTarget = null }: HomePageProps) {
+export default function HomePage({ products, categories, brands, heroImages }: HomePageProps) {
   return (
     <ShopLayout>
       {/* ── Mobile ──────────────────────────────────────────────── */}
       <div className="block lg:hidden">
-        <MobileHomePage products={products} categories={categories} brands={brands} heroImages={heroImages} countdownTarget={countdownTarget} />
+        <MobileHomePage products={products} categories={categories} brands={brands} heroImages={heroImages} />
       </div>
 
       {/* ── Desktop ─────────────────────────────────────────────── */}
       <div className="hidden lg:block">
         <HeroBanner heroImages={heroImages} />
-        <CountdownBanner targetDate={countdownTarget} />
-        <HomeProductSection products={products} categories={categories} />
-        <HomeBrandSection products={products} brands={brands} />
+        <HomeProductSection products={products} />
+        <CategoryExploreBlock categories={categories} />
+        <HomeBrandSection brands={brands} />
       </div>
     </ShopLayout>
   );

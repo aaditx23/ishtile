@@ -1,86 +1,100 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import CategorySelector, {
-  type CategoryFilterValue,
-  type CategorySelectorItem,
-} from './CategorySelector';
-import SectionHeader from './SectionHeader';
-import ProductGrid from './ProductGrid';
+import { useRef } from 'react';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import ProductCardSharp from './ProductCardSharp';
 import type { ProductCardData } from './ProductCard';
-import type { Category } from '@/domain/category/category.entity';
-
-// ── Static backgrounds per category index (cycles if more categories) ────────
-const CATEGORY_BG_PALETTE = [
-  'var(--brand-dark)',
-  '#B8D4E8',
-  '#F2D0D8',
-  'var(--surface-variant)',
-  '#D6CFC5',
-  '#C8D8BF',
-];
 
 interface HomeProductSectionProps {
-  /** All featured products — client side filters them by category */
   products: ProductCardData[];
-  /** API categories — used to build the category selector */
-  categories: Category[];
 }
 
-/**
- * Client island — owns the selected-category state so the rest of the
- * home page stays a server component and renders instantly.
- */
-export default function HomeProductSection({ products, categories }: HomeProductSectionProps) {
-  const [selectedCat, setSelectedCat] = useState<CategoryFilterValue>('all');
+export default function HomeProductSection({ products }: HomeProductSectionProps) {
+  const sliderRef = useRef<HTMLDivElement>(null);
 
-  // Build CategorySelectorItem list: prepend synthetic "All"
-  const selectorItems: CategorySelectorItem[] = useMemo(() => {
-    const allItem: CategorySelectorItem = {
-      value: 'all',
-      label: 'All',
-      image: '/images/categories/all.png',
-      bg:    'var(--brand-dark)',
-    };
-    const rest: CategorySelectorItem[] = categories.map((cat, i) => ({
-      value: cat.id,
-      label: cat.name,
-      image: cat.imageUrl ?? `/images/categories/${cat.slug}.png`,
-      bg:    CATEGORY_BG_PALETTE[(i + 1) % CATEGORY_BG_PALETTE.length],
-    }));
-    return [allItem, ...rest];
-  }, [categories]);
+  const scroll = (direction: 'left' | 'right') => {
+    if (!sliderRef.current) return;
+    sliderRef.current.scrollBy({
+      left: direction === 'left' ? -900 : 900,
+      behavior: 'smooth',
+    });
+  };
 
-  const filteredProducts = useMemo(() => {
-    if (selectedCat === 'all') return products;
-    return products.filter((p) => p.categoryId === selectedCat);
-  }, [products, selectedCat]);
-
-  const sectionTitle =
-    selectedCat === 'all'
-      ? 'All New Arrivals'
-      : `${selectorItems.find((c) => c.value === selectedCat)?.label ?? ''} New Arrivals`;
-
-  const viewAllSlug =
-    selectedCat === 'all'
-      ? 'all'
-      : (categories.find((c) => c.id === selectedCat)?.slug ?? 'all');
+  const viewAllHref = '/products';
 
   return (
-    <section>
-      <CategorySelector
-        categories={selectorItems}
-        selected={selectedCat}
-        onSelect={setSelectedCat}
-      />
-      <SectionHeader
-        title={sectionTitle}
-        viewAllHref={`/products?category=${viewAllSlug}`}
-      />
-      <ProductGrid
-        key={String(selectedCat)}
-        items={filteredProducts}
-      />
+    <section style={{ padding: '0' }}>
+      <div
+        style={{
+          borderTop: '1px solid var(--border)',
+          borderBottom: '1px solid var(--border)',
+          borderLeft: '1px solid var(--brand-dark)',
+          borderRight: '1px solid var(--brand-dark)',
+          backgroundColor: 'var(--surface)',
+          padding: '0',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', padding: '1rem 1rem 0' }}>
+          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Featured Products</h2>
+          <Link
+            href={viewAllHref}
+            style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px' }}
+          >
+            Shop All
+          </Link>
+        </div>
+
+        <div style={{ position: 'relative', marginTop: '0.75rem' }}>
+          <button
+            type="button"
+            onClick={() => scroll('left')}
+            aria-label="Scroll products left"
+            className="hidden md:flex"
+            style={{ position: 'absolute', left: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+          >
+            <ChevronLeft size={16} style={{ margin: 'auto' }} />
+          </button>
+
+          <div
+            ref={sliderRef}
+            style={{
+              display: 'flex',
+              gap: '0',
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              paddingBottom: '0',
+            }}
+            className="hide-scrollbar"
+          >
+            {products.map((product) => (
+              <div
+                key={product.id}
+                style={{
+                  flex: '0 0 min(86vw, 410px)',
+                  minWidth: 'min(86vw, 410px)',
+                  scrollSnapAlign: 'start',
+                }}
+                className="md:[flex-basis:min(35vw,470px)] md:[min-width:min(35vw,470px)] lg:[flex-basis:min(27vw,470px)] lg:[min-width:min(27vw,470px)] xl:[flex-basis:min(24vw,470px)] xl:[min-width:min(24vw,470px)]"
+              >
+                <ProductCardSharp product={product} />
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => scroll('right')}
+            aria-label="Scroll products right"
+            className="hidden md:flex"
+            style={{ position: 'absolute', right: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+          >
+            <ChevronRight size={16} style={{ margin: 'auto' }} />
+          </button>
+        </div>
+      </div>
     </section>
   );
 }
