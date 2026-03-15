@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FiInstagram, FiFacebook, FiMessageCircle } from 'react-icons/fi';
 import { Separator } from '@/components/ui/separator';
-import { Marquee } from '@/components/ui/marquee';
 import { getCategories } from '@/application/category/getCategories';
 import { getBrands } from '@/application/brand/getBrands';
 
@@ -96,23 +95,24 @@ export default function SiteFooter() {
 
   return (
     <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>
-      {/* Brand Motto Marquee */}
-      <div style={{ padding: '3rem 0', overflow: 'hidden' }}>
-        <Marquee duration={40} pauseOnHover>
-          <span
-            style={{
-              fontSize: 'clamp(1.5rem, 6vw, 4rem)',
-              fontWeight: 900,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: 'white',
-              whiteSpace: 'nowrap',
-              paddingRight: '4rem',
-            }}
-          >
-            Forget style, embrace a different kind of IshtiLE!
-          </span>
-        </Marquee>
+      {/* Brand Motto — static stylized */}
+      <div style={{ padding: '3rem 2rem', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <p style={{
+          fontSize: 'clamp(1.4rem, 4.5vw, 4rem)',
+          fontWeight: 100,
+          textTransform: 'uppercase',
+          letterSpacing: '0.12em',
+          lineHeight: 1.15,
+          color: 'rgba(255,255,255,0.6)',
+          userSelect: 'none',
+        }}>
+          Forget style, embrace a different kind of{' '}
+          <span style={{
+            fontWeight: 500,
+            color: 'var(--brand-gold)',
+            letterSpacing: '0.06em',
+          }}>ISHTILE</span>
+        </p>
       </div>
 
       {/* Main grid */}
