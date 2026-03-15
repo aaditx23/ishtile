@@ -271,10 +271,11 @@ export async function generateMemoPDF(data: MemoData): Promise<Buffer> {
 
       y += 26;
 
-      // Line 2: Contact Numbers & Website (Left) & Date (Right)
-      const callIconPath = 'public/images/icons/call.png';
-      const waIconPath = 'public/images/icons/whatsapp.png';
-      const webIconPath = 'public/images/icons/website.png'; // Assuming user named it website.png or web.png, will just use placeholder logic if missing
+      // Contact Numbers & Website
+      // Render icons using PDFKit image method. Use path.join with process.cwd() for Vercel production compatibility
+      const callIconPath = path.join(process.cwd(), 'public/images/icons/call.png');
+      const waIconPath = path.join(process.cwd(), 'public/images/icons/whatsapp.png');
+      const webIconPath = path.join(process.cwd(), 'public/images/icons/website.png');
 
       let currentX = L;
 
@@ -430,7 +431,7 @@ export async function generateMemoPDF(data: MemoData): Promise<Buffer> {
       ty += 15;
 
       doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
-         .text('TOTAL BDT', totX, ty+5, { width: 80, lineBreak: false });
+         .text('TOTAL BDT', totX, ty + 5, { width: 80, lineBreak: false });
       doc.fontSize(16).font('Helvetica-Bold').fillColor('#000000')
          .text(data.total.toFixed(0), totX + 80, ty, { width: totW - 80, align: 'right', lineBreak: false });
 
