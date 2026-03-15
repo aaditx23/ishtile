@@ -16,6 +16,7 @@ export const listProducts = query({
     brandId: v.optional(v.id("brands")),
     search: v.optional(v.string()),
     isFeatured: v.optional(v.boolean()),
+    isTrending: v.optional(v.boolean()),
     activeOnly: v.optional(v.boolean()),
     includeVariants: v.optional(v.boolean()),
   },
@@ -29,6 +30,7 @@ export const listProducts = query({
       brandId,
       search,
       isFeatured,
+      isTrending,
       activeOnly = true,
       includeVariants = false,
     },
@@ -98,6 +100,9 @@ export const listProducts = query({
     }
     if (isFeatured !== undefined && !brandId && !categoryId) {
       products = products.filter((p) => p.isFeatured === isFeatured);
+    }
+    if (isTrending !== undefined) {
+      products = products.filter((p) => (p.trending ?? false) === isTrending);
     }
 
     // Sort by creation time desc

@@ -8,9 +8,10 @@ import type { ProductCardData } from './ProductCard';
 
 interface HomeProductSectionProps {
   products: ProductCardData[];
+  title?: string;
 }
 
-export default function HomeProductSection({ products }: HomeProductSectionProps) {
+export default function HomeProductSection({ products, title = 'Featured Products' }: HomeProductSectionProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -36,7 +37,7 @@ export default function HomeProductSection({ products }: HomeProductSectionProps
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', padding: '1rem 1rem 0' }}>
-          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Featured Products</h2>
+          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{title}</h2>
           <Link
             href={viewAllHref}
             style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px' }}

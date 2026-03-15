@@ -10,13 +10,15 @@ export const revalidate = 300;
 
 export default async function Page() {
   let products:   Awaited<ReturnType<typeof getProducts>>['items']   = [];
+  let trending:   Awaited<ReturnType<typeof getProducts>>['items']   = [];
   let categories: Awaited<ReturnType<typeof getCategories>>          = [];
   let brands:     Awaited<ReturnType<typeof getBrands>>              = [];
   let heroImages: Awaited<ReturnType<typeof getActiveHeroImages>>    = [];
 
   try {
-    [{ items: products }, categories, brands, heroImages] = await Promise.all([
+    [{ items: products }, { items: trending }, categories, brands, heroImages] = await Promise.all([
       getProducts({ isFeatured: true, activeOnly: true, pageSize: 20 }),
+      getProducts({ isTrending: true, activeOnly: true, pageSize: 20 }),
       getCategories({ activeOnly: true, includeSubcategories: true }),
       getBrands({ activeOnly: true }),
       getActiveHeroImages(),
@@ -27,6 +29,7 @@ export default async function Page() {
   }
 
   const cardProducts = products.map((p) => toProductCardData(p, categories));
+  const trendingCardProducts = trending.map((p) => toProductCardData(p, categories));
 
-  return <HomePage products={cardProducts} categories={categories} brands={brands} heroImages={heroImages} />;
+  return <HomePage products={cardProducts} trendingProducts={trendingCardProducts} categories={categories} brands={brands} heroImages={heroImages} />;
 }

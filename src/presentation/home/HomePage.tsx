@@ -11,17 +11,18 @@ import type { HeroImageData } from '@/application/home/getActiveHeroImages';
 
 interface HomePageProps {
   products: ProductCardData[];
+  trendingProducts: ProductCardData[];
   categories: Category[];
   brands: Brand[];
   heroImages: HeroImageData[];
 }
 
-export default function HomePage({ products, categories, brands, heroImages }: HomePageProps) {
+export default function HomePage({ products, trendingProducts, categories, brands, heroImages }: HomePageProps) {
   return (
     <ShopLayout>
       {/* ── Mobile ──────────────────────────────────────────────── */}
       <div className="block lg:hidden">
-        <MobileHomePage products={products} categories={categories} brands={brands} heroImages={heroImages} />
+        <MobileHomePage products={products} trendingProducts={trendingProducts} categories={categories} brands={brands} heroImages={heroImages} />
       </div>
 
       {/* ── Desktop ─────────────────────────────────────────────── */}
@@ -29,6 +30,7 @@ export default function HomePage({ products, categories, brands, heroImages }: H
         <HeroBanner heroImages={heroImages} />
         <HomeProductSection products={products} />
         <CategoryExploreBlock categories={categories} />
+        <HomeProductSection products={trendingProducts} title="Trending Products" />
         <HomeBrandSection brands={brands} />
       </div>
     </ShopLayout>

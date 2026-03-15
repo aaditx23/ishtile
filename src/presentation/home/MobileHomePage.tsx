@@ -100,17 +100,19 @@ function MobileHeroBanner({ heroImages }: { heroImages: HeroImageData[] }) {
 
 interface MobileHomePageProps {
   products: ProductCardData[];
+  trendingProducts: ProductCardData[];
   categories: Category[];
   brands: Brand[];
   heroImages: HeroImageData[];
 }
 
-export default function MobileHomePage({ products, categories, brands, heroImages }: MobileHomePageProps) {
+export default function MobileHomePage({ products, trendingProducts, categories, brands, heroImages }: MobileHomePageProps) {
   return (
     <div>
       <MobileHeroBanner heroImages={heroImages} />
       <HomeProductSection products={products} />
       <CategoryExploreBlock categories={categories} />
+      <HomeProductSection products={trendingProducts} title="Trending Products" />
       <HomeBrandSection brands={brands} />
     </div>
   );

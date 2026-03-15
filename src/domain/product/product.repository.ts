@@ -9,6 +9,7 @@ export interface ListProductsParams {
   brandId?: number;
   search?: string;
   isFeatured?: boolean;
+  isTrending?: boolean;
   activeOnly?: boolean;
   includeVariants?: boolean;
 }

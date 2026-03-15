@@ -56,6 +56,7 @@ export class ProductConvexRepository implements ProductRepository {
       brandId:         params?.brandId ? fromId(params.brandId) as any : undefined,
       search:          params?.search,
       isFeatured:      params?.isFeatured,
+      isTrending:      params?.isTrending,
       activeOnly:      params?.activeOnly ?? true,
       includeVariants: params?.includeVariants ?? false,
     });

@@ -34,6 +34,7 @@ export function mapProduct(dto: ProductDto | ProductWithVariantsDto): Product {
     categoryId:       dto.categoryId,
     subcategoryId:    dto.subcategoryId,
     isFeatured:       dto.isFeatured,
+    trending:         dto.trending,
     isActive:         dto.isActive,
     variants,
   };
