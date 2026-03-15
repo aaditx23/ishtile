@@ -121,7 +121,7 @@ export interface Theme {
 
 export const LightColorScheme: ColorScheme = {
   // Brand
-  brandDark: '#414751',
+  brandDark: '#263147',
   brandGold: '#919f90',
   brandGoldHover: '#728171',
   brandGoldDeep: '#536352',

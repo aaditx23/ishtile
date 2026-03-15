@@ -111,6 +111,7 @@ export default function SiteFooter() {
             fontWeight: 500,
             color: 'var(--brand-gold)',
             letterSpacing: '0.06em',
+            fontStyle: 'italic',
           }}>ISHTILE</span>
         </p>
       </div>
