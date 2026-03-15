@@ -23,6 +23,8 @@ import type * as categories_mutations from "../categories/mutations.js";
 import type * as categories_queries from "../categories/queries.js";
 import type * as favourites_mutations from "../favourites/mutations.js";
 import type * as favourites_queries from "../favourites/queries.js";
+import type * as lookbooks_mutations from "../lookbooks/mutations.js";
+import type * as lookbooks_queries from "../lookbooks/queries.js";
 import type * as migrations_fixDeliveryMode from "../migrations/fixDeliveryMode.js";
 import type * as migrations_fixOldOrderStatus from "../migrations/fixOldOrderStatus.js";
 import type * as migrations_setProductTrendingDefault from "../migrations/setProductTrendingDefault.js";
@@ -60,6 +62,8 @@ declare const fullApi: ApiFromModules<{
   "categories/queries": typeof categories_queries;
   "favourites/mutations": typeof favourites_mutations;
   "favourites/queries": typeof favourites_queries;
+  "lookbooks/mutations": typeof lookbooks_mutations;
+  "lookbooks/queries": typeof lookbooks_queries;
   "migrations/fixDeliveryMode": typeof migrations_fixDeliveryMode;
   "migrations/fixOldOrderStatus": typeof migrations_fixOldOrderStatus;
   "migrations/setProductTrendingDefault": typeof migrations_setProductTrendingDefault;

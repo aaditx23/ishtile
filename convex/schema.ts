@@ -12,6 +12,7 @@ import { promoTables } from './promos/schema';
 import { shipmentTables } from './shipments/schema';
 import { adminTables } from './admin/schema';
 import { analyticsTables } from './analytics/schema';
+import { lookbookTables } from './lookbooks/schema';
 
 // Combine all tables into a single schema
 export default defineSchema({
@@ -26,4 +27,5 @@ export default defineSchema({
   ...shipmentTables,
   ...adminTables,
   ...analyticsTables,
+  ...lookbookTables,
 });

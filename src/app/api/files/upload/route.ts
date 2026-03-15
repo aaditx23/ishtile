@@ -104,7 +104,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const searchParams = req.nextUrl.searchParams;
   const rawFolder = searchParams.get('folder') || 'products';
-  const folder = ['products', 'categories', 'uploads'].includes(rawFolder) ? rawFolder : 'products';
+  const allowedFolders = ['products', 'categories', 'uploads', 'lookbooks', 'brands', 'hero-images'];
+  const folder = allowedFolders.includes(rawFolder) ? rawFolder : 'products';
 
   try {
     const formData = await req.formData();

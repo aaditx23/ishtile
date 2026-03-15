@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
-import { FiGrid, FiShoppingBag, FiPackage, FiTag, FiBarChart2, FiFolder, FiAward, FiSettings, FiSliders } from 'react-icons/fi';
+import { FiGrid, FiShoppingBag, FiPackage, FiTag, FiBarChart2, FiFolder, FiAward, FiSettings, FiSliders, FiBookOpen } from 'react-icons/fi';
 
 export const ADMIN_NAV_ITEMS = [
   { href: '/admin',             label: 'Dashboard',  Icon: FiGrid },
@@ -10,6 +10,7 @@ export const ADMIN_NAV_ITEMS = [
   { href: '/admin/brands',      label: 'Brands',     Icon: FiAward },
   { href: '/admin/promos',      label: 'Promos',     Icon: FiTag },
   { href: '/admin/analytics',   label: 'Analytics',  Icon: FiBarChart2 },
+  { href: '/admin/lookbooks',   label: 'Lookbooks',  Icon: FiBookOpen },
   { href: '/admin/customizations', label: 'Customizations', Icon: FiSliders },
   { href: '/admin/settings',    label: 'Settings',   Icon: FiSettings },
 ] as const;

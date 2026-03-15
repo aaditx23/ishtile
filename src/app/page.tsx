@@ -3,6 +3,7 @@ import { getProducts } from '@/application/product/getProducts';
 import { getCategories } from '@/application/category/getCategories';
 import { getBrands } from '@/application/brand/getBrands';
 import { getActiveHeroImages } from '@/application/home/getActiveHeroImages';
+import { getLookbooks } from '@/application/lookbook/getLookbooks';
 import { toProductCardData } from '@/presentation/home/utils/productCard.utils';
 
 // Revalidate every 5 minutes — featured products change infrequently
@@ -14,14 +15,16 @@ export default async function Page() {
   let categories: Awaited<ReturnType<typeof getCategories>>          = [];
   let brands:     Awaited<ReturnType<typeof getBrands>>              = [];
   let heroImages: Awaited<ReturnType<typeof getActiveHeroImages>>    = [];
+  let lookbooks:  Awaited<ReturnType<typeof getLookbooks>>           = [];
 
   try {
-    [{ items: products }, { items: trending }, categories, brands, heroImages] = await Promise.all([
+    [{ items: products }, { items: trending }, categories, brands, heroImages, lookbooks] = await Promise.all([
       getProducts({ isFeatured: true, activeOnly: true, pageSize: 20 }),
       getProducts({ isTrending: true, activeOnly: true, pageSize: 20 }),
       getCategories({ activeOnly: true, includeSubcategories: true }),
       getBrands({ activeOnly: true }),
       getActiveHeroImages(),
+      getLookbooks({ activeOnly: true, limit: 3 }),
     ]);
   } catch {
     // Backend unreachable (cold start, network error) — render empty shell;
@@ -31,5 +34,5 @@ export default async function Page() {
   const cardProducts = products.map((p) => toProductCardData(p, categories));
   const trendingCardProducts = trending.map((p) => toProductCardData(p, categories));
 
-  return <HomePage products={cardProducts} trendingProducts={trendingCardProducts} categories={categories} brands={brands} heroImages={heroImages} />;
+  return <HomePage products={cardProducts} trendingProducts={trendingCardProducts} categories={categories} brands={brands} heroImages={heroImages} lookbooks={lookbooks} />;
 }

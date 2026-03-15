@@ -4,10 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import HomeProductSection from './components/HomeProductSection';
 import HomeBrandSection from './components/HomeBrandSection';
 import CategoryExploreBlock from './components/CategoryExploreBlock';
+import LookbookSection from './components/LookbookSection';
 import HeroImageCard from './components/HeroImageCard';
 import type { ProductCardData } from './components/ProductCard';
 import type { Category } from '@/domain/category/category.entity';
 import type { Brand } from '@/domain/brand/brand.entity';
+import type { Lookbook } from '@/domain/lookbook/lookbook.entity';
 import type { HeroImageData } from '@/application/home/getActiveHeroImages';
 
 const FALLBACK_HEROES: HeroImageData[] = [
@@ -103,16 +105,18 @@ interface MobileHomePageProps {
   trendingProducts: ProductCardData[];
   categories: Category[];
   brands: Brand[];
+  lookbooks: Lookbook[];
   heroImages: HeroImageData[];
 }
 
-export default function MobileHomePage({ products, trendingProducts, categories, brands, heroImages }: MobileHomePageProps) {
+export default function MobileHomePage({ products, trendingProducts, categories, brands, lookbooks, heroImages }: MobileHomePageProps) {
   return (
     <div>
       <MobileHeroBanner heroImages={heroImages} />
       <HomeProductSection products={products} />
       <CategoryExploreBlock categories={categories} />
       <HomeProductSection products={trendingProducts} title="Trending Products" />
+      <LookbookSection lookbooks={lookbooks} />
       <HomeBrandSection brands={brands} />
     </div>
   );

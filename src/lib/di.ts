@@ -22,6 +22,7 @@ import { AdminProductConvexRepository } from '@/infrastructure/convex/adminProdu
 import { AdminPromoConvexRepository } from '@/infrastructure/convex/adminPromoConvex.repository';
 import { AdminCategoryConvexRepository } from '@/infrastructure/convex/adminCategoryConvex.repository';
 import { UserAddressConvexRepository } from '@/infrastructure/convex/userAddressConvex.repository';
+import { LookbookConvexRepository } from '@/infrastructure/convex/lookbookConvex.repository';
 import { LocationApiRepository } from '@/infrastructure/api/locationApi.repository';
 
 export const categoryRepository = new CategoryConvexRepository();
@@ -38,3 +39,4 @@ export const adminPromoRepository = new AdminPromoConvexRepository();
 export const adminCategoryRepository = new AdminCategoryConvexRepository();
 export const locationRepository = new LocationApiRepository(); // Pathao — stays as API
 export const addressRepository = new UserAddressConvexRepository();
+export const lookbookRepository = new LookbookConvexRepository();
