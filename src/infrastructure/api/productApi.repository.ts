@@ -16,6 +16,7 @@ export class ProductApiRepository implements ProductRepository {
         brandId:         params?.brandId,
         search:          params?.search,
         isFeatured:      params?.isFeatured,
+        isTrending:      params?.isTrending,
         activeOnly:      params?.activeOnly,
         includeVariants: params?.includeVariants,
       },

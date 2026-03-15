@@ -23,6 +23,7 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
     sub:        searchParams.get('sub')        ?? '',
     brand:      searchParams.get('brand')      ?? '',
     featured:   searchParams.get('featured')   === '1',
+    trending:   searchParams.get('trending')   === '1',
     activeOnly: searchParams.get('activeOnly') !== '0',
   };
 
@@ -45,10 +46,11 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
   const extraCount =
     (active.brand ? 1 : 0) +
     (active.featured ? 1 : 0) +
+    (active.trending ? 1 : 0) +
     (!active.activeOnly ? 1 : 0) +
     (active.category ? 1 : 0);
 
-  const hasAny = active.search || active.category || active.brand || active.featured || !active.activeOnly;
+  const hasAny = active.search || active.category || active.brand || active.featured || active.trending || !active.activeOnly;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 1rem 0' }}>
@@ -220,6 +222,15 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
                 style={{ accentColor: 'var(--brand-gold)', width: '14px', height: '14px' }}
               />
               Featured only
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', cursor: 'pointer', userSelect: 'none' }}>
+              <input
+                type="checkbox"
+                checked={active.trending}
+                onChange={(e) => push({ trending: e.target.checked ? '1' : '' })}
+                style={{ accentColor: 'var(--brand-gold)', width: '14px', height: '14px' }}
+              />
+              Trending only
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', cursor: 'pointer', userSelect: 'none' }}>
               <input

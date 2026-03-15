@@ -11,6 +11,7 @@ interface SearchParams {
   search?:     string;
   brand?:      string;
   featured?:   string; // '1' = true
+  trending?:   string; // '1' = true
   activeOnly?: string; // '0' = false (default true)
   page?:       string;
 }
@@ -39,6 +40,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       brandId:       params.brand ? parseInt(params.brand) : undefined,
       search:        params.search       || undefined,
       isFeatured:    params.featured === '1' ? true : undefined,
+      isTrending:    params.trending === '1' ? true : undefined,
       activeOnly:    params.activeOnly === '0' ? false : true,
     });
 

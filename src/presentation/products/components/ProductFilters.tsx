@@ -58,6 +58,7 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
     sub:        searchParams.get('sub')        ?? '',
     brand:      searchParams.get('brand')      ?? '',
     featured:   searchParams.get('featured')   === '1',
+    trending:   searchParams.get('trending')   === '1',
     activeOnly: searchParams.get('activeOnly') !== '0', // default true
   };
 
@@ -214,6 +215,16 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', cursor: 'pointer', userSelect: 'none' }}>
           <input
             type="checkbox"
+            checked={active.trending}
+            onChange={(e) => push({ trending: e.target.checked ? '1' : '' })}
+            style={{ accentColor: 'var(--brand-gold)', width: '14px', height: '14px' }}
+          />
+          Trending only
+        </label>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', cursor: 'pointer', userSelect: 'none' }}>
+          <input
+            type="checkbox"
             checked={active.activeOnly}
             onChange={(e) => push({ activeOnly: e.target.checked ? '' : '0' })}
             style={{ accentColor: 'var(--brand-gold)', width: '14px', height: '14px' }}
@@ -223,7 +234,7 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
       </section>
 
       {/* ── Clear all ─────────────────────────────────────────────────── */}
-      {(active.search || active.category || active.brand || active.featured || !active.activeOnly) && (
+      {(active.search || active.category || active.brand || active.featured || active.trending || !active.activeOnly) && (
         <Button
           variant="ghost"
           onClick={() => router.push('/products')}
