@@ -127,21 +127,22 @@ export default function LookbookDetailView({ lookbook }: LookbookDetailViewProps
       style={sectionStyles}
       onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
       onTouchEnd={(e) => handleDragEnd(e.changedTouches[0].clientX)}
-      onMouseDown={(e) => handleDragStart(e.clientX)}
+      onMouseDown={(e) => { e.preventDefault(); handleDragStart(e.clientX); }}
       onMouseUp={(e) => handleDragEnd(e.clientX)}
       onMouseLeave={handleDragCancel}
     >
       {/* Slide Container */}
       <div style={slideContainerStyles}>
         {slides.map((imageUrl, index) => (
-          <div key={`slide-${index}`} style={getSlideStyles(index)}>
+          <div key={`slide-${index}`} style={getSlideStyles(index)} draggable={false}>
             <Image
               src={imageUrl}
               alt={`${lookbook.title} slide ${index + 1}`}
               fill
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'cover', userSelect: 'none' }}
               sizes="100vw"
               priority={index === 0}
+              draggable={false}
             />
           </div>
         ))}

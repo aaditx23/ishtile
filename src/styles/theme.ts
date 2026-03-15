@@ -121,15 +121,15 @@ export interface Theme {
 
 export const LightColorScheme: ColorScheme = {
   // Brand
-  brandDark: '#1C1A19',
-  brandGold: '#A58C69',
-  brandGoldHover: '#8F6F4A',
-  brandGoldDeep: '#684F40',
+  brandDark: '#414751',
+  brandGold: '#919f90',
+  brandGoldHover: '#728171',
+  brandGoldDeep: '#536352',
 
   // Surfaces
-  background: '#ffeddc',
-  surface: '#f8e8d7',
-  surfaceVariant: '#ebd4b8',
+  background: '#e8ebed',
+  surface: '#f0f2f4',
+  surfaceVariant: '#d8dbde',
 
   // Content
   onBackground: '#1C1A19',
@@ -139,20 +139,20 @@ export const LightColorScheme: ColorScheme = {
 
   // Primary
   primary: '#1C1A19',
-  onPrimary: '#ffeddc',
+  onPrimary: '#e8ebed',
 
   // Accent
-  accent: '#A58C69',
-  onAccent: '#ffeddc',
+  accent: '#919f90',
+  onAccent: '#e8ebed',
 
   // Components
-  border: '#E5D8C8',
-  input: '#E5D8C8',
-  ring: '#A58C69',
+  border: '#c8cdd2',
+  input: '#c8cdd2',
+  ring: '#919f90',
 
   // Semantic
   destructive: '#DC2626',
-  onDestructive: '#ffeddc',
+  onDestructive: '#e8ebed',
   errorBg: '#fee2e2',
   onError: '#991b1b',
   successBg: '#d1fae5',
@@ -163,7 +163,7 @@ export const LightColorScheme: ColorScheme = {
   onInfo: '#3730a3',
 
   // Product
-  productBg: '#F0E2CC',
+  productBg: '#dde0e3',
 };
 
 // ─── Dark ColorScheme ─────────────────────────────────────────────────────────

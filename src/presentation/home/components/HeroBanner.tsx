@@ -58,21 +58,33 @@ export default function HeroBanner({ heroImages }: HeroBannerProps) {
   };
 
   const slide = slides[current];
+  void slide;
 
   return (
     <section
       style={{ position: 'relative', width: '100%', height: '60vh', overflow: 'hidden', cursor: 'grab' }}
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchEnd={(e) => onDragEnd(e.changedTouches[0].clientX)}
-      onMouseDown={(e) => onDragStart(e.clientX)}
+      onMouseDown={(e) => { e.preventDefault(); onDragStart(e.clientX); }}
       onMouseUp={(e) => onDragEnd(e.clientX)}
-      onMouseLeave={() => {
-        dragStartX.current = null;
-      }}
+      onMouseLeave={() => { dragStartX.current = null; }}
     >
-      <div style={{ width: '100%', height: '100%' }}>
-        <HeroImageCard slide={slide} />
-      </div>
+      {/* All slides stacked — crossfade via opacity */}
+      {slides.map((s, index) => (
+        <div
+          key={s.id}
+          draggable={false}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: index === current ? 1 : 0,
+            transition: 'opacity 600ms ease',
+            pointerEvents: index === current ? 'auto' : 'none',
+          }}
+        >
+          <HeroImageCard slide={s} />
+        </div>
+      ))}
 
       <div style={{ position: 'absolute', bottom: '1.25rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.4rem', zIndex: 10 }}>
         {slides.map((item, index) => (

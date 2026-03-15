@@ -13,6 +13,7 @@ interface LookbookSectionProps {
 export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [canScroll, setCanScroll] = useState(false);
 
   if (lookbooks.length === 0) return null;
 
@@ -53,6 +54,17 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
     return () => node.removeEventListener('scroll', onScroll);
   }, [lookbooks.length]);
 
+  // Show scroll controls only when content actually overflows
+  useEffect(() => {
+    const node = sliderRef.current;
+    if (!node) return;
+    const check = () => setCanScroll(node.scrollWidth > node.clientWidth + 2);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, [lookbooks.length]);
+
   return (
     <section style={{ padding: '1.25rem 0 1.25rem' }}>
       <div
@@ -74,15 +86,17 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
         </div>
 
         <div style={{ position: 'relative', marginTop: '1rem' }}>
-          <button
-            type="button"
-            onClick={() => scroll('left')}
-            aria-label="Scroll lookbooks left"
-            className="hidden md:flex"
-            style={{ position: 'absolute', left: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
-          >
-            <ChevronLeft size={16} style={{ margin: 'auto' }} />
-          </button>
+          {canScroll && (
+            <button
+              type="button"
+              onClick={() => scroll('left')}
+              aria-label="Scroll lookbooks left"
+              className="hidden md:flex"
+              style={{ position: 'absolute', left: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+            >
+              <ChevronLeft size={16} style={{ margin: 'auto' }} />
+            </button>
+          )}
 
           <div
             ref={sliderRef}
@@ -131,17 +145,19 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() => scroll('right')}
-            aria-label="Scroll lookbooks right"
-            className="hidden md:flex"
-            style={{ position: 'absolute', right: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
-          >
-            <ChevronRight size={16} style={{ margin: 'auto' }} />
-          </button>
+          {canScroll && (
+            <button
+              type="button"
+              onClick={() => scroll('right')}
+              aria-label="Scroll lookbooks right"
+              className="hidden md:flex"
+              style={{ position: 'absolute', right: '-0.55rem', top: '40%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+            >
+              <ChevronRight size={16} style={{ margin: 'auto' }} />
+            </button>
+          )}
 
-          {lookbooks.length > 1 ? (
+          {canScroll && lookbooks.length > 1 ? (
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.65rem' }}>
               {lookbooks.map((item, index) => (
                 <span

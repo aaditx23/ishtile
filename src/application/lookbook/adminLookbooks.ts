@@ -78,7 +78,7 @@ export async function uploadLookbookImages(files: File[], folder = 'lookbooks'):
   const formData = new FormData();
   for (const file of files) formData.append('files', file);
 
-  const res = await apiClient.postFormData<{ message?: string; listData?: unknown }>(ENDPOINTS.files.upload(folder), formData);
+  const res = await apiClient.postFormData<{ success: boolean; message: string; listData?: unknown }>(ENDPOINTS.files.upload(folder), formData);
   const urls = Array.isArray(res.listData) ? res.listData.filter((x): x is string => typeof x === 'string' && x.length > 0) : [];
 
   if (urls.length !== files.length) {

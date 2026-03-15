@@ -90,8 +90,8 @@ export default function SiteHeader() {
         zIndex: 50,
         height: '4rem',
         transition: 'background 300ms, box-shadow 300ms',
-        background: scrolled ? 'var(--brand-dark)' : 'rgba(28,26,25,0.9)',
-        backdropFilter: scrolled ? 'none' : 'blur(8px)',
+        background: scrolled ? 'color-mix(in srgb, var(--brand-dark) 88%, transparent)' : 'color-mix(in srgb, var(--brand-dark) 80%, transparent)',
+        backdropFilter: 'blur(12px)',
         boxShadow: scrolled ? '0 4px 12px rgba(0,0,0,0.3)' : 'none',
       }}
     >
@@ -140,7 +140,7 @@ export default function SiteHeader() {
                     <NavigationMenuLink asChild active={isLinkActive(link.href)}>
                       <Link
                         href={link.href}
-                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
                         style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                       >
                         {link.label}
@@ -157,7 +157,7 @@ export default function SiteHeader() {
                         <NavigationMenuLink asChild active={isLinkActive(link.href)}>
                           <Link
                             href={link.href}
-                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-neutral-300"
+                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
                             style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           >
                             {link.href === '/profile' ? getProfileLabel(auth.user.username) : link.label}
@@ -176,7 +176,7 @@ export default function SiteHeader() {
                         <Link
                           href="/admin"
                           style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
-                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-white data-[active]:rounded-none data-[active]:text-white hover:text-white text-[var(--brand-gold)]"
+                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
                         >
                           Dashboard
                         </Link>

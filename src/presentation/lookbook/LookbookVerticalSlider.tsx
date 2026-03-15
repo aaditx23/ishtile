@@ -15,6 +15,15 @@ const SLIDE_HEIGHT = 'calc(100svh - 4rem)';
 export default function LookbookVerticalSlider({ lookbooks }: LookbookVerticalSliderProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+
+  const onDragStart = (clientY: number) => { dragStartY.current = clientY; };
+  const onDragEnd = (clientY: number) => {
+    if (dragStartY.current === null) return;
+    const dy = clientY - dragStartY.current;
+    if (Math.abs(dy) > 50) goToIndex(activeIndex + (dy < 0 ? 1 : -1));
+    dragStartY.current = null;
+  };
 
   useEffect(() => {
     const node = sliderRef.current;
@@ -60,7 +69,14 @@ export default function LookbookVerticalSlider({ lookbooks }: LookbookVerticalSl
   }
 
   return (
-    <section style={{ position: 'relative', width: '100%', height: SLIDE_HEIGHT, background: 'var(--surface-muted)', overflow: 'hidden' }}>
+    <section
+      style={{ position: 'relative', width: '100%', height: SLIDE_HEIGHT, background: 'var(--surface-muted)', overflow: 'hidden', cursor: 'grab' }}
+      onMouseDown={(e) => { e.preventDefault(); onDragStart(e.clientY); }}
+      onMouseUp={(e) => onDragEnd(e.clientY)}
+      onMouseLeave={() => { dragStartY.current = null; }}
+      onTouchStart={(e) => onDragStart(e.touches[0].clientY)}
+      onTouchEnd={(e) => onDragEnd(e.changedTouches[0].clientY)}
+    >
       <div
         ref={sliderRef}
         className="hide-scrollbar"

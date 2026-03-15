@@ -30,6 +30,7 @@ export default function ExploreBlock({
   const visibleItems = items.slice(0, 6);
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [canScroll, setCanScroll] = useState(false);
 
   if (visibleItems.length === 0) return null;
 
@@ -64,6 +65,17 @@ export default function ExploreBlock({
     return () => node.removeEventListener('scroll', onScroll);
   }, [visibleItems.length]);
 
+  // Show scroll controls only when content actually overflows
+  useEffect(() => {
+    const node = sliderRef.current;
+    if (!node) return;
+    const check = () => setCanScroll(node.scrollWidth > node.clientWidth + 2);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, [visibleItems.length]);
+
   return (
     <section style={{ padding: sectionPadding }}>
       <div
@@ -74,28 +86,30 @@ export default function ExploreBlock({
           padding: '1.15rem',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', textAlign: 'center' }}>{title}</h2>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+          <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{title}</h2>
           {showShopAll ? (
             <Link
               href="/products"
-              style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px' }}
+              style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px', flexShrink: 0 }}
             >
-              Shop All
+              View All
             </Link>
           ) : null}
         </div>
 
         <div style={{ position: 'relative', marginTop: '1rem' }}>
-          <button
-            type="button"
-            onClick={() => scroll('left')}
-            aria-label="Scroll left"
-            className="hidden md:flex"
-            style={{ position: 'absolute', left: '-0.55rem', top: '45%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
-          >
-            <ChevronLeft size={16} style={{ margin: 'auto' }} />
-          </button>
+          {canScroll && (
+            <button
+              type="button"
+              onClick={() => scroll('left')}
+              aria-label="Scroll left"
+              className="hidden md:flex"
+              style={{ position: 'absolute', left: '-0.55rem', top: '45%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+            >
+              <ChevronLeft size={16} style={{ margin: 'auto' }} />
+            </button>
+          )}
 
           <div
             ref={sliderRef}
@@ -154,17 +168,19 @@ export default function ExploreBlock({
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() => scroll('right')}
-            aria-label="Scroll right"
-            className="hidden md:flex"
-            style={{ position: 'absolute', right: '-0.55rem', top: '45%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
-          >
-            <ChevronRight size={16} style={{ margin: 'auto' }} />
-          </button>
+          {canScroll && (
+            <button
+              type="button"
+              onClick={() => scroll('right')}
+              aria-label="Scroll right"
+              className="hidden md:flex"
+              style={{ position: 'absolute', right: '-0.55rem', top: '45%', transform: 'translateY(-50%)', zIndex: 20, width: '2rem', height: '2rem', border: '1px solid var(--border)', background: 'var(--surface)' }}
+            >
+              <ChevronRight size={16} style={{ margin: 'auto' }} />
+            </button>
+          )}
 
-          {visibleItems.length > 1 ? (
+          {canScroll && visibleItems.length > 1 ? (
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.65rem' }}>
               {visibleItems.map((item, index) => (
                 <span

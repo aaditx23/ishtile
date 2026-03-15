@@ -42,7 +42,7 @@ export default function HomeProductSection({ products, title = 'Featured Product
             href={viewAllHref}
             style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px' }}
           >
-            Shop All
+            View All
           </Link>
         </div>
 

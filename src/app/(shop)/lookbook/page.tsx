@@ -1,9 +1,10 @@
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import { getLookbooks } from '@/application/lookbook/getLookbooks';
+import type { Lookbook } from '@/domain/lookbook/lookbook.entity';
 import LookbookVerticalSlider from '@/presentation/lookbook/LookbookVerticalSlider';
 
 export default async function LookbookPage() {
-  let lookbooks = [];
+  let lookbooks: Lookbook[] = [];
   try {
     lookbooks = await getLookbooks({ activeOnly: true, limit: 100 });
   } catch {

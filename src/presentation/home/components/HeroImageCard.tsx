@@ -65,7 +65,7 @@ export default function HeroImageCard({ slide, mobile = false }: HeroImageCardPr
         {shouldShowButton && (
           <div style={{ display: 'flex', justifyContent: alignLeft ? 'flex-start' : 'flex-end' }}>
             <Button asChild variant="default" size="sm">
-              <Link href={slide.buttonUrl}>{slide.buttonText}</Link>
+              <Link href={slide.buttonUrl!}>{slide.buttonText}</Link>
             </Button>
           </div>
         )}
