@@ -14,7 +14,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { randomUUID } from 'crypto';
 
-const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5 MB
+const LIMITED_MAX_UPLOAD_SIZE = Math.floor(1.5 * 1024 * 1024); // 1.5 MB
+
+function getMaxUploadSize(_folder: string): number {
+  return LIMITED_MAX_UPLOAD_SIZE;
+}
+
+function buildFileTooLargeMessage(maxUploadSize: number): string {
+  return `FILE_TOO_LARGE: Max ${(maxUploadSize / (1024 * 1024)).toFixed(1)}MB`;
+}
 
 // ─── Cloudinary Config ────────────────────────────────────────────────────────
 
@@ -60,14 +68,15 @@ async function uploadToCloudinary(
   buffer: Buffer,
   folder: string,
   filename: string,
+  maxUploadSize: number,
 ): Promise<string> {
   const mime = sniffMime(buffer);
   if (!mime || !['image/jpeg', 'image/png', 'image/webp'].includes(mime)) {
     throw new Error('INVALID_FILE_TYPE');
   }
 
-  if (buffer.length > MAX_UPLOAD_SIZE) {
-    throw new Error('FILE_TOO_LARGE');
+  if (buffer.length > maxUploadSize) {
+    throw new Error(buildFileTooLargeMessage(maxUploadSize));
   }
 
   // Sanitize filename: remove extension, keep only alphanumeric + dash/underscore
@@ -106,6 +115,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const rawFolder = searchParams.get('folder') || 'products';
   const allowedFolders = ['products', 'categories', 'uploads', 'lookbooks', 'brands', 'hero-images'];
   const folder = allowedFolders.includes(rawFolder) ? rawFolder : 'products';
+  const maxUploadSize = getMaxUploadSize(folder);
 
   try {
     const formData = await req.formData();
@@ -125,9 +135,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     for (const file of files) {
       try {
+        if (file.size > maxUploadSize) {
+          throw new Error(buildFileTooLargeMessage(maxUploadSize));
+        }
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const url = await uploadToCloudinary(buffer, folder, file.name);
+        const url = await uploadToCloudinary(buffer, folder, file.name, maxUploadSize);
         urls.push(url);
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Upload failed';

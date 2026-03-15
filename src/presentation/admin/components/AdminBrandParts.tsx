@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { createBrand, updateBrand, uploadBrandImage } from '@/application/brand/adminBrand';
+import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
 import type { Brand } from '@/domain/brand/brand.entity';
 import { Button } from '@/components/ui/button';
 
@@ -236,7 +237,24 @@ export function BrandModal({
             {!imageFile && !form.imageUrl && (
               <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', border: '2px dashed var(--border)', cursor: saving ? 'not-allowed' : 'pointer', backgroundColor: 'var(--surface-muted)', color: 'var(--on-surface-muted)', fontSize: '1.5rem', flexShrink: 0, lineHeight: 1 }}>
               +
-              <input type="file" accept="image/*" disabled={saving} style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) setImageFile(f); }} />
+              <input
+                type="file"
+                accept="image/*"
+                disabled={saving}
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const { accepted, rejected } = splitFilesByUploadLimit([file]);
+                  if (rejected.length > 0) {
+                    toast.error(buildUploadSizeError(rejected));
+                  }
+                  if (accepted[0]) {
+                    setImageFile(accepted[0]);
+                  }
+                  e.target.value = '';
+                }}
+              />
             </label>
             )}
           </div>

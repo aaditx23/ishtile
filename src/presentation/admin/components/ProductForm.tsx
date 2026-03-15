@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { updateProduct, uploadProductImages } from '@/application/product/adminProduct';
 import { getBrands } from '@/application/brand/getBrands';
+import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
 import type { Product } from '@/domain/product/product.entity';
 import type { Category } from '@/domain/category/category.entity';
 import type { Brand } from '@/domain/brand/brand.entity';
@@ -61,6 +62,17 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
   const [savingMsg, setSavingMsg] = useState('');
   const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls ?? []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
+
+  const handleNewFilesSelected = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const { accepted, rejected } = splitFilesByUploadLimit(Array.from(files));
+    if (rejected.length > 0) {
+      toast.error(buildUploadSizeError(rejected));
+    }
+    if (accepted.length > 0) {
+      setNewFiles((prev) => [...prev, ...accepted]);
+    }
+  };
 
   useEffect(() => {
     getBrands({ activeOnly: false }).then(setBrands).catch(() => toast.error('Failed to load brands'));
@@ -264,7 +276,10 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
               multiple
               disabled={saving}
               style={{ display: 'none' }}
-              onChange={(e) => setNewFiles((prev) => [...prev, ...Array.from(e.target.files ?? [])])}
+              onChange={(e) => {
+                handleNewFilesSelected(e.target.files);
+                e.target.value = '';
+              }}
             />
           </label>
         </div>

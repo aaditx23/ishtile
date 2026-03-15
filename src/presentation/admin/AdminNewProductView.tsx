@@ -13,6 +13,7 @@ import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { createProduct, uploadProductImages } from '@/application/product/adminProduct';
 import { getCategories } from '@/application/category/getCategories';
 import { getBrands } from '@/application/brand/getBrands';
+import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
 import type { Category } from '@/domain/category/category.entity';
 import type { Brand } from '@/domain/brand/brand.entity';
 
@@ -70,6 +71,17 @@ export default function AdminNewProductView() {
   const [images, setImages]   = useState<File[]>([]);
   const [saving, setSaving]   = useState(false);
   const [savingMsg, setSavingMsg] = useState('');
+
+  const handleImagesSelected = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const { accepted, rejected } = splitFilesByUploadLimit(Array.from(files));
+    if (rejected.length > 0) {
+      toast.error(buildUploadSizeError(rejected));
+    }
+    if (accepted.length > 0) {
+      setImages((prev) => [...prev, ...accepted]);
+    }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -294,7 +306,10 @@ export default function AdminNewProductView() {
                     multiple
                     disabled={saving}
                     style={{ display: 'none' }}
-                    onChange={(e) => setImages((prev) => [...prev, ...Array.from(e.target.files ?? [])])}
+                    onChange={(e) => {
+                      handleImagesSelected(e.target.files);
+                      e.target.value = '';
+                    }}
                   />
                 </label>
               </div>

@@ -18,6 +18,7 @@ import {
   type HeroImagePayload,
   type HeroImageRecord,
 } from '@/application/customizations/heroCustomizations';
+import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
 
 const labelStyle: React.CSSProperties = {
   fontSize: '0.75rem',
@@ -127,9 +128,16 @@ export default function AdminCustomizationsView() {
 
   async function onUpload(file: File | null) {
     if (!file) return;
+    const { accepted, rejected } = splitFilesByUploadLimit([file]);
+    if (rejected.length > 0) {
+      toast.error(buildUploadSizeError(rejected));
+      return;
+    }
+    const validFile = accepted[0];
+    if (!validFile) return;
     setUploading(true);
     try {
-      const url = await uploadHeroImage(file);
+      const url = await uploadHeroImage(validFile);
       set('url', url);
       toast.success('Image uploaded.');
     } catch (err) {
@@ -311,7 +319,10 @@ function HeroFormCard({
             type="file"
             className="hero-upload-input"
             accept="image/*"
-            onChange={(e) => onUpload(e.target.files?.[0] ?? null)}
+            onChange={(e) => {
+              onUpload(e.target.files?.[0] ?? null);
+              e.target.value = '';
+            }}
             disabled={uploading || submitting}
             style={{ fontSize: '0.8rem' }}
           />

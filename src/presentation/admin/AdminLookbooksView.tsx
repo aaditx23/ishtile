@@ -15,6 +15,7 @@ import {
   updateLookbook,
   uploadLookbookImages,
 } from '@/application/lookbook/adminLookbooks';
+import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
 
 const labelStyle: React.CSSProperties = {
   fontSize: '0.75rem',
@@ -103,12 +104,25 @@ export default function AdminLookbooksView() {
 
   function handleCoverSelect(file: File | null) {
     if (!file) return;
-    setNewCoverFile(file);
+    const { accepted, rejected } = splitFilesByUploadLimit([file]);
+    if (rejected.length > 0) {
+      toast.error(buildUploadSizeError(rejected));
+      return;
+    }
+    if (accepted[0]) {
+      setNewCoverFile(accepted[0]);
+    }
   }
 
   function handleAlbumSelect(files: FileList | null) {
     if (!files || files.length === 0) return;
-    setNewAlbumFiles((prev) => [...prev, ...Array.from(files)]);
+    const { accepted, rejected } = splitFilesByUploadLimit(Array.from(files));
+    if (rejected.length > 0) {
+      toast.error(buildUploadSizeError(rejected));
+    }
+    if (accepted.length > 0) {
+      setNewAlbumFiles((prev) => [...prev, ...accepted]);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -412,7 +426,10 @@ function LookbookFormCard({
                     accept="image/*"
                     disabled={submitting}
                     style={{ display: 'none' }}
-                    onChange={(e) => onCoverSelect(e.target.files?.[0] ?? null)}
+                    onChange={(e) => {
+                      onCoverSelect(e.target.files?.[0] ?? null);
+                      e.target.value = '';
+                    }}
                   />
                 </label>
               ) : null}
@@ -465,7 +482,10 @@ function LookbookFormCard({
                   multiple
                   disabled={submitting}
                   style={{ display: 'none' }}
-                  onChange={(e) => onAlbumSelect(e.target.files)}
+                  onChange={(e) => {
+                    onAlbumSelect(e.target.files);
+                    e.target.value = '';
+                  }}
                 />
               </label>
             </div>
