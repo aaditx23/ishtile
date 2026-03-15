@@ -115,8 +115,8 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
               <article
                 key={item.id}
                 style={{
-                  flex: '0 0 min(100%, 500px)',
-                  minWidth: 'min(100%, 500px)',
+                  flex: '0 0 min(100%, clamp(260px, 38vw, 420px))',
+                  minWidth: 'min(100%, clamp(260px, 38vw, 420px))',
                   scrollSnapAlign: 'start',
                   border: '1px solid var(--brand-dark)',
                   backgroundColor: 'var(--surface)',

@@ -105,7 +105,7 @@ export default function SiteHeader() {
         }}
       >
         {/* ── ROW 1: LEFT (Start alignment) ────────────────────────────── */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pointerEvents: 'none', paddingLeft: '1rem' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pointerEvents: 'none', paddingLeft: '1rem', maxWidth: '42%', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', pointerEvents: 'auto' }}>
             {/* Mobile hamburger — hidden on ≥1024px */}
             <div className="flex items-center lg:!hidden">
@@ -201,7 +201,7 @@ export default function SiteHeader() {
         </div>
 
         {/* ── ROW 3: RIGHT (End alignment) ────────────────────────────── */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingRight:'2rem' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none', paddingRight:'2rem', maxWidth: '42%' }}>
           {/* Mobile: cart only */}
           <div style={{ pointerEvents: 'auto' }} className="flex lg:hidden">
             <CartButton />

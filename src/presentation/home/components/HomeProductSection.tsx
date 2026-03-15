@@ -74,11 +74,10 @@ export default function HomeProductSection({ products, title = 'Featured Product
               <div
                 key={product.id}
                 style={{
-                  flex: '0 0 min(86vw, 410px)',
-                  minWidth: 'min(86vw, 410px)',
+                  flex: '0 0 min(86vw, clamp(260px, 28vw, 380px))',
+                  minWidth: 'min(86vw, clamp(260px, 28vw, 380px))',
                   scrollSnapAlign: 'start',
                 }}
-                className="md:[flex-basis:min(35vw,470px)] md:[min-width:min(35vw,470px)] lg:[flex-basis:min(27vw,470px)] lg:[min-width:min(27vw,470px)] xl:[flex-basis:min(24vw,470px)] xl:[min-width:min(24vw,470px)]"
               >
                 <ProductCardSharp product={product} />
               </div>
