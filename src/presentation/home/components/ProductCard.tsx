@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 import FavouriteButton from '@/presentation/products/[slug]/components/FavouriteButton';
+import QuickAddDialog from './QuickAddDialog';
 
 export interface ProductCardData {
   id: number; // Domain ID type (Convex ID string at runtime)
@@ -30,6 +31,7 @@ function isValidUrl(src: string) {
 export default function ProductCard({ product }: { product: ProductCardData }) {
   const validImages = product.images.filter(isValidUrl);
   const [imgIndex, setImgIndex] = useState(0);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
   const hasMany = validImages.length > 1;
 
   const prev = (e: React.MouseEvent) => {
@@ -137,10 +139,29 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </div>
 
-        <Button variant="outline" size="sm" className="w-full mt-1 text-xs sm:text-sm h-7 sm:h-9" asChild>
-          <Link href={`/products/${product.slug}`}>View</Link>
-        </Button>
+        {/* Footer action row */}
+        <div className="flex gap-2 mt-1 w-full">
+          <Button variant="outline" size="sm" className="text-xs sm:text-sm h-7 sm:h-9 shrink-0" asChild>
+            <Link href={`/products/${product.slug}`}>View</Link>
+          </Button>
+          <Button
+            size="sm"
+            className="flex-1 text-xs sm:text-sm h-7 sm:h-9 gap-1.5"
+            onClick={() => setQuickAddOpen(true)}
+          >
+            <ShoppingBag size={13} />
+            Add
+          </Button>
+        </div>
       </CardFooter>
+
+      <QuickAddDialog
+        open={quickAddOpen}
+        onOpenChange={setQuickAddOpen}
+        productId={product.id}
+        productName={product.name}
+        productSlug={product.slug}
+      />
     </Card>
   );
 }

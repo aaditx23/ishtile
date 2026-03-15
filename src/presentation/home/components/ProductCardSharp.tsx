@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import FavouriteButton from '@/presentation/products/[slug]/components/FavouriteButton';
+import QuickAddDialog from './QuickAddDialog';
 
 export interface ProductCardData {
   id: number;
@@ -26,6 +27,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
   const validImages = product.images.filter(isValidUrl);
   const images = validImages.length > 0 ? validImages : ['https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=900&q=80'];
   const [imgIndex, setImgIndex] = useState(0);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
   const hasMany = images.length > 1;
 
   const prev = (e: React.MouseEvent) => {
@@ -128,18 +130,25 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
             )}
           </div>
 
-          <Link
-            href={`/products/${product.slug}`}
-            className="text-xs font-semibold uppercase tracking-[0.08em] underline underline-offset-2 text-on-surface"
+          <button
+            onClick={() => setQuickAddOpen(true)}
+            className="text-xs font-semibold uppercase tracking-[0.08em] underline underline-offset-2 text-on-surface cursor-pointer"
           >
             + Add
-          </Link>
+          </button>
         </div>
 
         <div className="w-full">
           <span className="text-[10px] uppercase tracking-[0.08em] text-on-surface-muted">{product.category}</span>
         </div>
       </div>
+      <QuickAddDialog
+        open={quickAddOpen}
+        onOpenChange={setQuickAddOpen}
+        productId={product.id}
+        productName={product.name}
+        productSlug={product.slug}
+      />
     </article>
   );
 }
