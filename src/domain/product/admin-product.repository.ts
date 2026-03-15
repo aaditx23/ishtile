@@ -27,6 +27,7 @@ export interface CreateProductPayload {
   brandId?: number;
   isActive?: boolean;
   isFeatured?: boolean;
+  trending?: boolean;
   metaTitle?: string;
   metaDescription?: string;
   variants?: CreateVariantWithInventoryInput[];

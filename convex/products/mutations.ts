@@ -33,6 +33,7 @@ export const createProduct = mutation({
     careInstructions: v.optional(v.string()),
     isActive: v.optional(v.boolean()),
     isFeatured: v.optional(v.boolean()),
+    trending: v.optional(v.boolean()),
     metaTitle: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
     compareAtPrice: v.optional(v.number()),
@@ -81,6 +82,7 @@ export const createProduct = mutation({
       basePrice,
       isActive: productFields.isActive ?? true,
       isFeatured: productFields.isFeatured ?? false,
+      trending: productFields.trending ?? false,
     });
 
     // Create variants + inventory
@@ -127,6 +129,7 @@ export const updateProduct = mutation({
     brandId: v.optional(v.id("brands")),
     isActive: v.optional(v.boolean()),
     isFeatured: v.optional(v.boolean()),
+    trending: v.optional(v.boolean()),
     basePrice: v.optional(v.number()),
     compareAtPrice: v.optional(v.number()),
     metaTitle: v.optional(v.string()),

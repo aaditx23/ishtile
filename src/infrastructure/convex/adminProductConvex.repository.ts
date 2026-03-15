@@ -33,7 +33,7 @@ function mapProduct(p: any): Product {
     brandId: p.brandId ? asId(p.brandId) : null, material: p.material ?? null,
     careInstructions: p.careInstructions ?? null,
     categoryId: asId(p.categoryId), subcategoryId: p.subcategoryId ? asId(p.subcategoryId) : null,
-    isFeatured: p.isFeatured, isActive: p.isActive,
+    isFeatured: p.isFeatured, trending: p.trending ?? false, isActive: p.isActive,
     variants: p.variants ? p.variants.map(mapVariant) : undefined,
   };
 }
@@ -67,6 +67,7 @@ export class AdminProductConvexRepository {
       brandId:         payload.brandId ? fromId(payload.brandId) as any : undefined,
       isActive:        payload.isActive,
       isFeatured:      payload.isFeatured,
+      trending:        payload.trending,
       metaTitle:       payload.metaTitle,
       metaDescription: payload.metaDescription,
       compareAtPrice:  payload.compareAtPrice,
@@ -107,6 +108,7 @@ export class AdminProductConvexRepository {
       brandId:         payload.brandId ? fromId(payload.brandId) as any : undefined,
       isActive:        payload.isActive,
       isFeatured:      payload.isFeatured,
+      trending:        payload.trending,
       basePrice:       payload.basePrice,
       compareAtPrice:  payload.compareAtPrice,
       metaTitle:       payload.metaTitle,

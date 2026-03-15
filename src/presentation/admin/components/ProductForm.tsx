@@ -55,6 +55,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     subcategoryId:    product.subcategoryId ?? undefined,
     isActive:         product.isActive,
     isFeatured:       product.isFeatured,
+    trending:         product.trending ?? false,
   });
   const [saving, setSaving] = useState(false);
   const [savingMsg, setSavingMsg] = useState('');
@@ -277,6 +278,10 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
           <input type="checkbox" checked={form.isFeatured ?? false} onChange={(e) => set('isFeatured', e.target.checked)} disabled={saving} />
           Featured
+        </label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
+          <input type="checkbox" checked={form.trending ?? false} onChange={(e) => set('trending', e.target.checked)} disabled={saving} />
+          Trending
         </label>
       </div>
 

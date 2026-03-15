@@ -26,6 +26,7 @@ export interface Product {
   categoryId: number;
   subcategoryId: number | null;
   isFeatured: boolean;
+  trending: boolean;
   isActive: boolean;
   variants?: ProductVariant[];
 }

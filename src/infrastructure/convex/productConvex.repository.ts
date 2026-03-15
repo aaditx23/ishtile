@@ -37,6 +37,7 @@ function mapProduct(p: any): Product {
     categoryId:       asId(p.categoryId),
     subcategoryId:    p.subcategoryId ? asId(p.subcategoryId) : null,
     isFeatured:       p.isFeatured,
+    trending:         p.trending ?? false,
     isActive:         p.isActive,
     variants:         p.variants ? p.variants.map(mapVariant) : undefined,
   };

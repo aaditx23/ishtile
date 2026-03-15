@@ -17,6 +17,7 @@ export const productTables = {
     careInstructions: v.optional(v.string()),
     isActive:         v.boolean(),
     isFeatured:       v.boolean(),
+    trending:         v.optional(v.boolean()),
     metaTitle:        v.optional(v.string()),
     metaDescription:  v.optional(v.string()),
   })

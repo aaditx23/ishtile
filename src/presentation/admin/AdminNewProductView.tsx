@@ -55,6 +55,7 @@ export default function AdminNewProductView() {
     description:    '',
     isActive:       true,
     isFeatured:     false,
+    trending:       false,
   });
   // Dynamic variants
   const [variants, setVariants] = useState([{
@@ -136,6 +137,7 @@ export default function AdminNewProductView() {
         description:    form.description || undefined,
         isActive:       form.isActive,
         isFeatured:     form.isFeatured,
+        trending:       form.trending,
         imageUrls,
         variants: variants.map(v => ({
           size:           v.size.trim(),
@@ -305,6 +307,10 @@ export default function AdminNewProductView() {
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
                 <input type="checkbox" checked={form.isFeatured} onChange={(e) => set('isFeatured', e.target.checked)} disabled={saving} />
                 Featured
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', cursor: 'pointer' }}>
+                <input type="checkbox" checked={form.trending} onChange={(e) => set('trending', e.target.checked)} disabled={saving} />
+                Trending
               </label>
             </div>
 

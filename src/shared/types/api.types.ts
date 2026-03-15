@@ -136,6 +136,7 @@ export interface ProductDto {
   brandId: number | null;
   isActive: boolean;
   isFeatured: boolean;
+  trending: boolean;
   metaTitle: string | null;
   metaDescription: string | null;
   createdAt: string;

@@ -25,6 +25,7 @@ import type * as favourites_mutations from "../favourites/mutations.js";
 import type * as favourites_queries from "../favourites/queries.js";
 import type * as migrations_fixDeliveryMode from "../migrations/fixDeliveryMode.js";
 import type * as migrations_fixOldOrderStatus from "../migrations/fixOldOrderStatus.js";
+import type * as migrations_setProductTrendingDefault from "../migrations/setProductTrendingDefault.js";
 import type * as orders_mutations from "../orders/mutations.js";
 import type * as orders_queries from "../orders/queries.js";
 import type * as pathao from "../pathao.js";
@@ -61,6 +62,7 @@ declare const fullApi: ApiFromModules<{
   "favourites/queries": typeof favourites_queries;
   "migrations/fixDeliveryMode": typeof migrations_fixDeliveryMode;
   "migrations/fixOldOrderStatus": typeof migrations_fixOldOrderStatus;
+  "migrations/setProductTrendingDefault": typeof migrations_setProductTrendingDefault;
   "orders/mutations": typeof orders_mutations;
   "orders/queries": typeof orders_queries;
   pathao: typeof pathao;
