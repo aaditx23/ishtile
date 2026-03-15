@@ -119,17 +119,6 @@ export async function POST(req: NextRequest): Promise<Response> {
     return webhookResponse({ success: true, skipped: true, reason: "consignment_missing" });
   }
 
-  const idempotencyKey = `${targetConsignmentId}:${event}`;
-  console.log("[Pathao Webhook] Step 6: reserving idempotency key", { idempotencyKey });
-  const reservation = await convex.mutation((api as any).admin.mutations.reserveIdempotencyKey, {
-    key: idempotencyKey,
-    source: "pathao_webhook",
-  });
-  if (!reservation?.reserved) {
-    console.log("[Pathao Webhook] Step 6: duplicate webhook ignored", { idempotencyKey });
-    return webhookResponse({ success: true, skipped: true, reason: "duplicate_webhook", idempotencyKey });
-  }
-
   try {
     console.log("[Pathao Webhook] Step 7: updating order status", {
       consignmentId: targetConsignmentId,
@@ -158,8 +147,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   console.log("[Pathao Webhook] Step 8: processed successfully", {
     consignmentId: targetConsignmentId,
     event,
-    idempotencyKey,
   });
 
-  return webhookResponse({ success: true, event, consignmentId: targetConsignmentId, idempotencyKey });
+  return webhookResponse({ success: true, event, consignmentId: targetConsignmentId });
 }
