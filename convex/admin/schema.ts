@@ -38,4 +38,18 @@ export const adminTables = {
     source: v.string(),   // 'pathao_webhook'
   })
     .index('by_key', ['key']),
+
+  heroImages: defineTable({
+    url: v.string(),
+    title: v.string(),
+    subtitle: v.optional(v.string()),
+    contentPosition: v.union(v.literal('left'), v.literal('right')),
+    showButton: v.optional(v.boolean()),
+    buttonText: v.optional(v.string()),
+    buttonUrl: v.optional(v.string()),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  })
+    .index('by_isActive', ['isActive']),
 };

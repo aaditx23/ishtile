@@ -230,3 +230,97 @@ export const reserveIdempotencyKey = mutation({
     return { reserved: true };
   },
 });
+
+// ─── Homepage hero images ─────────────────────────────────────────────────
+
+export const createHeroImage = mutation({
+  args: {
+    url: v.string(),
+    title: v.string(),
+    subtitle: v.optional(v.string()),
+    contentPosition: v.union(v.literal('left'), v.literal('right')),
+    showButton: v.optional(v.boolean()),
+    buttonText: v.optional(v.string()),
+    buttonUrl: v.optional(v.string()),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const id = await ctx.db.insert('heroImages', {
+      url: args.url,
+      title: args.title,
+      subtitle: args.subtitle,
+      contentPosition: args.contentPosition,
+      showButton: args.showButton ?? false,
+      buttonText: args.buttonText,
+      buttonUrl: args.buttonUrl,
+      isActive: args.isActive,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return { id };
+  },
+});
+
+export const updateHeroImage = mutation({
+  args: {
+    heroImageId: v.id('heroImages'),
+    url: v.string(),
+    title: v.string(),
+    subtitle: v.optional(v.string()),
+    contentPosition: v.union(v.literal('left'), v.literal('right')),
+    showButton: v.optional(v.boolean()),
+    buttonText: v.optional(v.string()),
+    buttonUrl: v.optional(v.string()),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.heroImageId);
+    if (!existing) throw new Error('Hero image not found');
+
+    await ctx.db.patch(args.heroImageId, {
+      url: args.url,
+      title: args.title,
+      subtitle: args.subtitle,
+      contentPosition: args.contentPosition,
+      showButton: args.showButton ?? false,
+      buttonText: args.buttonText,
+      buttonUrl: args.buttonUrl,
+      isActive: args.isActive,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const setHeroImageActive = mutation({
+  args: {
+    heroImageId: v.id('heroImages'),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, { heroImageId, isActive }) => {
+    const existing = await ctx.db.get(heroImageId);
+    if (!existing) throw new Error('Hero image not found');
+
+    await ctx.db.patch(heroImageId, {
+      isActive,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const deleteHeroImage = mutation({
+  args: {
+    heroImageId: v.id('heroImages'),
+  },
+  handler: async (ctx, { heroImageId }) => {
+    const existing = await ctx.db.get(heroImageId);
+    if (!existing) throw new Error('Hero image not found');
+
+    await ctx.db.delete(heroImageId);
+    return { success: true };
+  },
+});

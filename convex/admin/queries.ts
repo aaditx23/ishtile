@@ -197,3 +197,52 @@ export const getAdminSettings = query({
     };
   },
 });
+
+// ─── Homepage hero images ───────────────────────────────────────────────────
+
+export const getActiveHeroImages = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db
+      .query('heroImages')
+      .withIndex('by_isActive', (q) => q.eq('isActive', true))
+      .collect();
+
+    return rows
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .map((row) => ({
+        id: row._id,
+        url: row.url,
+        title: row.title,
+        subtitle: row.subtitle ?? null,
+        contentPosition: row.contentPosition,
+        showButton: row.showButton ?? false,
+        buttonText: row.buttonText ?? null,
+        buttonUrl: row.buttonUrl ?? null,
+        isActive: row.isActive,
+      }));
+  },
+});
+
+export const listHeroImages = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query('heroImages').collect();
+
+    return rows
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .map((row) => ({
+        id: row._id,
+        url: row.url,
+        title: row.title,
+        subtitle: row.subtitle ?? null,
+        contentPosition: row.contentPosition,
+        showButton: row.showButton ?? false,
+        buttonText: row.buttonText ?? null,
+        buttonUrl: row.buttonUrl ?? null,
+        isActive: row.isActive,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt ?? null,
+      }));
+  },
+});
