@@ -22,6 +22,7 @@ import { CartButton } from './CartButton';
 
 const SHOP_LINKS = [
   { label: 'Shop', href: '/products' },
+  { label: 'Lookbook', href: '/lookbook' },
 ];
 
 const USER_LINKS = [

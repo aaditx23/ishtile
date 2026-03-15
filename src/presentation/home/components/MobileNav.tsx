@@ -16,6 +16,7 @@ import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
 const SHOP_LINKS = [
   { label: 'Shop', href: '/products' },
+  { label: 'Lookbook', href: '/lookbook' },
 ];
 
 const USER_LINKS = [
