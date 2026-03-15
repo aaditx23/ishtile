@@ -63,7 +63,7 @@ function MobileHeroBanner({ heroImages }: { heroImages: HeroImageData[] }) {
 
   return (
     <section
-      style={{ position: 'relative', width: '100%', height: '100svh', overflow: 'hidden', cursor: 'grab' }}
+      style={{ position: 'relative', width: '100%', height: '60svh', overflow: 'hidden', cursor: 'grab' }}
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchEnd={(e) => onDragEnd(e.changedTouches[0].clientX)}
       onMouseDown={(e) => onDragStart(e.clientX)}

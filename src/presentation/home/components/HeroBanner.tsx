@@ -61,7 +61,7 @@ export default function HeroBanner({ heroImages }: HeroBannerProps) {
 
   return (
     <section
-      style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', cursor: 'grab' }}
+      style={{ position: 'relative', width: '100%', height: '60vh', overflow: 'hidden', cursor: 'grab' }}
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchEnd={(e) => onDragEnd(e.changedTouches[0].clientX)}
       onMouseDown={(e) => onDragStart(e.clientX)}
