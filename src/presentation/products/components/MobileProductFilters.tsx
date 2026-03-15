@@ -4,16 +4,17 @@ import { useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FiSearch, FiX, FiSliders } from 'react-icons/fi';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 interface MobileProductFiltersProps {
   categories: Category[];
+  brands: Brand[];
   total?:     number;
 }
 
-export default function MobileProductFilters({ categories, total }: MobileProductFiltersProps) {
+export default function MobileProductFilters({ categories, brands, total }: MobileProductFiltersProps) {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const brandRef     = useRef<HTMLInputElement>(null);
   const searchRef    = useRef<HTMLInputElement>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -181,33 +182,16 @@ export default function MobileProductFilters({ categories, total }: MobileProduc
           {/* Brand */}
           <div>
             <label style={SECTION_LABEL}>Brand</label>
-            <div style={{ position: 'relative' }}>
-              <input
-                ref={brandRef}
-                key={active.brand}
-                defaultValue={active.brand}
-                placeholder="e.g. Levi's"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') push({ brand: (e.target as HTMLInputElement).value.trim() });
-                }}
-                style={{
-                  width:           '100%',
-                  padding:         '0.45rem 1.75rem 0.45rem 0.65rem',
-                  border:          '1px solid var(--border)',
-                  fontSize:        '0.8rem',
-                  backgroundColor: 'var(--background)',
-                  color:           'inherit',
-                  outline:         'none',
-                }}
-              />
-              {active.brand && (
-                <button
-                  onClick={() => push({ brand: '' })}
-                  style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-muted)', padding: 0 }}
-                >
-                  <FiX size={13} />
-                </button>
-              )}
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              <Pill label="All Brands" active={!active.brand} onClick={() => push({ brand: '' })} />
+              {brands.map((brand) => (
+                <Pill
+                  key={brand.id}
+                  label={brand.name}
+                  active={active.brand === brand.slug}
+                  onClick={() => push({ brand: brand.slug })}
+                />
+              ))}
             </div>
           </div>
 

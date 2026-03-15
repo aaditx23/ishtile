@@ -6,6 +6,7 @@ import EmptyState from '@/presentation/shared/components/EmptyState';
 
 interface ProductGridProps {
   items: ProductCardData[];
+  stacked?: boolean;
 }
 
 function ProductCardSkeleton() {
@@ -22,7 +23,7 @@ function ProductCardSkeleton() {
   );
 }
 
-export default function ProductGrid({ items }: ProductGridProps) {
+export default function ProductGrid({ items, stacked = false }: ProductGridProps) {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +42,11 @@ export default function ProductGrid({ items }: ProductGridProps) {
     return (
       <div
         className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5"
-        style={{ padding: '2rem clamp(1rem, 5vw, 3rem)', columnGap: '0.5rem', rowGap: '1.25rem' }}
+        style={{
+          padding: '2rem clamp(1rem, 5vw, 3rem)',
+          columnGap: stacked ? '0' : '0.5rem',
+          rowGap: stacked ? '0' : '1.25rem',
+        }}
       >
         {Array.from({ length: 8 }).map((_, i) => (
           <ProductCardSkeleton key={i} />
@@ -57,7 +62,12 @@ export default function ProductGrid({ items }: ProductGridProps) {
   return (
     <div
       className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 transition-opacity duration-300"
-      style={{ padding: '2rem clamp(1rem, 5vw, 3rem)', columnGap: '0.5rem', rowGap: '1.25rem', opacity: visible ? 1 : 0 }}
+      style={{
+        padding: '2rem clamp(1rem, 5vw, 3rem)',
+        columnGap: stacked ? '0' : '0.5rem',
+        rowGap: stacked ? '0' : '1.25rem',
+        opacity: visible ? 1 : 0,
+      }}
     >
       {items.map((product) => (
         <ProductCardSharp key={product.id} product={product} />

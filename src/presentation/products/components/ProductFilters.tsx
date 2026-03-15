@@ -6,9 +6,11 @@ import { FiSearch, FiX, FiChevronRight } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 
 interface ProductFiltersProps {
   categories: Category[];
+  brands: Brand[];
 }
 
 const SECTION_LABEL: React.CSSProperties = {
@@ -46,10 +48,9 @@ function FilterRow({ active, label, onClick }: { active: boolean; label: string;
   );
 }
 
-export default function ProductFilters({ categories }: ProductFiltersProps) {
+export default function ProductFilters({ categories, brands }: ProductFiltersProps) {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const brandRef     = useRef<HTMLInputElement>(null);
   const searchRef    = useRef<HTMLInputElement>(null);
 
   const active = {
@@ -170,32 +171,15 @@ export default function ProductFilters({ categories }: ProductFiltersProps) {
       {/* ── Brand ─────────────────────────────────────────────────────── */}
       <section>
         <span style={SECTION_LABEL}>Brand</span>
-        <div style={{ position: 'relative' }}>
-          <Input
-            ref={brandRef}
-            key={active.brand}
-            defaultValue={active.brand}
-            placeholder="e.g. Levi's"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') push({ brand: (e.target as HTMLInputElement).value.trim() });
-            }}
-            style={{
-              paddingRight: '1.75rem',
-              fontSize: '0.8rem',
-            }}
+        <FilterRow active={!active.brand} label="All Brands" onClick={() => push({ brand: '' })} />
+        {brands.map((brand) => (
+          <FilterRow
+            key={brand.id}
+            active={active.brand === brand.slug}
+            label={brand.name}
+            onClick={() => push({ brand: brand.slug })}
           />
-          {active.brand && (
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => push({ brand: '' })}
-              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', height: 'auto', width: 'auto', padding: 0 }}
-              aria-label="Clear brand"
-            >
-              <FiX size={13} />
-            </Button>
-          )}
-        </div>
+        ))}
       </section>
 
       {/* ── Toggles ────────────────────────────────────────────────────── */}

@@ -6,12 +6,14 @@ import ProductGrid from '@/presentation/home/components/ProductGrid';
 import Pagination from '@/presentation/shared/components/Pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Category } from '@/domain/category/category.entity';
+import type { Brand } from '@/domain/brand/brand.entity';
 import type { Pagination as PaginationMeta } from '@/shared/types/api.types';
 import type { ProductCardData } from '@/presentation/home/components/ProductCard';
 
 interface ProductsPageViewProps {
   products: ProductCardData[];
   categories: Category[];
+  brands: Brand[];
   pagination?: PaginationMeta | null;
   currentPage: number;
 }
@@ -32,7 +34,7 @@ const EMPTY_STATE = (
   </div>
 );
 
-export default function ProductsPageView({ products, categories, pagination }: ProductsPageViewProps) {
+export default function ProductsPageView({ products, categories, brands, pagination }: ProductsPageViewProps) {
   const total = pagination?.total ?? 0;
 
   return (
@@ -42,11 +44,11 @@ export default function ProductsPageView({ products, categories, pagination }: P
         {/* ══ MOBILE layout (hidden on lg+) ═══════════════════════════════ */}
         <div className="block lg:hidden" style={{ paddingBottom: '2rem' }}>
           <Suspense fallback={<MobileFiltersSkeleton />}>
-            <MobileProductFilters categories={categories} total={total} />
+            <MobileProductFilters categories={categories} brands={brands} total={total} />
           </Suspense>
 
           <div style={{ padding: '1rem 1rem 0' }}>
-            {products.length === 0 ? EMPTY_STATE : <ProductGrid items={products} />}
+            {products.length === 0 ? EMPTY_STATE : <ProductGrid items={products} stacked />}
             <Suspense fallback={null}>
               {pagination && <Pagination pagination={pagination} />}
             </Suspense>
@@ -68,11 +70,11 @@ export default function ProductsPageView({ products, categories, pagination }: P
           {/* Two-column layout */}
           <div style={{ display: 'flex', gap: '2rem', padding: '2rem 2rem 0', alignItems: 'flex-start' }}>
             <Suspense fallback={<SidebarLoading />}>
-              <ProductFilters categories={categories} />
+              <ProductFilters categories={categories} brands={brands} />
             </Suspense>
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              {products.length === 0 ? EMPTY_STATE : <ProductGrid items={products} />}
+              {products.length === 0 ? EMPTY_STATE : <ProductGrid items={products} stacked />}
               <Suspense fallback={null}>
                 {pagination && <Pagination pagination={pagination} />}
               </Suspense>
