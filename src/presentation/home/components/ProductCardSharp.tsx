@@ -138,8 +138,14 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
           </button>
         </div>
 
-        <div className="w-full">
+        <div className="flex items-center justify-between w-full">
           <span className="text-[10px] uppercase tracking-[0.08em] text-on-surface-muted">{product.category}</span>
+          <Link
+            href={`/products/${product.slug}`}
+            className="text-[10px] uppercase tracking-[0.08em] text-on-surface-muted hover:text-on-surface underline underline-offset-2 transition-colors"
+          >
+            View Details
+          </Link>
         </div>
       </div>
       <QuickAddDialog
