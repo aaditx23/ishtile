@@ -55,6 +55,9 @@ export function SearchBar({ variant = 'desktop' }: SearchBarProps) {
               onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); }}
               placeholder="Search products…"
               className="h-10 w-full bg-white/10 border-white/20 px-3 text-sm text-white placeholder:text-white/50"
+              tabIndex={-1}
+              onClick={(e) => { e.currentTarget.tabIndex = 0; e.currentTarget.focus(); }}
+              onFocus={(e) => { e.currentTarget.tabIndex = 0; }}
             />
           </div>
           <Button
