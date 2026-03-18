@@ -67,6 +67,10 @@ export default function AdminSettingsView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     setSaving(true);
     try {
       const updated = await updateAdminSettings(formData);
@@ -89,6 +93,10 @@ export default function AdminSettingsView() {
 
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     setCreatingAdmin(true);
     try {
       await createAdmin({

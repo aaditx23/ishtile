@@ -133,6 +133,10 @@ function AddressModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     const addressError = getAddressLengthError(form.addressLine);
     const phoneError = getPhone11DigitError(form.phone);
     if (!form.addressLine.trim() || !form.cityName) {

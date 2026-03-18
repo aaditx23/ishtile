@@ -48,6 +48,9 @@ export default function ProfileView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
     
     const phoneError = getPhone11DigitError(form.phone ?? '');
     if (phoneError) {

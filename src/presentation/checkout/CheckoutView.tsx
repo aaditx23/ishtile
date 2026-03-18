@@ -121,6 +121,10 @@ export default function CheckoutView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     const phoneError = getPhone11DigitError(fields.phone);
     if (phoneError) {
       toast.error(phoneError);

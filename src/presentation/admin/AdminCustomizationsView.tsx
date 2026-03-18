@@ -150,6 +150,9 @@ export default function AdminCustomizationsView() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     if (!form.url.trim() || !form.title.trim()) {
       toast.error('Image URL and title are required.');
       return;

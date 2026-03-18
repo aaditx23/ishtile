@@ -55,6 +55,10 @@ function PromoFormModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    if (!formEl.reportValidity()) return;
+
     setSaving(true);
     try {
       const payload: CreatePromoPayload = { ...form, startsAt: nowUtc().replace('Z', '') };
