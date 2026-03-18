@@ -13,7 +13,7 @@ import StatusFilterTabs from './components/StatusFilterTabs';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
 import { getAdminOrders } from '@/application/order/getAdminOrders';
-import { generateMemo } from '@/application/order/generateMemo';
+import { generateBatchMemo } from '@/application/order/generateBatchMemo';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
@@ -67,7 +67,7 @@ function BatchProgressModal({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>
-            Downloading Memos
+            Generating Batch PDF
           </h2>
           <span style={{ fontSize: '0.8rem', color: 'var(--on-surface-muted)' }}>
             {done} / {total}
@@ -186,33 +186,27 @@ export default function AdminOrdersView() {
   async function handleBatchDownload() {
     if (selected.size === 0) return;
 
-    const toDownload = orders.filter((o) => selected.has(o.id));
-    const items: DownloadItem[] = toDownload.map((o) => ({
-      id:          o.id,
-      orderNumber: o.orderNumber,
-      status:      'pending',
-    }));
-    setDownloadItems([...items]);
+    const ids = orders
+      .filter((o) => selected.has(o.id))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((o) => o.id as any as string);
 
-    for (let i = 0; i < items.length; i++) {
-      // mark as downloading
-      setDownloadItems((prev) =>
-        prev!.map((it, idx) => idx === i ? { ...it, status: 'downloading' } : it),
-      );
-      try {
-        await generateMemo(items[i].id);
-        setDownloadItems((prev) =>
-          prev!.map((it, idx) => idx === i ? { ...it, status: 'done' } : it),
-        );
-      } catch (err) {
-        setDownloadItems((prev) =>
-          prev!.map((it, idx) =>
-            idx === i
-              ? { ...it, status: 'error', error: err instanceof Error ? err.message : 'Failed' }
-              : it,
-          ),
-        );
-      }
+    const batchItem: DownloadItem = {
+      id:          -1,
+      orderNumber: `${ids.length} order${ids.length !== 1 ? 's' : ''}`,
+      status:      'downloading',
+    };
+    setDownloadItems([batchItem]);
+
+    try {
+      await generateBatchMemo(ids);
+      setDownloadItems([{ ...batchItem, status: 'done' }]);
+    } catch (err) {
+      setDownloadItems([{
+        ...batchItem,
+        status: 'error',
+        error:  err instanceof Error ? err.message : 'Failed',
+      }]);
     }
   }
 

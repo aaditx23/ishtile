@@ -89,9 +89,10 @@ export async function POST(
         qty: item.quantity,
         total: item.lineTotal,
       })),
-      delivery: order.shippingCost,
-      advDisc: order.promoDiscount,
-      total: order.total,
+      delivery:    order.shippingCost,
+      advDisc:     order.promoDiscount,
+      total:       order.total,
+      instruction: order.customerNotes ?? '',
     };
 
     // 5️⃣ Generate memo PDF

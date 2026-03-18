@@ -8,6 +8,7 @@ import PromoInput from './components/PromoInput';
 import AddressPicker from './components/AddressPicker';
 import type { Cart } from '@/domain/cart/cart.entity';
 import type { PromoValidationDto } from '@/shared/types/api.types';
+import { Textarea } from '@/components/ui/textarea';
 
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
@@ -209,6 +210,18 @@ export default function MobileCheckoutView({
             onRemove={handlePromoRemove}
             appliedCode={promoCode || undefined}
             discount={promoResult?.discountAmount}
+          />
+        </Section>
+
+        {/* Order notes */}
+        <Section title="Order Notes (Optional)">
+          <Textarea
+            value={fields.notes}
+            onChange={(e) => patchFields({ notes: e.target.value })}
+            disabled={submitting}
+            placeholder="Special instructions, delivery notes, etc."
+            rows={3}
+            maxLength={180}
           />
         </Section>
 
