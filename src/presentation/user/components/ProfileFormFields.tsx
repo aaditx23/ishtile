@@ -79,7 +79,6 @@ export default function ProfileFormFields({
           placeholder="01XXXXXXXXX"
           inputMode="numeric"
           maxLength={11}
-          pattern="[0-9]{11}"
           disabled={saving}
         />
       </Field>
