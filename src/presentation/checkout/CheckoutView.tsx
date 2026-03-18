@@ -13,6 +13,7 @@ import AddressPicker from './components/AddressPicker';
 import MobileCheckoutView from './MobileCheckoutView';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 
 import { getCart } from '@/application/cart/getCart';
 import { createOrder } from '@/application/checkout/createOrder';
@@ -231,6 +232,18 @@ export default function CheckoutView() {
                     onRemove={handlePromoRemove}
                     appliedCode={promoCode || undefined}
                     discount={promoResult?.discountAmount}
+                  />
+                </Section>
+
+                {/* Order notes */}
+                <Section title="Order Notes (Optional)">
+                  <Textarea
+                    value={fields.notes}
+                    onChange={(e) => patchFields({ notes: e.target.value })}
+                    disabled={submitting}
+                    placeholder="Special instructions, delivery notes, etc."
+                    rows={3}
+                    maxLength={180}
                   />
                 </Section>
               </div>

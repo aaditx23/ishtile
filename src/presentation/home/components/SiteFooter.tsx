@@ -98,21 +98,21 @@ export default function SiteFooter() {
       {/* Brand Motto — static stylized */}
       <div style={{ padding: '3rem 2rem', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <p style={{
-          fontSize: 'clamp(1.4rem, 4.5vw, 4rem)',
+          fontSize: 'clamp(1rem, 4vw, 3.5rem)',
           fontWeight: 100,
-          textTransform: 'uppercase',
-          letterSpacing: '0.12em',
+          // textTransform: 'uppercase',
+          letterSpacing: '0.5rem',
           lineHeight: 1.15,
           color: 'rgba(255,255,255,0.6)',
           userSelect: 'none',
         }}>
-          Forget style, embrace a different kind of{' '}
-          <span style={{
+          Purveyors of fine labels. The absolute IshtiLE
+          {/* <span style={{
             fontWeight: 500,
             color: 'var(--brand-gold)',
             letterSpacing: '0.06em',
             fontStyle: 'italic',
-          }}>ISHTILE</span>
+          }}>ISHTILE</span> */}
         </p>
       </div>
 

@@ -219,6 +219,36 @@ function drawBottomSection(
      .text(data.total.toFixed(0), totX + 80, ty, { width: totW - 80, align: 'right', lineBreak: false });
 }
 
+// ─── Order separator ─────────────────────────────────────────────────────────
+
+const SEP_H = 20; // 8px gap above + 4px line + 8px gap below
+
+/**
+ * Draw a thin dotted horizontal rule between two orders.
+ * Must only be called between orders (not before first, not after last).
+ * If there isn't enough room for the separator + header + 1 row of the next
+ * order, skip drawing it — renderOrderOntoDoc will addPage() itself.
+ */
+function drawOrderSeparator(doc: InstanceType<typeof PDFDocument>): void {
+  const space = rem(doc);
+  // If remaining space can't fit separator + minimum order start, don't draw
+  if (space < SEP_H + MIN_START) return;
+
+  const sepY = doc.y + 8; // 8px breathing room above the line
+  doc
+    .save()
+    .lineWidth(0.5)
+    .strokeColor('#aaaaaa')
+    .dash(2, { space: 2 })
+    .moveTo(L, sepY)
+    .lineTo(R, sepY)
+    .stroke()
+    .undash()
+    .restore();
+
+  doc.y = sepY + 8; // 8px breathing room below the line
+}
+
 // ─── Core renderer ────────────────────────────────────────────────────────────
 
 /**
@@ -322,8 +352,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const adminUserId = payload.userId as Id<'users'>;
 
     // 2️⃣ Parse body
-    const body = await req.json();
-    const orderIds: Id<'orders'>[] = body.orderIds ?? [];
+    let body: { orderIds?: string[] };
+    try {
+      const rawText = await req.text();
+      body = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      return NextResponse.json(
+        { success: false, message: 'Invalid or empty request body', data: null, listData: null },
+        { status: 400 },
+      );
+    }
+    const orderIds: Id<'orders'>[] = (body.orderIds ?? []) as Id<'orders'>[];
 
     if (!orderIds.length) {
       return NextResponse.json(
@@ -374,9 +413,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         qty:         item.quantity,
         total:       item.lineTotal,
       })),
-      delivery: order.shippingCost,
-      advDisc:  order.promoDiscount,
-      total:    order.total,
+      delivery:    order.shippingCost,
+      advDisc:     order.promoDiscount,
+      total:       order.total,
+      instruction: order.customerNotes ?? '',
     }));
 
     // 6️⃣ Render all orders into one PDFDocument
@@ -393,6 +433,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       doc.on('error', reject);
 
       memoDatas.forEach((memo, idx) => {
+        if (idx > 0) drawOrderSeparator(doc); // separator between orders only
         renderOrderOntoDoc(doc, memo, idx === 0);
       });
 

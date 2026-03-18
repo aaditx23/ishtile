@@ -18,20 +18,20 @@ function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode 
 }
 
 const sectionStyle: React.CSSProperties = {
-  border:          '1px solid var(--border)',
-  padding:         '1.25rem',
+  border: '1px solid var(--border)',
+  padding: '1.25rem',
   backgroundColor: 'var(--surface)',
-  display:         'flex',
-  flexDirection:   'column',
-  gap:             '1rem',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
 };
 
 const headingStyle: React.CSSProperties = {
-  fontSize:      '0.7rem',
-  fontWeight:    700,
+  fontSize: '0.7rem',
+  fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
-  color:         'var(--on-surface-muted)',
+  color: 'var(--on-surface-muted)',
 };
 
 export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
@@ -86,7 +86,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
           <p>{order.shippingAddress}</p>
           <p>{order.shippingCity}{order.shippingPostalCode ? ` — ${order.shippingPostalCode}` : ''}</p>
           {order.customerNotes && (
-            <p style={{ marginTop: '0.5rem', fontStyle: 'italic', color: 'var(--on-surface-muted)' }}>
+            <p style={{ marginTop: '0.5rem', fontStyle: 'italic', color: 'var(--on-surface-muted)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               Note: {order.customerNotes}
             </p>
           )}

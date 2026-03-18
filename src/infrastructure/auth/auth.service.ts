@@ -16,10 +16,7 @@ import type { UserDto } from '@/shared/types/api.types';
 // ─── Request payloads ─────────────────────────────────────────────────────────
 
 export interface RegisterPayload {
-  phone?: string;
   email: string;
-  username: string;
-  fullName: string;
   password: string;
 }
 
@@ -28,13 +25,6 @@ export interface RegisterPayload {
 function validateEmail(email: string): void {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error('Enter a valid email address.');
-  }
-}
-
-function validatePhone(phone: string): void {
-  const n = phone.replace(/[\s\-]/g, '');
-  if (!/^01[3-9]\d{8}$/.test(n)) {
-    throw new Error('Enter a valid Bangladeshi mobile number (e.g. 01XXXXXXXXX).');
   }
 }
 
@@ -86,24 +76,16 @@ export const authConvexService = {
   },
 
   /**
-   * Register with phone / email / password.
+   * Register with email / password.
    * Calls /api/auth/register → Convex → JWT → tokenStore.
    * Returns a minimal UserDto (id is the Convex userId string cast to number).
    */
   async register(payload: RegisterPayload): Promise<UserDto> {
-    if (payload.phone?.trim()) {
-      validatePhone(payload.phone);
-    }
     validateEmail(payload.email);
-    if (!payload.username.trim()) throw new Error('Username is required.');
-    if (!payload.fullName.trim()) throw new Error('Full name is required.');
     if (!payload.password) throw new Error('Password is required.');
 
     const { token } = await postJson<{ token: string }>('/api/auth/register', {
-      phone: payload.phone?.trim() ? payload.phone.replace(/[\s\-]/g, '') : undefined,
       email: payload.email.trim(),
-      username: payload.username.trim(),
-      fullName: payload.fullName.trim(),
       password: payload.password,
     });
     tokenStore.setTokens(token, token);
@@ -111,10 +93,10 @@ export const authConvexService = {
     // Return a stub UserDto — the app re-fetches full user via userRepository.getMe()
     return {
       id: 0 as unknown as number,
-      phone: payload.phone ?? '',
+      phone: '',
       email: payload.email,
-      username: payload.username,
-      fullName: payload.fullName,
+      username: null,
+      fullName: null,
       role: 'buyer',
       isActive: true,
       isVerified: false,

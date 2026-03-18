@@ -12,8 +12,10 @@ import OrderSummaryCard from '@/presentation/orders/components/OrderSummaryCard'
 import OrderStatusSelector from './components/OrderStatusSelector';
 import DeliveryManagementCard from './components/DeliveryManagementCard';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { getAdminOrder } from '@/application/order/getAdminOrder';
 import { generateMemo } from '@/application/order/generateMemo';
+import { updateCustomerNotes } from '@/application/order/updateCustomerNotes';
 import type { Order } from '@/domain/order/order.entity';
 
 const sectionStyle: React.CSSProperties = {
@@ -36,7 +38,12 @@ export default function AdminOrderDetailView() {
   const [order, setOrder]         = useState<Order | null>(null);
   const [loading, setLoading]     = useState(true);
   const [notFound, setNotFound]   = useState(false);
-  const [memoLoading, setMemoLoading] = useState(false);
+  const [memoLoading, setMemoLoading]     = useState(false);
+  const [notesDraft, setNotesDraft]       = useState<string | null>(null); // null = not editing
+  const [notesSaving, setNotesSaving]     = useState(false);
+
+  // Sync draft when order loads
+  useEffect(() => { if (order) setNotesDraft(null); }, [order?.id]);
 
   const handleGenerateMemo = async () => {
     if (!order) return;
@@ -48,6 +55,21 @@ export default function AdminOrderDetailView() {
       toast.error(err instanceof Error ? err.message : 'Failed to generate memo.');
     } finally {
       setMemoLoading(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!order || notesDraft === null) return;
+    setNotesSaving(true);
+    try {
+      await updateCustomerNotes(order.id as unknown as string, notesDraft);
+      setOrder((o) => o ? { ...o, customerNotes: notesDraft || null } : o);
+      setNotesDraft(null);
+      toast.success('Notes updated');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save notes');
+    } finally {
+      setNotesSaving(false);
     }
   };
 
@@ -124,6 +146,53 @@ export default function AdminOrderDetailView() {
                     order={order}
                     onOrderChange={(next) => setOrder(next)}
                   />
+
+                  {/* Customer Notes */}
+                  <div style={sectionStyle}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                      <p style={headingStyle}>Customer Notes</p>
+                      {notesDraft === null ? (
+                        <button
+                          onClick={() => setNotesDraft(order.customerNotes ?? '')}
+                          style={{ fontSize: '0.75rem', color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                          Edit
+                        </button>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            onClick={() => setNotesDraft(null)}
+                            disabled={notesSaving}
+                            style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveNotes}
+                            disabled={notesSaving}
+                            style={{ fontSize: '0.75rem', color: 'var(--brand-gold)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700 }}
+                          >
+                            {notesSaving ? 'Saving…' : 'Save'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {notesDraft === null ? (
+                      <p style={{ fontSize: '0.85rem', color: order.customerNotes ? 'var(--on-surface)' : 'var(--on-surface-muted)', fontStyle: order.customerNotes ? 'normal' : 'italic', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                        {order.customerNotes || 'No notes'}
+                      </p>
+                    ) : (
+                      <Textarea
+                        value={notesDraft}
+                        onChange={(e) => setNotesDraft(e.target.value)}
+                        disabled={notesSaving}
+                        placeholder="Customer notes…"
+                        rows={3}
+                        maxLength={180}
+                        autoFocus
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             )}

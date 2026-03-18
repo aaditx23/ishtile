@@ -674,3 +674,29 @@ async function updateProductSummaryHelper(ctx: any, orderId: any) {
     }
   }
 }
+
+// ─── Update customer notes (admin) ────────────────────────────────────────────
+
+export const updateCustomerNotes = mutation({
+  args: {
+    orderId:     v.id("orders"),
+    customerNotes: v.string(),
+    adminUserId: v.id("users"),
+  },
+  handler: async (ctx, { orderId, customerNotes, adminUserId }) => {
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+
+    await ctx.db.patch(orderId, { customerNotes: customerNotes || undefined });
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "update",
+      entityType: "order",
+      entityId: orderId,
+      description: `Order ${order.orderNumber}: customer notes updated`,
+    });
+
+    return { success: true };
+  },
+});
