@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { authConvexService } from '@/infrastructure/auth/auth.service';
-import { getPhone11DigitError, normalizePhoneInput } from '@/shared/utils/phoneValidation';
 
 const labelStyle: React.CSSProperties = {
   display:       'block',
@@ -25,10 +24,7 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get('next') ?? '/';
 
-  const [phone, setPhone]         = useState('');
   const [email, setEmail]         = useState('');
-  const [username, setUsername]   = useState('');
-  const [fullName, setFullName]   = useState('');
   const [password, setPassword]   = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPwd, setShowPwd]     = useState(false);
@@ -36,12 +32,6 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const phoneError = getPhone11DigitError(phone);
-    if (phoneError) {
-      toast.error(phoneError);
-      return;
-    }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,10 +48,7 @@ function RegisterForm() {
     setLoading(true);
     try {
       await authConvexService.register({
-        phone: phone.trim(),
         email,
-        username,
-        fullName,
         password,
       });
       toast.success('Account created! Welcome to Ishtile.');
@@ -76,48 +63,13 @@ function RegisterForm() {
   return (
     <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <div>
-        <label style={labelStyle}>Phone Number</label>
-        <Input
-          type="tel"
-          placeholder="01XXXXXXXXX"
-          value={phone}
-          onChange={(e) => setPhone(normalizePhoneInput(e.target.value))}
-          inputMode="numeric"
-          maxLength={11}
-          pattern="[0-9]{11}"
-          autoFocus
-        />
-      </div>
-
-      <div>
         <label style={labelStyle}>Email</label>
         <Input
           type="email"
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
-
-      <div>
-        <label style={labelStyle}>Username</label>
-        <Input
-          type="text"
-          placeholder="johndoe"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-      </div>
-
-      <div>
-        <label style={labelStyle}>Full Name</label>
-        <Input
-          type="text"
-          placeholder="John Doe"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          autoFocus
           required
         />
       </div>
