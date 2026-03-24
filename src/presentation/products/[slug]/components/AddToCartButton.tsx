@@ -34,7 +34,13 @@ export default function AddToCartButton({ variant, availableStock = 0 }: AddToCa
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'Not authenticated') {
         const next = pathname || '/';
-        router.push(`/login?next=${encodeURIComponent(next)}`);
+        const params = new URLSearchParams({
+          next,
+          addToCart: '1',
+          variantId: String(variant.id),
+          qty: String(qty),
+        });
+        router.push(`/login?${params.toString()}`);
         return;
       }
       toast.error('Could not add to cart. Please try again.');

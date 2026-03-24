@@ -84,8 +84,14 @@ export default function QuickAddDialog({
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'Not authenticated') {
         const next = pathname || '/';
+        const params = new URLSearchParams({
+          next,
+          addToCart: '1',
+          variantId: String(selectedVariant.id),
+          qty: String(qty),
+        });
         onOpenChange(false);
-        router.push(`/login?next=${encodeURIComponent(next)}`);
+        router.push(`/login?${params.toString()}`);
         return;
       }
       toast.error('Could not add to cart. Please try again.');

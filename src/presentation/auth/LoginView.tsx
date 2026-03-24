@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { addToCart } from '@/application/cart/addToCart';
 import { authConvexService } from '@/infrastructure/auth/auth.service';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
 
@@ -24,6 +25,9 @@ function LoginForm() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const next         = searchParams.get('next') ?? '/';
+  const pendingAddToCart = searchParams.get('addToCart') === '1';
+  const pendingVariantId = searchParams.get('variantId');
+  const pendingQty = Number(searchParams.get('qty') ?? '1');
 
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
@@ -47,6 +51,13 @@ function LoginForm() {
     setLoading(true);
     try {
       await authConvexService.login(email, password);
+
+      if (pendingAddToCart && pendingVariantId) {
+        const safeQty = Number.isFinite(pendingQty) && pendingQty > 0 ? Math.floor(pendingQty) : 1;
+        await addToCart(pendingVariantId as unknown as number, safeQty);
+        toast.success('Added to cart!');
+      }
+
       toast.success('Welcome back!');
       router.push(next);
     } catch (err) {
