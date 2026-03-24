@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Heart, Loader2 } from 'lucide-react';
 import { toggleFavourite } from '@/application/favourite/toggleFavourite';
@@ -15,6 +16,8 @@ interface FavouriteButtonProps {
 }
 
 export default function FavouriteButton({ productId, initialFavId = null, compact = false }: FavouriteButtonProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [favId, setFavId]       = useState<number | null>(initialFavId);
   const [loading, setLoading]   = useState(false);
   const [checking, setChecking] = useState(initialFavId === null);
@@ -37,8 +40,13 @@ export default function FavouriteButton({ productId, initialFavId = null, compac
       const result = await toggleFavourite(productId);
       setFavId(result.favouriteId);
       toast.success(result.added ? 'Added to favourites!' : 'Removed from favourites.');
-    } catch {
-      toast.error('Could not update favourites. Are you logged in?');
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'Not authenticated') {
+        const next = pathname || '/';
+        router.push(`/login?next=${encodeURIComponent(next)}`);
+        return;
+      }
+      toast.error('Could not update favourites. Please try again.');
     } finally {
       setLoading(false);
     }

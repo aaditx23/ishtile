@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ import type { FavouriteDto } from '@/shared/types/api.types';
 const fmt = (n: number) => `৳${Number(n || 0).toFixed(0)}`;
 
 export default function FavouritesView() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [items, setItems]     = useState<FavouriteDto[]>([]);
   const [loading, setLoading] = useState(true);
   const initRef               = useRef(false);
@@ -22,12 +25,17 @@ export default function FavouritesView() {
     try {
       const result = await getFavourites(1, 50);
       setItems(result.items);
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'Not authenticated') {
+        const next = pathname || '/favourites';
+        router.push(`/login?next=${encodeURIComponent(next)}`);
+        return;
+      }
       toast.error('Failed to load favourites.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pathname, router]);
 
   useEffect(() => {
     if (initRef.current) return;
@@ -39,7 +47,12 @@ export default function FavouritesView() {
     try {
       await removeFavourite(favId);
       setItems((prev) => prev.filter((f) => f.id !== favId));
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'Not authenticated') {
+        const next = pathname || '/favourites';
+        router.push(`/login?next=${encodeURIComponent(next)}`);
+        return;
+      }
       toast.error('Could not remove favourite.');
     }
   };
