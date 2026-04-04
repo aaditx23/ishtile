@@ -285,3 +285,49 @@ export const resetPassword = mutation({
     return { ok: true };
   },
 });
+
+// ─── Update Admin Credentials ─────────────────────────────────────────────────
+// Updates existing admin user's email and password
+
+export const updateAdminCredentials = mutation({
+  args: {
+    oldEmail: v.string(),
+    newEmail: v.string(),
+    newPasswordHash: v.string(),
+  },
+  handler: async (ctx, { oldEmail, newEmail, newPasswordHash }) => {
+    // Find admin by old email
+    const admin = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", oldEmail))
+      .first();
+
+    if (!admin) {
+      throw new Error("Admin user not found with email: " + oldEmail);
+    }
+
+    if (admin.role !== "admin") {
+      throw new Error("User is not an admin");
+    }
+
+    // Check if new email is already taken by another user
+    if (oldEmail !== newEmail) {
+      const existingUser = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", newEmail))
+        .first();
+
+      if (existingUser && existingUser._id !== admin._id) {
+        throw new Error("New email is already in use");
+      }
+    }
+
+    // Update email and password
+    await ctx.db.patch(admin._id, {
+      email: newEmail,
+      passwordHash: newPasswordHash,
+    });
+
+    return { userId: admin._id, role: admin.role };
+  },
+});
