@@ -14,6 +14,8 @@ import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
 import { getAdminOrders } from '@/application/order/getAdminOrders';
 import { generateBatchMemo } from '@/application/order/generateBatchMemo';
+import { generateBatchCsv } from '@/application/order/generateBatchCsv';
+import { DateFilterInline } from '@/components/ui/date-filter';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
@@ -152,6 +154,12 @@ export default function AdminOrdersView() {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading]       = useState(true);
 
+  // ── Date filter state (default to today) ───────────────────────────────────
+  const today = new Date();
+  const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
+  const [selectedMonth, setSelectedMonth] = useState<number>(today.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState<number>(today.getFullYear());
+
   // ── selection state ─────────────────────────────────────────────────────────
   const [selected, setSelected]           = useState<Set<number>>(new Set());
   const [downloadItems, setDownloadItems] = useState<DownloadItem[] | null>(null);
@@ -160,10 +168,23 @@ export default function AdminOrdersView() {
     setLoading(true);
     setSelected(new Set());
     getAdminOrders({ page, pageSize: 20, status: status ?? undefined })
-      .then(({ items, pagination: pg }) => { setOrders(items); setPagination(pg); })
+      .then(({ items, pagination: pg }) => {
+        // Filter orders by selected date (client-side)
+        const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
+        const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999));
+        
+        const filteredOrders = items.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate >= startOfDay && orderDate <= endOfDay;
+        });
+        
+        setOrders(filteredOrders);
+        setPagination(pg);
+      })
       .catch(() => toast.error('Failed to load orders.'))
       .finally(() => setLoading(false));
-  }, [page, status]);
+  }, [page, status, selectedDay, selectedMonth, selectedYear]);
 
   const allSelected = orders.length > 0 && orders.every((o) => selected.has(o.id));
 
@@ -210,6 +231,23 @@ export default function AdminOrdersView() {
     }
   }
 
+  async function handleBatchCsvDownload() {
+    if (selected.size === 0) return;
+
+    const ids = orders
+      .filter((o) => selected.has(o.id))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((o) => o.id as any as string);
+
+    try {
+      await generateBatchCsv(ids);
+      toast.success(`${ids.length} order${ids.length !== 1 ? 's' : ''} exported to CSV`);
+      setSelected(new Set());
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to export CSV');
+    }
+  }
+
   return (
     <ShopLayout>
       {/* ── Mobile ─────────────────────────────────────────────────────── */}
@@ -239,29 +277,65 @@ export default function AdminOrdersView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Orders</h1>
-
-              {selected.size > 0 && (
-                <button
-                  onClick={handleBatchDownload}
-                  style={{
-                    padding:      '0.45rem 1rem',
-                    background:   'var(--brand-dark, #000)',
-                    color:        '#fff',
-                    border:       'none',
-                    fontWeight:   600,
-                    fontSize:     '0.8rem',
-                    cursor:       'pointer',
-                    display:      'flex',
-                    alignItems:   'center',
-                    gap:          '0.4rem',
-                  }}
-                >
-                  ↓ Download Memos ({selected.size})
-                </button>
-              )}
             </div>
 
-            <Suspense><StatusFilterTabs /></Suspense>
+            {/* Date Filter */}
+            <div>
+              <DateFilterInline
+                showDay={true}
+                selectedDay={selectedDay}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+                onDayChange={setSelectedDay}
+                onMonthChange={setSelectedMonth}
+                onYearChange={setSelectedYear}
+              />
+            </div>
+
+            {/* Status Filter Tabs + Download Buttons (aligned horizontally) */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <Suspense><StatusFilterTabs /></Suspense>
+              
+              {/* Batch Action Buttons - Aligned with status tabs */}
+              {selected.size > 0 && (
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={handleBatchCsvDownload}
+                    style={{
+                      padding:      '0.45rem 1rem',
+                      background:   'var(--brand-dark, #000)',
+                      color:        '#fff',
+                      border:       'none',
+                      fontWeight:   600,
+                      fontSize:     '0.8rem',
+                      cursor:       'pointer',
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '0.4rem',
+                    }}
+                  >
+                    ↓ Download Excel ({selected.size})
+                  </button>
+                  <button
+                    onClick={handleBatchDownload}
+                    style={{
+                      padding:      '0.45rem 1rem',
+                      background:   'var(--brand-dark, #000)',
+                      color:        '#fff',
+                      border:       'none',
+                      fontWeight:   600,
+                      fontSize:     '0.8rem',
+                      cursor:       'pointer',
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '0.4rem',
+                    }}
+                  >
+                    ↓ Download Memos ({selected.size})
+                  </button>
+                </div>
+              )}
+            </div>
 
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

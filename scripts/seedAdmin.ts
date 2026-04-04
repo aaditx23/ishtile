@@ -23,7 +23,7 @@ if (!CONVEX_URL) {
   process.exit(1);
 }
 
-const ADMIN_EMAIL = 'admin@yopmail.com';
+const ADMIN_EMAIL = 'admin@ishtile.dev';
 const ADMIN_PHONE = '+8801700000000';
 const ADMIN_PASSWORD = 'admin123';
 const ADMIN_USERNAME = 'admin';

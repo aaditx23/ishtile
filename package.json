@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed:admin": "npx tsx scripts/seedAdmin.ts",
+    "update:admin": "npx tsx scripts/updateAdmin.ts",
     "test:pathao": "npx tsx --test tests/pathao-workflow.test.ts"
   },
   "dependencies": {

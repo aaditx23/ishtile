@@ -63,3 +63,13 @@ address-and-file-api.md
 ishtile-backend
 docs
 .env.prod
+
+# Temporary setup files and scripts
+scripts/createCsvRoute.js
+create-csv-dir.bat
+MANUAL_SETUP_CSV_EXPORT.md
+scripts
+ADMIN_LOGIN_FIX.md
+# CSV exports
+*.csv
+!src/**/*.csv
