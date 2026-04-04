@@ -10,7 +10,6 @@ import { api } from '../../../../../../convex/_generated/api';
 import type { Id } from '../../../../../../convex/_generated/dataModel';
 import { verifyToken } from '@/lib/auth';
 import { ordersToCsvString } from '@/lib/csv-utils';
-import type { Order } from '@/domain/order/order.entity';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -86,8 +85,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 4️⃣ Map to Order entity format
-    const orderEntities: Order[] = orders.map((order) => ({
+    // 4️⃣ Map to compatible format for CSV
+    const orderEntities = orders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
       userId: order.userId,

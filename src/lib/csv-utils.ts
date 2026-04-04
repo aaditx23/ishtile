@@ -2,7 +2,20 @@
  * CSV Utilities - Convert orders to Pathao-compatible CSV format
  */
 
-import type { Order } from '@/domain/order/order.entity';
+/**
+ * Order-like type for CSV conversion (accepts both domain Order and Convex order)
+ */
+type OrderLike = {
+  id: string | number;
+  orderNumber?: string;
+  shippingName: string;
+  shippingPhone: string;
+  shippingCity: string;
+  shippingAddress: string;
+  total: number;
+  customerNotes?: string | null;
+  items?: Array<{ quantity: number }>;
+};
 
 /**
  * Escape CSV values (handle commas, quotes, newlines)
@@ -22,7 +35,7 @@ function escapeCsvValue(value: string | number | null | undefined): string {
  *         RecipientCity,RecipientZone,RecipientArea,RecipientAddress,
  *         AmountToCollect,ItemQuantity,ItemWeight,ItemDesc,SpecialInstruction
  */
-export function ordersToCsvString(orders: Order[]): string {
+export function ordersToCsvString(orders: OrderLike[]): string {
   const headers = [
     'ItemType',
     'StoreName',
@@ -55,7 +68,7 @@ export function ordersToCsvString(orders: Order[]): string {
     return [
       'parcel', // ItemType
       'fashionkingbd.com', // StoreName
-      order.orderNumber || order.id.toString(), // MerchantOrderId
+      order.orderNumber || String(order.id), // MerchantOrderId
       order.shippingName, // RecipientName
       order.shippingPhone, // RecipientPhone
       order.shippingCity, // RecipientCity
