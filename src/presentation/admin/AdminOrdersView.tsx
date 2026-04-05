@@ -16,6 +16,7 @@ import { getAdminOrders } from '@/application/order/getAdminOrders';
 import { generateBatchMemo } from '@/application/order/generateBatchMemo';
 import { generateBatchCsv } from '@/application/order/generateBatchCsv';
 import { DateFilterInline } from '@/components/ui/date-filter';
+import { UpdateDateButton } from '@/components/ui/update-date-button';
 import type { Order } from '@/domain/order/order.entity';
 import type { Pagination as PaginationMeta, OrderStatus } from '@/shared/types/api.types';
 
@@ -160,6 +161,12 @@ export default function AdminOrdersView() {
   const [selectedMonth, setSelectedMonth] = useState<number>(today.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState<number>(today.getFullYear());
 
+  const handleUpdateToToday = (date: { day?: number; month: number; year: number }) => {
+    if (date.day) setSelectedDay(date.day);
+    setSelectedMonth(date.month);
+    setSelectedYear(date.year);
+  };
+
   // ── selection state ─────────────────────────────────────────────────────────
   const [selected, setSelected]           = useState<Set<number>>(new Set());
   const [downloadItems, setDownloadItems] = useState<DownloadItem[] | null>(null);
@@ -280,7 +287,7 @@ export default function AdminOrdersView() {
             </div>
 
             {/* Date Filter */}
-            <div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <DateFilterInline
                 showDay={true}
                 selectedDay={selectedDay}
@@ -290,6 +297,7 @@ export default function AdminOrdersView() {
                 onMonthChange={setSelectedMonth}
                 onYearChange={setSelectedYear}
               />
+              <UpdateDateButton onUpdateDate={handleUpdateToToday} includeDay={true} />
             </div>
 
             {/* Status Filter Tabs + Download Buttons (aligned horizontally) */}
