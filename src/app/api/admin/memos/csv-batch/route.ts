@@ -85,7 +85,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 4️⃣ Map to compatible format for CSV
+    // 4️⃣ Fetch active Pathao store
+    let activeStoreName: string | undefined;
+    try {
+      const activeStore = await convex.query(api.shipments.queries.getActivePathaoStore);
+      activeStoreName = activeStore?.storeName;
+      if (!activeStoreName) {
+        console.warn('[Batch CSV API] No active Pathao store found, using fallback store name');
+      }
+    } catch (storeErr) {
+      console.error('[Batch CSV API] Failed to fetch active store:', storeErr);
+    }
+
+    // 5️⃣ Map to compatible format for CSV
     const orderEntities = orders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -119,14 +131,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       items: order.items ?? [],
     }));
 
-    // 5️⃣ Convert to CSV
-    const csvContent = ordersToCsvString(orderEntities);
+    // 6️⃣ Convert to CSV
+    const csvContent = ordersToCsvString(orderEntities, activeStoreName);
 
-    // 6️⃣ Generate filename with current date
+    // 7️⃣ Generate filename with current date
     const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const filename = `orders-batch-${date}.csv`;
 
-    // 7️⃣ Return CSV file
+    // 8️⃣ Return CSV file
     return new NextResponse(csvContent, {
       status: 200,
       headers: {

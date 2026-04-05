@@ -37,7 +37,7 @@ function escapeCsvValue(value: string | number | null | undefined): string {
  *         RecipientCity,RecipientZone,RecipientArea,RecipientAddress,
  *         AmountToCollect,ItemQuantity,ItemWeight,ItemDesc,SpecialInstruction
  */
-export function ordersToCsvString(orders: OrderLike[]): string {
+export function ordersToCsvString(orders: OrderLike[], storeName?: string): string {
   const headers = [
     'ItemType',
     'StoreName',
@@ -69,7 +69,7 @@ export function ordersToCsvString(orders: OrderLike[]): string {
 
     return [
       'parcel', // ItemType
-      'fashionkingbd.com', // StoreName
+      storeName || 'fashionkingbd.com', // StoreName
       order.orderNumber || String(order.id), // MerchantOrderId
       order.shippingName, // RecipientName
       order.shippingPhone, // RecipientPhone
