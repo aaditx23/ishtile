@@ -20,6 +20,8 @@ export interface ShippingFields {
   cityId:      number | null;
   zoneId:      number | null;
   areaId:      number | null;
+  zoneName:    string;
+  areaName:    string;
   postalCode:  string;
   notes:       string;
 }
@@ -105,6 +107,26 @@ export default function ShippingForm({ values, onChange, disabled, columns = 2 }
       .finally(() => setAreasLoading(false));
   }, [values.zoneId]);
 
+  // Auto-populate zoneName when zones are loaded and zoneId is set
+  useEffect(() => {
+    if (values.zoneId && zones.length > 0 && !values.zoneName) {
+      const zone = zones.find(z => z.zoneId === values.zoneId);
+      if (zone) {
+        onChange({ zoneName: zone.zoneName });
+      }
+    }
+  }, [zones, values.zoneId, values.zoneName, onChange]);
+
+  // Auto-populate areaName when areas are loaded and areaId is set
+  useEffect(() => {
+    if (values.areaId && areas.length > 0 && !values.areaName) {
+      const area = areas.find(a => a.areaId === values.areaId);
+      if (area) {
+        onChange({ areaName: area.areaName });
+      }
+    }
+  }, [areas, values.areaId, values.areaName, onChange]);
+
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id   = e.target.value ? Number(e.target.value) : null;
     const name = id ? e.target.options[e.target.selectedIndex].text : '';
@@ -112,11 +134,15 @@ export default function ShippingForm({ values, onChange, disabled, columns = 2 }
   };
 
   const handleZoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange({ zoneId: e.target.value ? Number(e.target.value) : null, areaId: null });
+    const id   = e.target.value ? Number(e.target.value) : null;
+    const name = id ? e.target.options[e.target.selectedIndex].text : '';
+    onChange({ zoneId: id, zoneName: name, areaId: null, areaName: '' });
   };
 
   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange({ areaId: e.target.value ? Number(e.target.value) : null });
+    const id   = e.target.value ? Number(e.target.value) : null;
+    const name = id ? e.target.options[e.target.selectedIndex].text : '';
+    onChange({ areaId: id, areaName: name });
   };
 
   const textField = (key: keyof Pick<ShippingFields, 'name' | 'phone' | 'address' | 'postalCode' | 'notes'>) => ({

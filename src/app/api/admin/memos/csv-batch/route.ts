@@ -108,6 +108,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       shippingCityId: order.shippingCityId ?? null,
       shippingZoneId: order.shippingZoneId ?? null,
       shippingAreaId: order.shippingAreaId ?? null,
+      shippingZoneName: order.shippingZoneName ?? null,
+      shippingAreaName: order.shippingAreaName ?? null,
       shippingPostalCode: order.shippingPostalCode ?? null,
       customerNotes: order.customerNotes ?? null,
       adminNotes: order.adminNotes ?? null,
