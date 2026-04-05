@@ -131,6 +131,8 @@ function addressToFields(addr: UserAddressDto): Partial<ShippingFields> {
     cityId:    addr.cityId,
     zoneId:    addr.zoneId,
     areaId:    addr.areaId,
+    zoneName:  '',  // Zone name not stored in saved addresses
+    areaName:  addr.area ?? '',  // Use area field for areaName
     postalCode: addr.postalCode ?? '',
   };
 }

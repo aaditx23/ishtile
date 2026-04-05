@@ -12,6 +12,8 @@ type OrderLike = {
   shippingPhone: string;
   shippingCity: string;
   shippingAddress: string;
+  shippingZoneName?: string | null;
+  shippingAreaName?: string | null;
   total: number;
   customerNotes?: string | null;
   items?: Array<{ quantity: number }>;
@@ -35,7 +37,7 @@ function escapeCsvValue(value: string | number | null | undefined): string {
  *         RecipientCity,RecipientZone,RecipientArea,RecipientAddress,
  *         AmountToCollect,ItemQuantity,ItemWeight,ItemDesc,SpecialInstruction
  */
-export function ordersToCsvString(orders: OrderLike[]): string {
+export function ordersToCsvString(orders: OrderLike[], storeName?: string): string {
   const headers = [
     'ItemType',
     'StoreName',
@@ -57,17 +59,17 @@ export function ordersToCsvString(orders: OrderLike[]): string {
     // Calculate total quantity from items
     const totalQuantity = order.items?.reduce((sum, item) => sum + item.quantity, 0) || 1;
 
-    // Format address with city appended (zone/area from address line or empty)
+    // Format address with city appended
     const addressParts = [order.shippingAddress, order.shippingCity].filter(Boolean);
     const formattedAddress = addressParts.join(',');
 
-    // Extract zone/area from address or use city as fallback
-    const zone = order.shippingCity; // Use city as zone
-    const area = order.shippingCity; // Use city as area
+    // Use zone/area names if available, otherwise fall back to city
+    const zone = order.shippingZoneName || order.shippingCity;
+    const area = order.shippingAreaName || order.shippingCity;
 
     return [
       'parcel', // ItemType
-      'fashionkingbd.com', // StoreName
+      storeName || 'fashionkingbd.com', // StoreName
       order.orderNumber || String(order.id), // MerchantOrderId
       order.shippingName, // RecipientName
       order.shippingPhone, // RecipientPhone
