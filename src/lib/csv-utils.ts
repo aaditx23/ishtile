@@ -1,6 +1,7 @@
 /**
  * CSV Utilities - Convert orders to Pathao-compatible CSV format
  */
+import type { LocationNameResolver } from './pathao/locationResolver';
 
 /**
  * Order-like type for CSV conversion (accepts both domain Order and Convex order)
@@ -12,8 +13,9 @@ type OrderLike = {
   shippingPhone: string;
   shippingCity: string;
   shippingAddress: string;
-  shippingZoneName?: string | null;
-  shippingAreaName?: string | null;
+  shippingCityId?: number | null;
+  shippingZoneId?: number | null;
+  shippingAreaId?: number | null;
   total: number;
   customerNotes?: string | null;
   items?: Array<{ quantity: number }>;
@@ -37,7 +39,11 @@ function escapeCsvValue(value: string | number | null | undefined): string {
  *         RecipientCity,RecipientZone,RecipientArea,RecipientAddress,
  *         AmountToCollect,ItemQuantity,ItemWeight,ItemDesc,SpecialInstruction
  */
-export function ordersToCsvString(orders: OrderLike[], storeName?: string): string {
+export function ordersToCsvString(
+  orders: OrderLike[],
+  resolver: LocationNameResolver,
+  storeName?: string
+): string {
   const headers = [
     'ItemType',
     'StoreName',
@@ -63,9 +69,20 @@ export function ordersToCsvString(orders: OrderLike[], storeName?: string): stri
     const addressParts = [order.shippingAddress, order.shippingCity].filter(Boolean);
     const formattedAddress = addressParts.join(',');
 
-    // Use zone/area names if available, otherwise fall back to city
-    const zone = order.shippingZoneName || order.shippingCity;
-    const area = order.shippingAreaName || order.shippingCity;
+    // Resolve zone/area names from IDs using resolver
+    // Fallback to shippingCity if IDs are missing or resolution fails
+    const zone = resolver.resolveZoneName(
+      order.shippingCityId,
+      order.shippingZoneId,
+      order.shippingCity
+    );
+    
+    const area = resolver.resolveAreaName(
+      order.shippingCityId,
+      order.shippingZoneId,
+      order.shippingAreaId,
+      order.shippingCity
+    );
 
     return [
       'parcel', // ItemType

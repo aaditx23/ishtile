@@ -78,8 +78,6 @@ export const createOrder = mutation({
     shippingCityId: v.optional(v.number()),
     shippingZoneId: v.optional(v.number()),
     shippingAreaId: v.optional(v.number()),
-    shippingZoneName: v.optional(v.string()),
-    shippingAreaName: v.optional(v.string()),
     customerNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {

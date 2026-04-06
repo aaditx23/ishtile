@@ -10,6 +10,7 @@ import { api } from '../../../../../../convex/_generated/api';
 import type { Id } from '../../../../../../convex/_generated/dataModel';
 import { verifyToken } from '@/lib/auth';
 import { ordersToCsvString } from '@/lib/csv-utils';
+import { LocationNameResolver } from '@/lib/pathao/locationResolver';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -44,7 +45,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const adminUserId = payload.userId as Id<'users'>;
 
-    // 2️⃣ Parse body
+    // 2️⃣ Trigger lazy sync (best effort, non-blocking)
+    try {
+      console.log('[Batch CSV API] Triggering location sync...');
+      await convex.action(api.locations_syncAction.default, { forceSync: false });
+    } catch (syncErr) {
+      console.error('[Batch CSV API] Sync failed (non-critical):', syncErr);
+      // Continue with CSV generation even if sync fails
+    }
+
+    // 3️⃣ Parse body
     let body: { orderIds?: string[] };
     try {
       const rawText = await req.text();
@@ -64,7 +74,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 3️⃣ Fetch all orders in parallel
+    // 4️⃣ Fetch all orders in parallel
     const rawOrders = await Promise.all(
       orderIds.map((orderId) =>
         convex.query(api.orders.queries.getOrderById, {
@@ -85,7 +95,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 4️⃣ Fetch active Pathao store
+    // 5️⃣ Initialize location resolver and load cache
+    const resolver = new LocationNameResolver();
+    try {
+      await resolver.loadFromConvex(convex);
+      console.log('[Batch CSV API] Location resolver loaded:', resolver.getStats());
+    } catch (resolverErr) {
+      console.error('[Batch CSV API] Failed to load resolver (will use fallback):', resolverErr);
+      // Continue - resolver will fallback to city names
+    }
+
+    // 6️⃣ Fetch active Pathao store
     let activeStoreName: string | undefined;
     try {
       const activeStore = await convex.query(api.shipments.queries.getActivePathaoStore);
@@ -97,7 +117,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       console.error('[Batch CSV API] Failed to fetch active store:', storeErr);
     }
 
-    // 5️⃣ Map to compatible format for CSV
+    // 7️⃣ Map to compatible format for CSV
     const orderEntities = orders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -120,8 +140,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       shippingCityId: order.shippingCityId ?? null,
       shippingZoneId: order.shippingZoneId ?? null,
       shippingAreaId: order.shippingAreaId ?? null,
-      shippingZoneName: order.shippingZoneName ?? null,
-      shippingAreaName: order.shippingAreaName ?? null,
       shippingPostalCode: order.shippingPostalCode ?? null,
       customerNotes: order.customerNotes ?? null,
       adminNotes: order.adminNotes ?? null,
@@ -131,14 +149,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       items: order.items ?? [],
     }));
 
-    // 6️⃣ Convert to CSV
-    const csvContent = ordersToCsvString(orderEntities, activeStoreName);
+    // 8️⃣ Convert to CSV
+    const csvContent = ordersToCsvString(orderEntities, resolver, activeStoreName);
 
-    // 7️⃣ Generate filename with current date
+    // 9️⃣ Generate filename with current date
     const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const filename = `orders-batch-${date}.csv`;
 
-    // 8️⃣ Return CSV file
+    // 🔟 Return CSV file
     return new NextResponse(csvContent, {
       status: 200,
       headers: {

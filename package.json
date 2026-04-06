@@ -9,7 +9,9 @@
     "lint": "next lint",
     "seed:admin": "npx tsx scripts/seedAdmin.ts",
     "update:admin": "npx tsx scripts/updateAdmin.ts",
-    "test:pathao": "npx tsx --test tests/pathao-workflow.test.ts"
+    "test:pathao": "npx tsx --test tests/pathao-workflow.test.ts",
+    "sync:locations": "npx tsx scripts/syncPathaoLocations.ts",
+    "cleanup:location-fields": "npx tsx scripts/cleanupLocationFields.ts"
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.11",

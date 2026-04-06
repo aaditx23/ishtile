@@ -33,12 +33,25 @@ export async function generateBatchCsv(orderIds: string[]): Promise<void> {
 
   // Download the CSV file
   const blob = await res.blob();
+  
+  // Debug: check if blob has content
+  console.log('[CSV Download] Blob size:', blob.size, 'type:', blob.type);
+  
+  if (blob.size === 0) {
+    throw new Error('CSV file is empty');
+  }
+  
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.style.display = 'none';
   document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
+  
+  // Use setTimeout to ensure DOM update before click
+  setTimeout(() => {
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 100);
 }
