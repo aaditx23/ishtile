@@ -31,8 +31,6 @@ function mapOrder(o: any): Order {
     shippingCityId: o.shippingCityId ?? null,
     shippingZoneId: o.shippingZoneId ?? null,
     shippingAreaId: o.shippingAreaId ?? null,
-    shippingZoneName: o.shippingZoneName ?? null,
-    shippingAreaName: o.shippingAreaName ?? null,
     shippingPostalCode: o.shippingPostalCode ?? null,
     customerNotes: o.customerNotes ?? null, adminNotes: o.adminNotes ?? null,
     isPaid: o.isPaid, paymentMethod: 'cod',

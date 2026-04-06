@@ -149,8 +149,6 @@ export default function CheckoutView() {
         shippingCityId:      fields.cityId!,
         shippingZoneId:      fields.zoneId!,
         shippingAreaId:      fields.areaId!,
-        shippingZoneName:    fields.zoneName,
-        shippingAreaName:    fields.areaName,
         ...(fields.postalCode.trim() ? { shippingPostalCode: fields.postalCode.trim() } : {}),
         paymentMethod:       'cod',
         deliveryMode:        'manual',
