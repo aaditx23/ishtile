@@ -34,7 +34,9 @@ export interface Order {
   shippingCity: string;
   shippingCityId?: number | null;
   shippingZoneId?: number | null;
+  shippingZoneName?: string | null;
   shippingAreaId?: number | null;
+  shippingAreaName?: string | null;
   shippingPostalCode: string | null;
   customerNotes: string | null;
   adminNotes: string | null;

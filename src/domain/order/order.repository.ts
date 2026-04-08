@@ -10,7 +10,9 @@ export interface CreateOrderPayload {
   shippingAddressLine: string;
   shippingCityId?:     number;
   shippingZoneId?:     number;
+  shippingZoneName?:   string;
   shippingAreaId?:     number;
+  shippingAreaName?:   string;
   paymentMethod?:      'cod';
   deliveryMode?:       'manual' | 'pathao';
   promoCode?:          string;

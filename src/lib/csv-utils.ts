@@ -1,7 +1,6 @@
 /**
  * CSV Utilities - Convert orders to Pathao-compatible CSV format
  */
-import type { LocationNameResolver } from './pathao/locationResolver';
 
 /**
  * Order-like type for CSV conversion (accepts both domain Order and Convex order)
@@ -15,7 +14,9 @@ type OrderLike = {
   shippingAddress: string;
   shippingCityId?: number | null;
   shippingZoneId?: number | null;
+  shippingZoneName?: string | null;
   shippingAreaId?: number | null;
+  shippingAreaName?: string | null;
   total: number;
   customerNotes?: string | null;
   items?: Array<{ quantity: number }>;
@@ -41,7 +42,6 @@ function escapeCsvValue(value: string | number | null | undefined): string {
  */
 export function ordersToCsvString(
   orders: OrderLike[],
-  resolver: LocationNameResolver,
   storeName?: string
 ): string {
   const headers = [
@@ -69,20 +69,9 @@ export function ordersToCsvString(
     const addressParts = [order.shippingAddress, order.shippingCity].filter(Boolean);
     const formattedAddress = addressParts.join(',');
 
-    // Resolve zone/area names from IDs using resolver
-    // Fallback to shippingCity if IDs are missing or resolution fails
-    const zone = resolver.resolveZoneName(
-      order.shippingCityId,
-      order.shippingZoneId,
-      order.shippingCity
-    );
-    
-    const area = resolver.resolveAreaName(
-      order.shippingCityId,
-      order.shippingZoneId,
-      order.shippingAreaId,
-      order.shippingCity
-    );
+    // Use snapshot names directly with fallback to city
+    const zone = order.shippingZoneName || order.shippingCity;
+    const area = order.shippingAreaName || order.shippingCity;
 
     return [
       'parcel', // ItemType
