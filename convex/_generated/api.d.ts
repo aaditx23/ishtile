@@ -30,6 +30,7 @@ import type * as migrations_fixOldOrderStatus from "../migrations/fixOldOrderSta
 import type * as migrations_setProductTrendingDefault from "../migrations/setProductTrendingDefault.js";
 import type * as orders_mutations from "../orders/mutations.js";
 import type * as orders_queries from "../orders/queries.js";
+import type * as orders_backfillLocationNames from "../orders_backfillLocationNames.js";
 import type * as orders_cleanup from "../orders_cleanup.js";
 import type * as pathao from "../pathao.js";
 import type * as products_mutations from "../products/mutations.js";
@@ -70,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/setProductTrendingDefault": typeof migrations_setProductTrendingDefault;
   "orders/mutations": typeof orders_mutations;
   "orders/queries": typeof orders_queries;
+  orders_backfillLocationNames: typeof orders_backfillLocationNames;
   orders_cleanup: typeof orders_cleanup;
   pathao: typeof pathao;
   "products/mutations": typeof products_mutations;
