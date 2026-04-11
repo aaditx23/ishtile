@@ -178,7 +178,7 @@ export class AdminProductConvexRepository {
     });
     // Return a minimal shape; caller typically re-fetches the product
     return { id: variantId, productId: 0, size: payload.size ?? '', color: payload.color ?? null,
-      sku: payload.sku ?? '', price: payload.price ?? 0, compareAtPrice: null,
+      sku: payload.sku ?? '', price: payload.price ?? 0, compareAtPrice: payload.compareAtPrice ?? null,
       quantity: 0, isActive: payload.isActive ?? true };
   }
 

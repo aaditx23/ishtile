@@ -169,7 +169,20 @@ function VariantRow({
         compareAtPrice: compareRaw ? Number(compareRaw) : null,
         isActive: form.isActive,
       });
-      onSaved(updated);
+
+      // Keep UI state aligned with submitted values even if repository returns a minimal/stale shape.
+      const normalizedUpdated: ProductVariant = {
+        ...updated,
+        size: form.size.trim(),
+        color: form.color || null,
+        sku: form.sku.trim(),
+        price: Number(form.price),
+        compareAtPrice: compareRaw ? Number(compareRaw) : null,
+        isActive: form.isActive,
+      };
+
+      onSaved(normalizedUpdated);
+      setForm(toForm(normalizedUpdated));
       toast.success('Variant saved.');
     } catch { 
       toast.error('Failed to save variant.'); 
