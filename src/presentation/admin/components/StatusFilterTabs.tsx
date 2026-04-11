@@ -2,7 +2,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const TABS: { label: string; value: 'all' | 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' }[] = [
+export type StatusTabValue = 'all' | 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+
+const TABS: { label: string; value: StatusTabValue }[] = [
   { label: 'All',       value: 'all' },
   { label: 'Pending',   value: 'pending' },
   { label: 'Confirmed', value: 'confirmed' },
@@ -11,13 +13,18 @@ const TABS: { label: string; value: 'all' | 'pending' | 'confirmed' | 'shipped' 
   { label: 'Cancelled', value: 'cancelled' },
 ];
 
-export default function StatusFilterTabs() {
+interface StatusFilterTabsProps {
+  onStatusChange?: (status: StatusTabValue) => void;
+}
+
+export default function StatusFilterTabs({ onStatusChange }: StatusFilterTabsProps) {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const currentRaw   = searchParams.get('status') ?? 'all';
-  const current      = currentRaw === 'new' ? 'pending' : currentRaw;
+  const current      = (currentRaw === 'new' ? 'pending' : currentRaw) as StatusTabValue;
 
-  const setStatus = (v: string) => {
+  const setStatus = (v: StatusTabValue) => {
+    onStatusChange?.(v);
     const p = new URLSearchParams(searchParams.toString());
     p.delete('page');
     if (v === 'all') p.delete('status'); else p.set('status', v);

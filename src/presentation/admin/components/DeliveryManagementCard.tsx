@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,8 @@ import {
   PathaoParcelValidationError,
 } from '@/application/order/createPathaoParcel';
 import { refreshPathaoStatus } from '@/application/order/refreshPathaoStatus';
-import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
-import { getPhone11DigitError, normalizePhoneInput } from '@/shared/utils/phoneValidation';
+import { getAddressLengthError } from '@/shared/utils/addressValidation';
+import { getPhone11DigitError } from '@/shared/utils/phoneValidation';
 
 interface DeliveryManagementCardProps {
   order: Order;
@@ -44,17 +44,21 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
   const [refreshing, setRefreshing] = useState(false);
   const [serverMissingFields, setServerMissingFields] = useState<string[]>([]);
 
-  const [recipientName, setRecipientName] = useState(order.shippingName ?? '');
-  const [recipientPhone, setRecipientPhone] = useState(order.shippingPhone ?? '');
-  const [recipientAddress, setRecipientAddress] = useState(order.shippingAddress ?? '');
-  const [recipientCity, setRecipientCity] = useState(String(order.shippingCityId ?? ''));
-  const [recipientZone, setRecipientZone] = useState(String(order.shippingZoneId ?? ''));
-  const [recipientArea, setRecipientArea] = useState(String(order.shippingAreaId ?? ''));
   const [deliveryType, setDeliveryType] = useState(48);
   const [itemWeight, setItemWeight] = useState('1');
   const [itemQuantity, setItemQuantity] = useState(String(order.items?.length || 1));
-  const [amountToCollect, setAmountToCollect] = useState(String(order.total ?? 0));
-  const [specialInstruction, setSpecialInstruction] = useState('');
+
+  useEffect(() => {
+    setMode(order.deliveryMode ?? 'manual');
+  }, [order.deliveryMode]);
+
+  const recipientName = order.shippingName ?? '';
+  const recipientPhone = order.shippingPhone ?? '';
+  const recipientAddress = order.shippingAddressLine ?? order.shippingAddress ?? '';
+  const recipientCity = String(order.shippingCityId ?? '');
+  const recipientZone = String(order.shippingZoneId ?? '');
+  const recipientArea = String(order.shippingAreaId ?? '');
+  const amountToCollect = String(order.total ?? 0);
 
   const missingRequired = useMemo(() => {
     const missing: string[] = [];
@@ -63,11 +67,11 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
     if (!recipientAddress.trim()) missing.push('Address');
     if (!Number(recipientCity)) missing.push('Recipient City');
     if (!Number(recipientZone)) missing.push('Recipient Zone');
+    if (!Number(recipientArea)) missing.push('Recipient Area');
     if (!Number(itemWeight)) missing.push('Item Weight');
     if (!Number(itemQuantity)) missing.push('Item Quantity');
-    if (!Number(amountToCollect)) missing.push('Amount to Collect');
     return missing;
-  }, [amountToCollect, itemQuantity, itemWeight, recipientAddress, recipientCity, recipientName, recipientPhone, recipientZone]);
+  }, [itemQuantity, itemWeight, recipientAddress, recipientArea, recipientCity, recipientName, recipientPhone, recipientZone]);
 
   const pathaoStatus = normalizeStatus(order.pathaoStatus);
   const isPersistedPathaoMode = (order.deliveryMode ?? 'manual') === 'pathao';
@@ -126,17 +130,9 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
     setServerMissingFields([]);
     try {
       const result = await createPathaoParcel(order.id, {
-        recipientName: recipientName.trim(),
-        recipientPhone: recipientPhone.trim(),
-        recipientAddress: recipientAddress.trim(),
-        recipientCity: Number(recipientCity),
-        recipientZone: Number(recipientZone),
-        recipientArea: Number(recipientArea) || undefined,
         deliveryType,
         itemWeight: parsedItemWeight,
         itemQuantity: Number(itemQuantity),
-        amountToCollect: Number(amountToCollect),
-        specialInstruction: specialInstruction.trim() || undefined,
       });
 
       onOrderChange({
@@ -222,19 +218,14 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="pathao-recipient-name">Recipient Name</Label>
-                <Input id="pathao-recipient-name" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} placeholder="Recipient Name" />
+                <Input id="pathao-recipient-name" value={recipientName} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-phone-number">Phone Number</Label>
                 <Input
                   id="pathao-phone-number"
                   value={recipientPhone}
-                  onChange={(e) => setRecipientPhone(normalizePhoneInput(e.target.value))}
-                  placeholder="Phone Number"
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={11}
-                  pattern="[0-9]{11}"
+                  readOnly
                 />
               </div>
               <div className="space-y-2">
@@ -242,23 +233,20 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
                 <Input
                   id="pathao-address"
                   value={recipientAddress}
-                  onChange={(e) => setRecipientAddress(e.target.value)}
-                  placeholder="Address"
-                  minLength={ADDRESS_MIN_LENGTH}
-                  maxLength={ADDRESS_MAX_LENGTH}
+                  readOnly
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-city">City</Label>
-                <Input id="pathao-city" value={recipientCity} onChange={(e) => setRecipientCity(e.target.value)} placeholder="Recipient City ID" type="number" min={1} />
+                <Input id="pathao-city" value={recipientCity} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-zone">Zone</Label>
-                <Input id="pathao-zone" value={recipientZone} onChange={(e) => setRecipientZone(e.target.value)} placeholder="Recipient Zone ID" type="number" min={1} />
+                <Input id="pathao-zone" value={recipientZone} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-area">Area</Label>
-                <Input id="pathao-area" value={recipientArea} onChange={(e) => setRecipientArea(e.target.value)} placeholder="Recipient Area ID (optional)" type="number" min={1} />
+                <Input id="pathao-area" value={recipientArea} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-delivery-type">Delivery Type</Label>
@@ -269,7 +257,7 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-amount-to-collect">Amount to Collect</Label>
-                <Input id="pathao-amount-to-collect" value={amountToCollect} onChange={(e) => setAmountToCollect(e.target.value)} placeholder="Amount to Collect" type="number" min={0} />
+                <Input id="pathao-amount-to-collect" value={amountToCollect} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pathao-item-quantity">Item Quantity</Label>
@@ -286,15 +274,6 @@ export default function DeliveryManagementCard({ order, onOrderChange }: Deliver
                   min={MIN_ITEM_WEIGHT_KG}
                   max={MAX_ITEM_WEIGHT_KG}
                   step={0.1}
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="pathao-special-instruction">Special Instruction</Label>
-                <Input
-                  id="pathao-special-instruction"
-                  value={specialInstruction}
-                  onChange={(e) => setSpecialInstruction(e.target.value)}
-                  placeholder="Special instruction (optional)"
                 />
               </div>
             </div>
