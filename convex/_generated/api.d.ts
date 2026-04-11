@@ -23,10 +23,6 @@ import type * as categories_mutations from "../categories/mutations.js";
 import type * as categories_queries from "../categories/queries.js";
 import type * as favourites_mutations from "../favourites/mutations.js";
 import type * as favourites_queries from "../favourites/queries.js";
-import type * as locations_mutations from "../locations_mutations.js";
-import type * as locations_queries from "../locations_queries.js";
-import type * as locations_schema from "../locations_schema.js";
-import type * as locations_syncAction from "../locations_syncAction.js";
 import type * as lookbooks_mutations from "../lookbooks/mutations.js";
 import type * as lookbooks_queries from "../lookbooks/queries.js";
 import type * as migrations_fixDeliveryMode from "../migrations/fixDeliveryMode.js";
@@ -34,6 +30,7 @@ import type * as migrations_fixOldOrderStatus from "../migrations/fixOldOrderSta
 import type * as migrations_setProductTrendingDefault from "../migrations/setProductTrendingDefault.js";
 import type * as orders_mutations from "../orders/mutations.js";
 import type * as orders_queries from "../orders/queries.js";
+import type * as orders_backfillLocationNames from "../orders_backfillLocationNames.js";
 import type * as orders_cleanup from "../orders_cleanup.js";
 import type * as pathao from "../pathao.js";
 import type * as products_mutations from "../products/mutations.js";
@@ -67,10 +64,6 @@ declare const fullApi: ApiFromModules<{
   "categories/queries": typeof categories_queries;
   "favourites/mutations": typeof favourites_mutations;
   "favourites/queries": typeof favourites_queries;
-  locations_mutations: typeof locations_mutations;
-  locations_queries: typeof locations_queries;
-  locations_schema: typeof locations_schema;
-  locations_syncAction: typeof locations_syncAction;
   "lookbooks/mutations": typeof lookbooks_mutations;
   "lookbooks/queries": typeof lookbooks_queries;
   "migrations/fixDeliveryMode": typeof migrations_fixDeliveryMode;
@@ -78,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "migrations/setProductTrendingDefault": typeof migrations_setProductTrendingDefault;
   "orders/mutations": typeof orders_mutations;
   "orders/queries": typeof orders_queries;
+  orders_backfillLocationNames: typeof orders_backfillLocationNames;
   orders_cleanup: typeof orders_cleanup;
   pathao: typeof pathao;
   "products/mutations": typeof products_mutations;
