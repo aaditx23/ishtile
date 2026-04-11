@@ -39,8 +39,9 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
     setImgIndex((i) => (i + 1) % images.length);
   };
 
+  const hasComparePrice = product.salePrice !== null && product.salePrice !== undefined;
   const formattedPrice = `৳${Number(product.salePrice ?? product.price ?? 0).toFixed(0)}`;
-  const formattedComparePrice = product.salePrice ? `৳${Number(product.price).toFixed(0)}` : null;
+  const formattedComparePrice = hasComparePrice ? `৳${Number(product.price).toFixed(0)}` : null;
 
   return (
     <article className="overflow-hidden group bg-surface" style={{ border: '1px solid var(--brand-dark)' }}>
@@ -120,10 +121,10 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
 
         <div className="flex items-center justify-between w-full gap-2">
           <div className="flex items-center gap-2">
-            {formattedComparePrice ? (
+            {hasComparePrice && formattedComparePrice ? (
               <>
-                <span className="text-sm font-semibold text-on-surface">{formattedPrice}</span>
-                <span className="text-xs text-on-surface-muted line-through">{formattedComparePrice}</span>
+                <span className="text-sm font-semibold text-on-surface">{formattedComparePrice}</span>
+                <span className="text-xs text-on-surface-muted line-through">{formattedPrice}</span>
               </>
             ) : (
               <span className="text-sm font-semibold text-on-surface">{formattedPrice}</span>

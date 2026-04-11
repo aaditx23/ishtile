@@ -38,6 +38,26 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function getComparePriceError(priceRaw: string, compareRaw: string): string | null {
+  const price = Number(priceRaw);
+  if (!Number.isFinite(price) || price <= 0) {
+    return 'Enter a valid price before setting compare price.';
+  }
+
+  if (!compareRaw.trim()) return null;
+
+  const compare = Number(compareRaw);
+  if (!Number.isFinite(compare) || compare <= 0) {
+    return 'Compare price must be a valid number greater than 0.';
+  }
+
+  if (compare <= price) {
+    return `Compare price must be greater than price (Price: ${price}, Compare: ${compare}).`;
+  }
+
+  return null;
+}
+
 function InvCell({ variantId }: { variantId: number }) {
   const [inv, setInv]   = useState<InventoryDto | null>(null);
   const [qty, setQty]   = useState('');
@@ -110,29 +130,43 @@ function VariantRow({
   canDelete?: boolean;
   disabled?: boolean;
 }) {
-  const [form, setForm] = useState({
-    size:  variant.size,
-    color: variant.color ?? '',
-    sku:   variant.sku,
-    price: String(variant.price),
-    compareAtPrice: variant.compareAtPrice ? String(variant.compareAtPrice) : '',
-    isActive: variant.isActive,
+  const toForm = (v: ProductVariant) => ({
+    size:  v.size,
+    color: v.color ?? '',
+    sku:   v.sku,
+    price: String(v.price),
+    compareAtPrice: v.compareAtPrice === null || v.compareAtPrice === undefined ? '' : String(v.compareAtPrice),
+    isActive: v.isActive,
   });
+
+  const [form, setForm] = useState(toForm(variant));
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    setForm(toForm(variant));
+  }, [variant]);
+
   const save = async () => {
-    if (form.compareAtPrice && Number(form.compareAtPrice) <= Number(form.price)) {
-      toast.error('Compare at price must be greater than price.');
+    if (!form.size.trim() || !form.sku.trim() || !form.price.trim()) {
+      toast.error('Size, SKU and price are required.');
       return;
     }
+
+    const compareRaw = form.compareAtPrice.trim();
+    const compareError = getComparePriceError(form.price, compareRaw);
+    if (compareError) {
+      toast.error(compareError);
+      return;
+    }
+
     setBusy(true);
     try {
       const updated = await updateVariant(variant.id, {
-        size:     form.size,
+        size:     form.size.trim(),
         color:    form.color || undefined,
-        sku:      form.sku,
+        sku:      form.sku.trim(),
         price:    Number(form.price),
-        compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : undefined,
+        compareAtPrice: compareRaw ? Number(compareRaw) : null,
         isActive: form.isActive,
       });
       onSaved(updated);
@@ -144,17 +178,21 @@ function VariantRow({
     }
   };
 
-  const hasChanges = 
-    form.size !== variant.size ||
+  const variantCompareRaw = variant.compareAtPrice === null || variant.compareAtPrice === undefined
+    ? ''
+    : String(variant.compareAtPrice);
+
+  const hasChanges =
+    form.size.trim() !== variant.size ||
     form.color !== (variant.color ?? '') ||
-    form.sku !== variant.sku ||
-    form.price !== String(variant.price) ||
-    form.compareAtPrice !== (variant.compareAtPrice ? String(variant.compareAtPrice) : '') ||
+    form.sku.trim() !== variant.sku ||
+    form.price.trim() !== String(variant.price) ||
+    form.compareAtPrice.trim() !== variantCompareRaw ||
     form.isActive !== variant.isActive;
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_minmax(5rem,1fr)_auto_auto] items-end gap-2">
-      <Field label="Size">
+      <Field label="Size *">
         <select
           value={form.size}
           onChange={(e) => setForm((p) => ({ ...p, size: e.target.value }))}
@@ -176,7 +214,7 @@ function VariantRow({
         />
       </Field>
       <div className="col-span-2 lg:col-span-1">
-        <Field label="SKU">
+        <Field label="SKU *">
           <Input 
             value={form.sku} 
             onChange={(e) => setForm((p) => ({ ...p, sku: e.target.value }))} 
@@ -185,7 +223,7 @@ function VariantRow({
           />
         </Field>
       </div>
-      <Field label="Price">
+      <Field label="Price *">
         <Input 
           type="number" 
           value={form.price} 
@@ -258,22 +296,24 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
   };
 
   const handleAdd = async () => {
-    if (!newForm.size || !newForm.sku || !newForm.price) {
+    if (!newForm.size.trim() || !newForm.sku.trim() || !newForm.price.trim()) {
       toast.error('Size, SKU and price are required.'); return;
     }
-    if (newForm.compareAtPrice && Number(newForm.compareAtPrice) <= Number(newForm.price)) {
-      toast.error('Compare at price must be greater than price.');
+    const compareRaw = newForm.compareAtPrice.trim();
+    const compareError = getComparePriceError(newForm.price, compareRaw);
+    if (compareError) {
+      toast.error(compareError);
       return;
     }
     setBusy(true);
     try {
       const v = await createVariant({
         productId,
-        size:  newForm.size,
+        size:  newForm.size.trim(),
         color: newForm.color || undefined,
-        sku:   newForm.sku,
+        sku:   newForm.sku.trim(),
         price: Number(newForm.price),
-        compareAtPrice: newForm.compareAtPrice ? Number(newForm.compareAtPrice) : undefined,
+        compareAtPrice: compareRaw ? Number(compareRaw) : undefined,
         isActive: true,
       });
       setVariants((prev) => [...prev, v]);
@@ -321,8 +361,11 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
           <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--on-surface-muted)', marginBottom: '0.75rem' }}>
             New Variant
           </p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)', marginBottom: '0.5rem' }}>
+            Fields marked with * are required.
+          </p>
           <div className="grid grid-cols-2 lg:grid-cols-[minmax(4rem,1fr)_minmax(5rem,1fr)_minmax(6rem,1fr)_minmax(4rem,1fr)_minmax(4rem,1fr)_auto] items-end gap-2">
-            <Field label="Size">
+            <Field label="Size *">
               <select
                 value={newForm.size}
                 onChange={(e) => setNewForm((p) => ({ ...p, size: e.target.value }))}
@@ -344,7 +387,7 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
               />
             </Field>
             <div className="col-span-2 lg:col-span-1">
-              <Field label="SKU">
+              <Field label="SKU *">
                 <Input 
                   value={newForm.sku} 
                   onChange={(e) => setNewForm((p) => ({ ...p, sku: e.target.value }))} 
@@ -353,7 +396,7 @@ export default function VariantManager({ productId, initialVariants }: VariantMa
                 />
               </Field>
             </div>
-            <Field label="Price">
+            <Field label="Price *">
               <Input 
                 type="number" 
                 value={newForm.price} 

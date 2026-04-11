@@ -37,7 +37,7 @@ export const productTables = {
     color:          v.optional(v.string()),
     sku:            v.string(),
     price:          v.number(),
-    compareAtPrice: v.optional(v.number()),
+    compareAtPrice: v.optional(v.union(v.number(), v.null())),
     weightGrams:    v.optional(v.number()),
     isActive:       v.boolean(),
   })

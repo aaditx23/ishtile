@@ -44,7 +44,8 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   };
 
   const formattedPrice = `৳${Number(product.price || 0).toFixed(2)}`;
-  const formattedSalePrice = product.salePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
+  const hasComparePrice = product.salePrice !== null && product.salePrice !== undefined;
+  const formattedSalePrice = hasComparePrice ? `৳${Number(product.salePrice).toFixed(2)}` : null;
 
   return (
     <Card className="overflow-hidden group" style={{ gap: 0, padding: 0 }}>
@@ -129,7 +130,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         </div>
 
         <div className="flex items-center gap-1.5">
-          {formattedSalePrice ? (
+          {hasComparePrice && formattedSalePrice ? (
             <>
               <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--brand-gold)' }}>{formattedPrice}</span>
               <span className="text-xs text-muted-foreground line-through">{formattedSalePrice}</span>

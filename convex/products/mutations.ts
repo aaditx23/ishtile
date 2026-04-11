@@ -3,6 +3,7 @@
  * Mirrors: POST/PUT/DELETE /api/v1/products (admin only)
  */
 import { mutation } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
 import { v } from "convex/values";
 import { adjustStockHelper } from "../_internal/inventory";
 
@@ -15,6 +16,31 @@ const variantArgs = v.object({
   weightGrams: v.optional(v.number()),
   quantity: v.optional(v.number()), // initial inventory
 });
+
+async function syncProductPricingFromVariants(
+  ctx: any,
+  productId: Id<"products">,
+) {
+  const activeVariants = await ctx.db
+    .query("productVariants")
+    .withIndex("by_product", (q: any) => q.eq("productId", productId))
+    .filter((q: any) => q.eq(q.field("isActive"), true))
+    .collect();
+
+  if (!activeVariants.length) return;
+
+  const basePrice = Math.min(...activeVariants.map((v: any) => v.price));
+  const compareValues = activeVariants
+    .map((v: any) => v.compareAtPrice)
+    .filter((v: any): v is number => typeof v === "number" && Number.isFinite(v) && v > 0);
+
+  const compareAtPrice = compareValues.length ? Math.max(...compareValues) : undefined;
+
+  await ctx.db.patch(productId, {
+    basePrice,
+    compareAtPrice,
+  });
+}
 
 // ─── Create product ───────────────────────────────────────────────────────────
 // Mirrors: create_product in products.py
@@ -227,7 +253,7 @@ export const updateVariant = mutation({
     color: v.optional(v.string()),
     sku: v.optional(v.string()),
     price: v.optional(v.number()),
-    compareAtPrice: v.optional(v.number()),
+    compareAtPrice: v.optional(v.union(v.number(), v.null())),
     weightGrams: v.optional(v.number()),
     isActive: v.optional(v.boolean()),
   },
@@ -237,22 +263,17 @@ export const updateVariant = mutation({
 
     const patch = Object.fromEntries(
       Object.entries(fields).filter(([, v]) => v !== undefined),
-    );
+    ) as Record<string, unknown>;
+
     await ctx.db.patch(id, patch);
 
-    // Recalculate product basePrice if price changed
-    if (fields.price !== undefined) {
-      const allVariants = await ctx.db
-        .query("productVariants")
-        .withIndex("by_product", (q) => q.eq("productId", variant.productId))
-        .filter((q) => q.eq(q.field("isActive"), true))
-        .collect();
-
-      const basePrice = allVariants.length
-        ? Math.min(...allVariants.map((v) => (v._id === id ? fields.price! : v.price)))
-        : fields.price;
-
-      await ctx.db.patch(variant.productId, { basePrice });
+    // Keep product-level pricing in sync with active variants.
+    if (
+      fields.price !== undefined ||
+      fields.compareAtPrice !== undefined ||
+      fields.isActive !== undefined
+    ) {
+      await syncProductPricingFromVariants(ctx, variant.productId);
     }
 
     return { id };
@@ -288,6 +309,8 @@ export const createVariant = mutation({
       quantity: 0,
       reservedQuantity: 0,
     });
+
+    await syncProductPricingFromVariants(ctx, productId);
 
     await ctx.db.insert("auditLogs", {
       userId: adminUserId,
@@ -326,17 +349,7 @@ export const deleteVariant = mutation({
     // Delete the variant
     await ctx.db.delete(id);
 
-    // Recalculate product basePrice
-    const remainingVariants = await ctx.db
-      .query("productVariants")
-      .withIndex("by_product", (q) => q.eq("productId", productId))
-      .filter((q) => q.eq(q.field("isActive"), true))
-      .collect();
-
-    if (remainingVariants.length > 0) {
-      const basePrice = Math.min(...remainingVariants.map((v) => v.price));
-      await ctx.db.patch(productId, { basePrice });
-    }
+    await syncProductPricingFromVariants(ctx, productId);
 
     await ctx.db.insert("auditLogs", {
       userId: adminUserId,

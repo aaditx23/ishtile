@@ -46,7 +46,9 @@ export interface CreateVariantPayload {
   isActive?: boolean;
 }
 
-export type UpdateVariantPayload = Partial<Omit<CreateVariantPayload, 'productId'>>;
+export type UpdateVariantPayload = Omit<Partial<Omit<CreateVariantPayload, 'productId'>>, 'compareAtPrice'> & {
+  compareAtPrice?: number | null;
+};
 
 export interface UpdateInventoryPayload {
   quantity: number;
