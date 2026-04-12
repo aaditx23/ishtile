@@ -33,18 +33,56 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd]   = useState(false);
   const [loading, setLoading]   = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
-    const token = tokenStore.getRefresh();
-    if (token) {
-      // Real token exists — already logged in, redirect away
-      router.replace(next.startsWith('/') ? next : '/');
-    } else {
-      // No real token but stale session cookie may exist — clear it
-      tokenStore.clearAll();
-    }
+    let cancelled = false;
+
+    const verifySession = async () => {
+      const refresh = tokenStore.getRefresh();
+      if (!refresh) {
+        tokenStore.clearAll();
+        if (!cancelled) setCheckingSession(false);
+        return;
+      }
+
+      const access = tokenStore.getAccess();
+      if (!access) {
+        tokenStore.clearAll();
+        if (!cancelled) setCheckingSession(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/me', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${access}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Session is invalid');
+
+        if (!cancelled) {
+          router.replace(next.startsWith('/') ? next : '/');
+        }
+      } catch {
+        tokenStore.clearAll();
+        if (!cancelled) setCheckingSession(false);
+      }
+    };
+
+    void verifySession();
+
+    return () => {
+      cancelled = true;
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (checkingSession) {
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
