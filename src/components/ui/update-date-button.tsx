@@ -27,7 +27,7 @@ export function UpdateDateButton({
       size="sm"
       className={className}
     >
-      Update to Today
+      Today
     </Button>
   );
 }

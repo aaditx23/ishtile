@@ -99,8 +99,22 @@ body {
   background-color: var(--background);
   color: var(--on-background);
   font-family: var(--font-sans);
+  letter-spacing: 0.07em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-semibold,
+.font-bold,
+.font-extrabold,
+.font-black {
+  letter-spacing: 0.07em;
 }
 
 /* ── Shadcn base layer ───────────────────────────────────────────────────────── */

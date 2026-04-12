@@ -123,17 +123,18 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
           <div className="flex items-center gap-2">
             {hasComparePrice && formattedComparePrice ? (
               <>
-                <span className="text-sm font-semibold text-on-surface">{formattedComparePrice}</span>
-                <span className="text-xs text-on-surface-muted line-through">{formattedPrice}</span>
+                <span className="text-sm text-on-surface " style={{color: 'var(--on-surface)'}}>{formattedComparePrice}</span>
+                <span className="text-xs text-on-surface-muted line-through" style={{color: 'var(--on-surface-muted)'}}>{formattedPrice}</span>
               </>
             ) : (
-              <span className="text-sm font-semibold text-on-surface">{formattedPrice}</span>
+              <span className="text-sm text-on-surface style={{color: 'var(--on-surface-muted)'}}">{formattedPrice}</span>
             )}
           </div>
 
           <button
             onClick={() => setQuickAddOpen(true)}
-            className="text-xs font-semibold uppercase tracking-[0.08em] underline underline-offset-2 text-on-surface cursor-pointer"
+            className="text-xs uppercase tracking-[0.08em] underline underline-offset-2 text-on-surface cursor-pointer"
+            style={{color: 'var(--on-surface-muted)'}}
           >
             + Add
           </button>
