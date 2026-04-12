@@ -10,17 +10,12 @@ import { getBaseUrl } from '@/shared/config/baseUrl';
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 interface CreateParcelBody {
-  name?: string;
-  phone?: string;
-  address?: string;
-  city?: number | string;
-  zone?: number | string;
-  area?: number | string;
   item_quantity?: number | string;
   item_weight?: number | string;
-  amount_to_collect?: number | string;
-  special_instruction?: string;
   delivery_type?: number | string;
+  itemQuantity?: number | string;
+  itemWeight?: number | string;
+  deliveryType?: number | string;
 }
 
 export async function POST(
@@ -43,10 +38,10 @@ export async function POST(
     const orderId = orderIdParam as Id<'orders'>;
     const adminUserId = payload.userId as Id<'users'>;
 
-    let body: Record<string, unknown> = {};
+    let body: CreateParcelBody = {};
 
     try {
-      body = (await req.json()) as Record<string, unknown>;
+      body = (await req.json()) as CreateParcelBody;
     } catch {
       body = {};
     }
@@ -87,22 +82,16 @@ export async function POST(
       );
     }
 
-    const recipientName = String(
-      body.recipient_name ?? body.name ?? body.recipientName ?? order.shippingName ?? ''
-    ).trim();
-    const recipientPhone = String(
-      body.recipient_phone ?? body.phone ?? body.recipientPhone ?? order.shippingPhone ?? ''
-    ).trim();
-    const recipientAddress = String(
-      body.recipient_address ?? body.address ?? body.recipientAddress ?? order.shippingAddressLine ?? order.shippingAddress ?? ''
-    ).trim();
-    const recipientCity = Number(body.recipient_city ?? body.city ?? body.recipientCity ?? order.shippingCityId);
-    const recipientZone = Number(body.recipient_zone ?? body.zone ?? body.recipientZone ?? order.shippingZoneId);
-    const recipientArea = Number(body.recipient_area ?? body.area ?? body.recipientArea ?? order.shippingAreaId);
+    const recipientName = String(order.shippingName ?? '').trim();
+    const recipientPhone = String(order.shippingPhone ?? '').trim();
+    const recipientAddress = String(order.shippingAddressLine ?? order.shippingAddress ?? '').trim();
+    const recipientCity = Number(order.shippingCityId);
+    const recipientZone = Number(order.shippingZoneId);
+    const recipientArea = Number(order.shippingAreaId);
     const itemQuantity = Number(body.item_quantity ?? body.itemQuantity ?? 1);
     const itemWeight = Number(body.item_weight ?? body.itemWeight ?? 1);
-    const amountToCollect = Number(body.amount_to_collect ?? body.amountToCollect ?? order.total);
-    const specialInstruction = String(body.special_instruction ?? body.specialInstruction ?? '');
+    const amountToCollect = Number(order.total);
+    const specialInstruction = String(order.customerNotes ?? '');
     const deliveryType = Number(body.delivery_type ?? body.deliveryType ?? 48);
 
     if (![48, 12].includes(deliveryType)) {

@@ -27,12 +27,6 @@ const EMPTY_FIELDS: ShippingFields = {
   name:       '',
   phone:      '',
   address:    '',
-  cityName:   '',
-  cityId:     null,
-  zoneId:     null,
-  areaId:     null,
-  zoneName:   '',
-  areaName:   '',
   postalCode: '',
   notes:      '',
 };
@@ -50,17 +44,12 @@ export default function CheckoutView() {
   const [showNewForm, setShowNewForm]   = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
 
-  // Fetch shipping quote from backend whenever city changes.
+  // Fetch default shipping quote from backend.
   useEffect(() => {
-    if (!fields.cityName) {
-      setShippingCost(0);
-      return;
-    }
-
     let cancelled = false;
     const loadShippingCost = async () => {
       try {
-        const cost = await getCheckoutShippingCost(fields.cityName);
+        const cost = await getCheckoutShippingCost('');
         if (!cancelled) setShippingCost(cost);
       } catch {
         if (!cancelled) setShippingCost(0);
@@ -71,7 +60,7 @@ export default function CheckoutView() {
     return () => {
       cancelled = true;
     };
-  }, [fields.cityName]);
+  }, []);
 
   const fetchCart = useCallback(async () => {
     setCartLoading(true);
@@ -115,9 +104,6 @@ export default function CheckoutView() {
     isValidPhone11Digits(fields.phone.trim()) &&
     fields.address.trim() &&
     !getAddressLengthError(fields.address) &&
-    fields.cityId != null &&
-    fields.zoneId != null &&
-    fields.areaId != null &&
     codConfirmed &&
     !submitting;
 
@@ -145,12 +131,7 @@ export default function CheckoutView() {
         shippingPhone:       fields.phone.trim(),
         shippingAddress:     fields.address.trim(),
         shippingAddressLine: fields.address.trim(),
-        shippingCity:        fields.cityName,
-        shippingCityId:      fields.cityId!,
-        shippingZoneId:      fields.zoneId!,
-        shippingZoneName:    fields.zoneName,
-        shippingAreaId:      fields.areaId!,
-        shippingAreaName:    fields.areaName,
+        shippingCity:        '',
         ...(fields.postalCode.trim() ? { shippingPostalCode: fields.postalCode.trim() } : {}),
         paymentMethod:       'cod',
         deliveryMode:        'manual',

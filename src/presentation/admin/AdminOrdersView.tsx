@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import { AdminSidebarNav } from './AdminLayout';
 import MobileAdminOrdersView from './MobileAdminOrdersView';
-import StatusFilterTabs from './components/StatusFilterTabs';
+import StatusFilterTabs, { type StatusTabValue } from './components/StatusFilterTabs';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
 import { getAdminOrders } from '@/application/order/getAdminOrders';
@@ -155,16 +155,27 @@ export default function AdminOrdersView() {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading]       = useState(true);
 
-  // ── Date filter state (default to today) ───────────────────────────────────
-  const today = new Date();
-  const [selectedDay, setSelectedDay] = useState<number>(today.getDate());
-  const [selectedMonth, setSelectedMonth] = useState<number>(today.getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState<number>(today.getFullYear());
+  // ── Date filter state (nullable by default) ────────────────────────────────
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   const handleUpdateToToday = (date: { day?: number; month: number; year: number }) => {
-    if (date.day) setSelectedDay(date.day);
+    if (typeof date.day === 'number') setSelectedDay(date.day);
     setSelectedMonth(date.month);
     setSelectedYear(date.year);
+  };
+
+  const resetDateFilter = () => {
+    setSelectedDay(null);
+    setSelectedMonth(null);
+    setSelectedYear(null);
+  };
+
+  const handleStatusChange = (nextStatus: StatusTabValue) => {
+    if (nextStatus === 'all') {
+      resetDateFilter();
+    }
   };
 
   // ── selection state ─────────────────────────────────────────────────────────
@@ -176,16 +187,21 @@ export default function AdminOrdersView() {
     setSelected(new Set());
     getAdminOrders({ page, pageSize: 20, status: status ?? undefined })
       .then(({ items, pagination: pg }) => {
-        // Filter orders by selected date (client-side)
-        const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
-        const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999));
-        
-        const filteredOrders = items.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate >= startOfDay && orderDate <= endOfDay;
-        });
-        
+        let filteredOrders = items;
+
+        if (selectedDay !== null && selectedMonth !== null && selectedYear !== null) {
+          const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
+          const startOfDay = new Date(selectedDate);
+          startOfDay.setHours(0, 0, 0, 0);
+          const endOfDay = new Date(selectedDate);
+          endOfDay.setHours(23, 59, 59, 999);
+
+          filteredOrders = items.filter((order) => {
+            const orderDate = new Date(order.createdAt);
+            return orderDate >= startOfDay && orderDate <= endOfDay;
+          });
+        }
+
         setOrders(filteredOrders);
         setPagination(pg);
       })
@@ -263,6 +279,7 @@ export default function AdminOrdersView() {
           orders={orders}
           loading={loading}
           pagination={pagination}
+          onStatusChange={handleStatusChange}
         />
       </div>
 
@@ -290,9 +307,10 @@ export default function AdminOrdersView() {
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <DateFilterInline
                 showDay={true}
-                selectedDay={selectedDay}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
+                showEmptyOption={true}
+                selectedDay={selectedDay ?? undefined}
+                selectedMonth={selectedMonth ?? undefined}
+                selectedYear={selectedYear ?? undefined}
                 onDayChange={setSelectedDay}
                 onMonthChange={setSelectedMonth}
                 onYearChange={setSelectedYear}
@@ -302,7 +320,7 @@ export default function AdminOrdersView() {
 
             {/* Status Filter Tabs + Download Buttons (aligned horizontally) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-              <Suspense><StatusFilterTabs /></Suspense>
+              <Suspense><StatusFilterTabs onStatusChange={handleStatusChange} /></Suspense>
               
               {/* Batch Action Buttons - Aligned with status tabs */}
               {selected.size > 0 && (

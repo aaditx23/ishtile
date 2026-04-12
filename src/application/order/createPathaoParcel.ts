@@ -2,17 +2,9 @@ import { tokenStore } from '@/infrastructure/auth/tokenStore';
 import { getBaseUrl } from '@/shared/config/baseUrl';
 
 export interface CreatePathaoParcelInput {
-  recipientName?: string;
-  recipientPhone?: string;
-  recipientAddress?: string;
-  recipientCity?: number;
-  recipientZone?: number;
-  recipientArea?: number;
   itemWeight?: number;
   itemQuantity?: number;
-  amountToCollect?: number;
   deliveryType?: number;
-  specialInstruction?: string;
 }
 
 export interface CreatePathaoParcelResult {

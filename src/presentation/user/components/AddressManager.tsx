@@ -3,9 +3,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
-import { getCities } from '@/application/location/getCities';
-import { getZones } from '@/application/location/getZones';
-import { getAreas } from '@/application/location/getAreas';
 import {
   getAddresses,
   createAddress,
@@ -13,7 +10,6 @@ import {
   deleteAddress,
 } from '@/application/address/addresses';
 import type { UserAddressDto, CreateAddressInput } from '@/shared/types/api.types';
-import type { PathaoCityDto, PathaoZoneDto, PathaoAreaDto } from '@/shared/types/api.types';
 import type { User } from '@/domain/user/user.entity';
 import { Button } from '@/components/ui/button';
 import { ADDRESS_MAX_LENGTH, ADDRESS_MIN_LENGTH, getAddressLengthError } from '@/shared/utils/addressValidation';
@@ -25,13 +21,6 @@ const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: '0.7rem', fontWeight: 600,
   textTransform: 'uppercase', letterSpacing: '0.12em',
   color: 'var(--on-surface-muted)', marginBottom: '0.3rem',
-};
-
-const selectStyle: React.CSSProperties = {
-  width: '100%', padding: '0.5rem 0.75rem',
-  border: '1px solid var(--border)',
-  backgroundColor: 'var(--surface)', color: 'var(--on-surface)',
-  fontSize: '0.875rem', outline: 'none', cursor: 'pointer',
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -49,17 +38,12 @@ interface AddressFormState {
   name:        string;
   phone:       string;
   addressLine: string;
-  cityId:      number | null;
-  cityName:    string;
-  zoneId:      number | null;
-  areaId:      number | null;
   postalCode:  string;
   isDefault:   boolean;
 }
 
 const EMPTY_FORM: AddressFormState = {
   name: '', phone: '', addressLine: '',
-  cityId: null, cityName: '', zoneId: null, areaId: null,
   postalCode: '', isDefault: false,
 };
 
@@ -82,10 +66,6 @@ function AddressModal({
           name:        initial.name        ?? '',
           phone:       initial.phone       ?? '',
           addressLine: initial.addressLine,
-          cityId:      initial.cityId,
-          cityName:    initial.city,
-          zoneId:      initial.zoneId,
-          areaId:      initial.areaId,
           postalCode:  initial.postalCode  ?? '',
           isDefault:   initial.isDefault,
         }
@@ -97,39 +77,8 @@ function AddressModal({
   );
   const [saving, setSaving] = useState(false);
 
-  const [cities, setCities] = useState<PathaoCityDto[]>([]);
-  const [zones,  setZones]  = useState<PathaoZoneDto[]>([]);
-  const [areas,  setAreas]  = useState<PathaoAreaDto[]>([]);
-  const [citiesLoading, setCitiesLoading] = useState(true);
-  const [zonesLoading,  setZonesLoading]  = useState(false);
-  const [areasLoading,  setAreasLoading]  = useState(false);
-
-  useEffect(() => {
-    getCities().then(setCities).finally(() => setCitiesLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (form.cityId == null) { setZones([]); setAreas([]); return; }
-    setZonesLoading(true);
-    setZones([]); setAreas([]);
-    getZones(form.cityId).then(setZones).finally(() => setZonesLoading(false));
-  }, [form.cityId]);
-
-  useEffect(() => {
-    if (form.zoneId == null) { setAreas([]); return; }
-    setAreasLoading(true);
-    setAreas([]);
-    getAreas(form.zoneId).then(setAreas).finally(() => setAreasLoading(false));
-  }, [form.zoneId]);
-
   const set = <K extends keyof AddressFormState>(k: K, v: AddressFormState[K]) =>
     setForm(p => ({ ...p, [k]: v }));
-
-  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id   = e.target.value ? Number(e.target.value) : null;
-    const name = id ? e.target.options[e.target.selectedIndex].text : '';
-    setForm(p => ({ ...p, cityId: id, cityName: name, zoneId: null, areaId: null }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,8 +88,8 @@ function AddressModal({
 
     const addressError = getAddressLengthError(form.addressLine);
     const phoneError = getPhone11DigitError(form.phone);
-    if (!form.addressLine.trim() || !form.cityName) {
-      toast.error('Address line and city are required.');
+    if (!form.addressLine.trim()) {
+      toast.error('Address line is required.');
       return;
     }
     if (phoneError) {
@@ -155,13 +104,10 @@ function AddressModal({
     try {
       const payload: CreateAddressInput = {
         addressLine: form.addressLine.trim(),
-        city:        form.cityName,
+        city:        initial?.city ?? '',
         name:        form.name.trim()       || undefined,
         phone:       form.phone.trim()      || undefined,
         postalCode:  form.postalCode.trim() || undefined,
-        cityId:      form.cityId ?? undefined,
-        zoneId:      form.zoneId ?? undefined,
-        areaId:      form.areaId ?? undefined,
         isDefault:   form.isDefault,
       };
       const saved = initial
@@ -227,43 +173,6 @@ function AddressModal({
             />
           </Field>
 
-          <Field label="City *">
-            <select
-              style={{ ...selectStyle, opacity: citiesLoading || saving ? 0.6 : 1 }}
-              value={form.cityId ?? ''}
-              onChange={handleCityChange}
-              disabled={citiesLoading || saving}
-              required
-            >
-              <option value="">{citiesLoading ? 'Loading…' : 'Select city'}</option>
-              {cities.map(c => <option key={c.cityId} value={c.cityId}>{c.cityName}</option>)}
-            </select>
-          </Field>
-
-          <Field label="Zone">
-            <select
-              style={{ ...selectStyle, opacity: !form.cityId || zonesLoading || saving ? 0.6 : 1 }}
-              value={form.zoneId ?? ''}
-              onChange={e => setForm(p => ({ ...p, zoneId: e.target.value ? Number(e.target.value) : null, areaId: null }))}
-              disabled={!form.cityId || zonesLoading || saving}
-            >
-              <option value="">{zonesLoading ? 'Loading…' : 'Select zone'}</option>
-              {zones.map(z => <option key={z.zoneId} value={z.zoneId}>{z.zoneName}</option>)}
-            </select>
-          </Field>
-
-          <Field label="Area">
-            <select
-              style={{ ...selectStyle, opacity: !form.zoneId || areasLoading || saving ? 0.6 : 1 }}
-              value={form.areaId ?? ''}
-              onChange={e => set('areaId', e.target.value ? Number(e.target.value) : null)}
-              disabled={!form.zoneId || areasLoading || saving}
-            >
-              <option value="">{areasLoading ? 'Loading…' : 'Select area'}</option>
-              {areas.map(a => <option key={a.areaId} value={a.areaId}>{a.areaName}</option>)}
-            </select>
-          </Field>
-
           <Field label="Postal Code">
             <Input value={form.postalCode} onChange={e => set('postalCode', e.target.value)} disabled={saving} placeholder="Optional" />
           </Field>
@@ -316,7 +225,7 @@ function AddressCard({
       <p style={{ fontSize: '0.825rem', color: 'var(--on-surface-muted)', margin: 0 }}>
         {address.addressLine}
         {address.area ? `, ${address.area}` : ''}
-        {`, ${address.city}`}
+        {address.city ? `, ${address.city}` : ''}
         {address.postalCode ? ` - ${address.postalCode}` : ''}
       </p>
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>

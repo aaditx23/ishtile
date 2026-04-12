@@ -702,3 +702,93 @@ export const updateCustomerNotes = mutation({
     return { success: true };
   },
 });
+
+// ─── Update shipping details (admin) ─────────────────────────────────────────
+
+export const updateShippingDetails = mutation({
+  args: {
+    orderId: v.id("orders"),
+    adminUserId: v.id("users"),
+    shippingName: v.optional(v.string()),
+    shippingPhone: v.optional(v.string()),
+    shippingAddress: v.optional(v.string()),
+    shippingAddressLine: v.optional(v.string()),
+    shippingPostalCode: v.optional(v.union(v.string(), v.null())),
+    shippingCity: v.optional(v.string()),
+    shippingCityId: v.optional(v.union(v.number(), v.null())),
+    shippingZoneId: v.optional(v.union(v.number(), v.null())),
+    shippingZoneName: v.optional(v.union(v.string(), v.null())),
+    shippingAreaId: v.optional(v.union(v.number(), v.null())),
+    shippingAreaName: v.optional(v.union(v.string(), v.null())),
+  },
+  handler: async (ctx, args) => {
+    const {
+      orderId,
+      adminUserId,
+      shippingName,
+      shippingPhone,
+      shippingAddress,
+      shippingAddressLine,
+      shippingPostalCode,
+      shippingCity,
+      shippingCityId,
+      shippingZoneId,
+      shippingZoneName,
+      shippingAreaId,
+      shippingAreaName,
+    } = args;
+
+    const order = await ctx.db.get(orderId);
+    if (!order) throw new Error("Order not found");
+
+    const patch: Record<string, unknown> = {};
+
+    if (shippingName !== undefined) patch.shippingName = shippingName.trim();
+    if (shippingPhone !== undefined) patch.shippingPhone = shippingPhone.trim();
+
+    if (shippingAddressLine !== undefined) {
+      const nextAddressLine = shippingAddressLine.trim();
+      patch.shippingAddressLine = nextAddressLine;
+      patch.shippingAddress = nextAddressLine;
+    } else if (shippingAddress !== undefined) {
+      const nextAddress = shippingAddress.trim();
+      patch.shippingAddress = nextAddress;
+      patch.shippingAddressLine = nextAddress;
+    }
+
+    if (shippingPostalCode !== undefined) {
+      const normalized = shippingPostalCode === null ? "" : shippingPostalCode.trim();
+      patch.shippingPostalCode = normalized || undefined;
+    }
+
+    if (shippingCity !== undefined) patch.shippingCity = shippingCity.trim();
+    if (shippingCityId !== undefined) patch.shippingCityId = shippingCityId ?? undefined;
+    if (shippingZoneId !== undefined) patch.shippingZoneId = shippingZoneId ?? undefined;
+
+    if (shippingZoneName !== undefined) {
+      const normalized = shippingZoneName === null ? "" : shippingZoneName.trim();
+      patch.shippingZoneName = normalized || undefined;
+    }
+
+    if (shippingAreaId !== undefined) patch.shippingAreaId = shippingAreaId ?? undefined;
+
+    if (shippingAreaName !== undefined) {
+      const normalized = shippingAreaName === null ? "" : shippingAreaName.trim();
+      patch.shippingAreaName = normalized || undefined;
+    }
+
+    if (Object.keys(patch).length === 0) return { success: true };
+
+    await ctx.db.patch(orderId, patch);
+
+    await ctx.db.insert("auditLogs", {
+      userId: adminUserId,
+      actionType: "update",
+      entityType: "order",
+      entityId: orderId,
+      description: `Order ${order.orderNumber}: shipping details updated`,
+    });
+
+    return { success: true };
+  },
+});

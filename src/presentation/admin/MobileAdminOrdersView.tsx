@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import AdminMobileNavStrip from './components/AdminMobileNavStrip';
-import StatusFilterTabs from './components/StatusFilterTabs';
+import StatusFilterTabs, { type StatusTabValue } from './components/StatusFilterTabs';
 import Pagination from '@/presentation/shared/components/Pagination';
 import OrderStatusBadge from '@/presentation/orders/components/OrderStatusBadge';
 import type { Order } from '@/domain/order/order.entity';
@@ -16,9 +16,10 @@ interface MobileAdminOrdersViewProps {
   orders:     Order[];
   loading:    boolean;
   pagination: PaginationMeta | null;
+  onStatusChange?: (status: StatusTabValue) => void;
 }
 
-export default function MobileAdminOrdersView({ orders, loading, pagination }: MobileAdminOrdersViewProps) {
+export default function MobileAdminOrdersView({ orders, loading, pagination, onStatusChange }: MobileAdminOrdersViewProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '1.25rem 1rem' }}>
@@ -29,7 +30,7 @@ export default function MobileAdminOrdersView({ orders, loading, pagination }: M
         <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Orders</h1>
 
         {/* Status filter tabs */}
-        <Suspense><StatusFilterTabs /></Suspense>
+        <Suspense><StatusFilterTabs onStatusChange={onStatusChange} /></Suspense>
 
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>

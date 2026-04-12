@@ -3,7 +3,7 @@ import { asId, fromId, buildPagination } from './convexHelpers';
 import { api } from '../../../convex/_generated/api';
 import { requireConvexUserId } from './convexAuth';
 import type { Order, OrderItem } from '@/domain/order/order.entity';
-import type { UpdateOrderStatusPayload } from '@/domain/order/admin-order.repository';
+import type { UpdateOrderStatusPayload, UpdateOrderShippingPayload } from '@/domain/order/admin-order.repository';
 import type { ListOrdersParams, PaginatedOrders } from '@/domain/order/order.repository';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,6 +113,27 @@ export class AdminOrderConvexRepository {
     });
 
     if (!res) throw new Error('Order not found after delivery mode update');
+    return mapOrder(res);
+  }
+
+  async updateShippingDetails(orderId: number, payload: UpdateOrderShippingPayload): Promise<Order> {
+    const adminUserId = requireConvexUserId();
+
+    await convex.mutation((api as any).orders.mutations.updateShippingDetails, {
+      orderId: fromId(orderId),
+      adminUserId,
+      ...payload,
+    });
+
+    const res = await convex.query(api.orders.queries.getOrderById, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      orderId: fromId(orderId) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      userId: adminUserId as any,
+      role: 'admin',
+    });
+
+    if (!res) throw new Error('Order not found after shipping update');
     return mapOrder(res);
   }
 }

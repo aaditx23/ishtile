@@ -101,13 +101,14 @@ export function DateFilter({
 
 // Legacy inline-style version (matches existing analytics page styling)
 interface DateFilterInlineProps {
-  selectedDay?: number;
-  selectedMonth?: number;
-  selectedYear?: number;
-  onDayChange?: (day: number) => void;
-  onMonthChange: (month: number) => void;
-  onYearChange: (year: number) => void;
+  selectedDay?: number | null;
+  selectedMonth?: number | null;
+  selectedYear?: number | null;
+  onDayChange?: (day: number | null) => void;
+  onMonthChange: (month: number | null) => void;
+  onYearChange: (year: number | null) => void;
   showDay?: boolean;
+  showEmptyOption?: boolean;
   yearRange?: number;
   style?: React.CSSProperties;
 }
@@ -120,18 +121,24 @@ export function DateFilterInline({
   onMonthChange,
   onYearChange,
   showDay = false,
+  showEmptyOption = false,
   yearRange = 6,
   style,
 }: DateFilterInlineProps) {
   const today = new Date();
-  const currentDay = selectedDay ?? today.getDate();
-  const currentMonth = selectedMonth ?? today.getMonth() + 1;
-  const currentYear = selectedYear ?? today.getFullYear();
-  
-  const yearOptions = Array.from({ length: yearRange }, (_, i) => currentYear - i);
-  
-  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+  const baseYear = today.getFullYear();
+  const currentDay = selectedDay ?? '';
+  const currentMonth = selectedMonth ?? (showEmptyOption ? '' : today.getMonth() + 1);
+  const currentYear = selectedYear ?? (showEmptyOption ? '' : baseYear);
+
+  const yearOptions = Array.from({ length: yearRange }, (_, i) => baseYear - i);
+
+  const resolvedMonth = selectedMonth ?? today.getMonth() + 1;
+  const resolvedYear = selectedYear ?? baseYear;
+  const daysInMonth = new Date(resolvedYear, resolvedMonth, 0).getDate();
   const dayOptions = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  const parseNullableNumber = (value: string) => (value === '' ? null : Number(value));
 
   const selectStyle: React.CSSProperties = {
     border: '1px solid var(--border)',
@@ -146,8 +153,9 @@ export function DateFilterInline({
       {showDay && onDayChange && (
         <select
           value={currentDay}
-          onChange={(e) => onDayChange(Number(e.target.value))}
+          onChange={(e) => onDayChange(parseNullableNumber(e.target.value))}
           style={selectStyle}
+          disabled={showEmptyOption && (selectedMonth == null || selectedYear == null)}
         >
           <option value="">Day</option>
           {dayOptions.map((day) => (
@@ -160,9 +168,10 @@ export function DateFilterInline({
 
       <select
         value={currentMonth}
-        onChange={(e) => onMonthChange(Number(e.target.value))}
+        onChange={(e) => onMonthChange(parseNullableNumber(e.target.value))}
         style={selectStyle}
       >
+        {showEmptyOption && <option value="">Select month</option>}
         {MONTH_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -172,9 +181,10 @@ export function DateFilterInline({
 
       <select
         value={currentYear}
-        onChange={(e) => onYearChange(Number(e.target.value))}
+        onChange={(e) => onYearChange(parseNullableNumber(e.target.value))}
         style={selectStyle}
       >
+        {showEmptyOption && <option value="">Select year</option>}
         {yearOptions.map((year) => (
           <option key={year} value={year}>
             {year}
