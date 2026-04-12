@@ -14,6 +14,7 @@ import {
 import { HamburgerIcon } from '@/components/icons';
 import { useCurrentUser } from '@/presentation/shared/hooks/useCurrentUser';
 import { tokenStore } from '@/infrastructure/auth/tokenStore';
+import { getSiteBranding } from '@/application/customizations/heroCustomizations';
 import { MobileNav } from './MobileNav';
 import { SearchBar } from './SearchBar';
 import { CartButton } from './CartButton';
@@ -46,6 +47,8 @@ export default function SiteHeader() {
 
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
+  const [siteName, setSiteName]       = useState('Ishtile');
+  const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
 
   const isAuth  = auth.status === 'authenticated';
   const isAdmin = isAuth && auth.user.role === 'admin';
@@ -71,6 +74,25 @@ export default function SiteHeader() {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    getSiteBranding()
+      .then((branding) => {
+        if (!mounted) return;
+        setSiteName(branding.siteName?.trim() || 'Ishtile');
+        setBrandLogoUrl(branding.brandLogoUrl ?? null);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setSiteName('Ishtile');
+        setBrandLogoUrl(null);
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const closeMobile = () => setMobileOpen(false);
@@ -117,7 +139,7 @@ export default function SiteHeader() {
                 </SheetTrigger>
                 <SheetContent side="left" className="bg-[var(--brand-dark)] text-white border-r border-white/10 w-72 overflow-y-auto">
                   <SheetTitle className="text-white tracking-widest text-sm uppercase font-black mb-6 text-center pt-4">
-                    Ishtile
+                    {siteName}
                   </SheetTitle>
                   
                   <MobileNav
@@ -192,10 +214,19 @@ export default function SiteHeader() {
         {/* ── ROW 2: CENTER (Center alignment) ────────────────────────────── */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
           <div style={{ pointerEvents: 'auto' }}>
-            <Link href="/" aria-label="Ishtile Home" style={{ textDecoration: 'none' }}>
-              <span style={{ fontSize: '1.125rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#fff', userSelect: 'none' }}>
-                Ishtile
-              </span>
+            <Link href="/" aria-label={`${siteName} Home`} style={{ textDecoration: 'none' }}>
+              {brandLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={brandLogoUrl}
+                  alt={siteName}
+                  style={{ height: '2rem', width: 'auto', maxWidth: '10rem', objectFit: 'contain', userSelect: 'none' }}
+                />
+              ) : (
+                <span style={{ fontSize: '1.125rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#fff', userSelect: 'none' }}>
+                  {siteName}
+                </span>
+              )}
             </Link>
           </div>
         </div>

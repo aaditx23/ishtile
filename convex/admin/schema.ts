@@ -5,6 +5,8 @@ export const adminTables = {
   adminSettings: defineTable({
     insideDhakaShippingCost:  v.number(),
     outsideDhakaShippingCost: v.number(),
+    siteName: v.optional(v.string()),
+    brandLogoUrl: v.optional(v.string()),
     // Future settings can be added here:
     // taxRate: v.optional(v.number()),
     // minOrderAmount: v.optional(v.number()),

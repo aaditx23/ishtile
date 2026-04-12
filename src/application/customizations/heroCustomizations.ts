@@ -30,6 +30,11 @@ export interface HeroImagePayload {
   isActive: boolean;
 }
 
+export interface SiteBranding {
+  siteName: string;
+  brandLogoUrl: string | null;
+}
+
 function normalizeOptional(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
@@ -115,6 +120,46 @@ export async function uploadHeroImage(file: File): Promise<string> {
   const first = urls[0];
   if (typeof first !== 'string' || first.length === 0) {
     throw new Error('Image upload failed');
+  }
+
+  return first;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapBranding(raw: any): SiteBranding {
+  return {
+    siteName: String(raw?.siteName ?? 'Ishtile'),
+    brandLogoUrl: raw?.brandLogoUrl ? String(raw.brandLogoUrl) : null,
+  };
+}
+
+export async function getSiteBranding(): Promise<SiteBranding> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row = await convex.query((api as any).admin.queries.getSiteBranding, {});
+  return mapBranding(row);
+}
+
+export async function updateSiteBranding(payload: SiteBranding): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await convex.mutation((api as any).admin.mutations.updateSiteBranding, {
+    siteName: payload.siteName.trim(),
+    brandLogoUrl: normalizeOptional(payload.brandLogoUrl ?? undefined),
+  });
+}
+
+export async function uploadBrandLogo(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('files', file);
+
+  const res = await apiClient.postFormData<{ success: boolean; message: string; listData?: unknown }>(
+    ENDPOINTS.files.upload('branding'),
+    formData,
+  );
+
+  const urls = Array.isArray(res.listData) ? res.listData : [];
+  const first = urls[0];
+  if (typeof first !== 'string' || first.length === 0) {
+    throw new Error('Logo upload failed');
   }
 
   return first;

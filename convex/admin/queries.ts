@@ -187,6 +187,8 @@ export const getAdminSettings = query({
       return {
         insideDhakaShippingCost: 60,
         outsideDhakaShippingCost: 120,
+        siteName: 'Ishtile',
+        brandLogoUrl: null,
       };
     }
     
@@ -194,6 +196,20 @@ export const getAdminSettings = query({
       id: settings._id,
       insideDhakaShippingCost: settings.insideDhakaShippingCost,
       outsideDhakaShippingCost: settings.outsideDhakaShippingCost,
+      siteName: settings.siteName ?? 'Ishtile',
+      brandLogoUrl: settings.brandLogoUrl ?? null,
+    };
+  },
+});
+
+export const getSiteBranding = query({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db.query('adminSettings').first();
+
+    return {
+      siteName: settings?.siteName?.trim() || 'Ishtile',
+      brandLogoUrl: settings?.brandLogoUrl ?? null,
     };
   },
 });

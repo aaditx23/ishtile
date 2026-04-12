@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import AdminCustomizationsView from '@/presentation/admin/AdminCustomizationsView';
+import AdminCustomizationsView from '@/presentation/admin/customizations/AdminCustomizationsView';
 
 export const metadata: Metadata = { title: 'Customizations — Admin' };
 

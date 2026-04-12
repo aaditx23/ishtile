@@ -1,24 +1,7 @@
-'use client';
-
-import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
-import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
-import { AdminSidebarNav } from './AdminLayout';
-import AdminMobileNavStrip from './components/AdminMobileNavStrip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  createHeroImage,
-  deleteHeroImage,
-  listHeroImages,
-  setHeroImageActive,
-  updateHeroImage,
-  uploadHeroImage,
-  type HeroContentPosition,
-  type HeroImagePayload,
-  type HeroImageRecord,
-} from '@/application/customizations/heroCustomizations';
-import { buildUploadSizeError, splitFilesByUploadLimit } from '@/presentation/admin/utils/uploadValidation';
+import type { HeroImageRecord } from '@/application/customizations/heroCustomizations';
+import type { HeroFieldSetter, HeroFormState } from './types';
 
 const labelStyle: React.CSSProperties = {
   fontSize: '0.75rem',
@@ -44,243 +27,61 @@ const primaryBtn: React.CSSProperties = {
   fontWeight: 700,
 };
 
-interface HeroFormState {
-  url: string;
-  title: string;
-  subtitle: string;
-  contentPosition: HeroContentPosition;
-  showButton: boolean;
-  buttonText: string;
-  buttonUrl: string;
-  isActive: boolean;
+interface HeroSectionProps {
+  form: HeroFormState;
+  editingId: string | null;
+  submitLabel: string;
+  submitting: boolean;
+  uploading: boolean;
+  loading: boolean;
+  items: HeroImageRecord[];
+  onSet: HeroFieldSetter;
+  onUpload: (file: File | null) => Promise<void>;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onCancelEdit: () => void;
+  onEdit: (item: HeroImageRecord) => void;
+  onToggle: (item: HeroImageRecord) => Promise<void>;
+  onDelete: (item: HeroImageRecord) => Promise<void>;
 }
 
-const INITIAL_FORM: HeroFormState = {
-  url: '',
-  title: '',
-  subtitle: '',
-  contentPosition: 'left',
-  showButton: false,
-  buttonText: '',
-  buttonUrl: '',
-  isActive: true,
-};
-
-function toPayload(form: HeroFormState): HeroImagePayload {
-  return {
-    url: form.url.trim(),
-    title: form.title.trim(),
-    subtitle: form.subtitle,
-    contentPosition: form.contentPosition,
-    showButton: form.showButton,
-    buttonText: form.buttonText,
-    buttonUrl: form.buttonUrl,
-    isActive: form.isActive,
-  };
-}
-
-function toForm(record: HeroImageRecord): HeroFormState {
-  return {
-    url: record.url,
-    title: record.title,
-    subtitle: record.subtitle ?? '',
-    contentPosition: record.contentPosition,
-    showButton: record.showButton,
-    buttonText: record.buttonText ?? '',
-    buttonUrl: record.buttonUrl ?? '',
-    isActive: record.isActive,
-  };
-}
-
-export default function AdminCustomizationsView() {
-  const [items, setItems] = useState<HeroImageRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<HeroFormState>(INITIAL_FORM);
-
-  const submitLabel = useMemo(() => (editingId ? 'Update Hero' : 'Add Hero'), [editingId]);
-
-  async function loadData() {
-    try {
-      const list = await listHeroImages();
-      setItems(list);
-    } catch {
-      toast.error('Failed to load hero images.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  function set<K extends keyof HeroFormState>(key: K, value: HeroFormState[K]) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function resetForm() {
-    setEditingId(null);
-    setForm(INITIAL_FORM);
-  }
-
-  async function onUpload(file: File | null) {
-    if (!file) return;
-    const { accepted, rejected } = splitFilesByUploadLimit([file]);
-    if (rejected.length > 0) {
-      toast.error(buildUploadSizeError(rejected));
-      return;
-    }
-    const validFile = accepted[0];
-    if (!validFile) return;
-    setUploading(true);
-    try {
-      const url = await uploadHeroImage(validFile);
-      set('url', url);
-      toast.success('Image uploaded.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Upload failed.');
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    const formEl = e.currentTarget as HTMLFormElement;
-    if (!formEl.reportValidity()) return;
-
-    if (!form.url.trim() || !form.title.trim()) {
-      toast.error('Image URL and title are required.');
-      return;
-    }
-
-    if (form.showButton && (!form.buttonText.trim() || !form.buttonUrl.trim())) {
-      toast.error('Button text and URL are required when button is enabled.');
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const payload = toPayload(form);
-      if (editingId) {
-        await updateHeroImage(editingId, payload);
-        toast.success('Hero updated.');
-      } else {
-        await createHeroImage(payload);
-        toast.success('Hero added.');
-      }
-      resetForm();
-      await loadData();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to save hero image.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function handleToggle(item: HeroImageRecord) {
-    try {
-      await setHeroImageActive(item.id, !item.isActive);
-      setItems((prev) => prev.map((row) => (row.id === item.id ? { ...row, isActive: !row.isActive } : row)));
-      toast.success(item.isActive ? 'Hero deactivated.' : 'Hero activated.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update active state.');
-    }
-  }
-
-  async function handleDelete(item: HeroImageRecord) {
-    if (!window.confirm(`Delete hero image \"${item.title}\"?`)) return;
-
-    try {
-      await deleteHeroImage(item.id);
-      if (editingId === item.id) resetForm();
-      setItems((prev) => prev.filter((row) => row.id !== item.id));
-      toast.success('Hero deleted.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to delete hero image.');
-    }
-  }
-
+export default function HeroSection({
+  form,
+  editingId,
+  submitLabel,
+  submitting,
+  uploading,
+  loading,
+  items,
+  onSet,
+  onUpload,
+  onSubmit,
+  onCancelEdit,
+  onEdit,
+  onToggle,
+  onDelete,
+}: HeroSectionProps) {
   return (
-    <ShopLayout>
-      <div className="block lg:hidden" style={{ padding: '1.25rem 1rem' }}>
-        <AdminMobileNavStrip activeHref="/admin/customizations" />
+    <>
+      <HeroFormCard
+        form={form}
+        editingId={editingId}
+        submitLabel={submitLabel}
+        submitting={submitting}
+        uploading={uploading}
+        onSet={onSet}
+        onUpload={onUpload}
+        onSubmit={onSubmit}
+        onCancelEdit={onCancelEdit}
+      />
 
-        <h1 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem' }}>Customizations</h1>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <HeroFormCard
-            form={form}
-            editingId={editingId}
-            submitLabel={submitLabel}
-            submitting={submitting}
-            uploading={uploading}
-            onSet={set}
-            onUpload={onUpload}
-            onSubmit={handleSubmit}
-            onCancelEdit={resetForm}
-          />
-
-          <HeroListCard
-            items={items}
-            loading={loading}
-            onEdit={(item) => {
-              setEditingId(item.id);
-              setForm(toForm(item));
-            }}
-            onToggle={handleToggle}
-            onDelete={handleDelete}
-          />
-        </div>
-      </div>
-
-      <div
-        className="hidden lg:grid"
-        style={{
-          maxWidth: '84rem',
-          margin: '0 auto',
-          padding: '2rem 1.25rem',
-          gridTemplateColumns: '13rem 1fr',
-          gap: '2rem',
-          alignItems: 'start',
-        }}
-      >
-        <AdminSidebarNav activeHref="/admin/customizations" />
-
-        <main>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Customizations</h1>
-
-            <HeroFormCard
-              form={form}
-              editingId={editingId}
-              submitLabel={submitLabel}
-              submitting={submitting}
-              uploading={uploading}
-              onSet={set}
-              onUpload={onUpload}
-              onSubmit={handleSubmit}
-              onCancelEdit={resetForm}
-            />
-
-            <HeroListCard
-              items={items}
-              loading={loading}
-              onEdit={(item) => {
-                setEditingId(item.id);
-                setForm(toForm(item));
-              }}
-              onToggle={handleToggle}
-              onDelete={handleDelete}
-            />
-          </div>
-        </main>
-      </div>
-    </ShopLayout>
+      <HeroListCard
+        items={items}
+        loading={loading}
+        onEdit={onEdit}
+        onToggle={onToggle}
+        onDelete={onDelete}
+      />
+    </>
   );
 }
 
@@ -300,7 +101,7 @@ function HeroFormCard({
   submitLabel: string;
   submitting: boolean;
   uploading: boolean;
-  onSet: <K extends keyof HeroFormState>(key: K, value: HeroFormState[K]) => void;
+  onSet: HeroFieldSetter;
   onUpload: (file: File | null) => Promise<void>;
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onCancelEdit: () => void;
@@ -505,7 +306,7 @@ function HeroListCard({
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: '0.85rem', fontWeight: 700 }}>{item.title}</p>
                 <p style={{ fontSize: '0.75rem', color: 'var(--on-surface-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {item.subtitle || '—'}
+                  {item.subtitle || '-'}
                 </p>
                 <p style={{ fontSize: '0.72rem', color: 'var(--on-surface-muted)', marginTop: '0.35rem' }}>
                   {item.contentPosition.toUpperCase()} · {item.showButton ? 'Button On' : 'Button Off'} · {item.isActive ? 'Active' : 'Inactive'}

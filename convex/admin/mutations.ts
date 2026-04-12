@@ -177,6 +177,8 @@ export const updateAdminSettings = mutation({
   args: {
     insideDhakaShippingCost: v.optional(v.number()),
     outsideDhakaShippingCost: v.optional(v.number()),
+    siteName: v.optional(v.string()),
+    brandLogoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // Get existing settings or create new one
@@ -191,6 +193,14 @@ export const updateAdminSettings = mutation({
       if (args.outsideDhakaShippingCost !== undefined) {
         updates.outsideDhakaShippingCost = args.outsideDhakaShippingCost;
       }
+      if (args.siteName !== undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (updates as any).siteName = args.siteName;
+      }
+      if (args.brandLogoUrl !== undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (updates as any).brandLogoUrl = args.brandLogoUrl;
+      }
       
       await ctx.db.patch(existing._id, updates);
       return { id: existing._id };
@@ -199,9 +209,43 @@ export const updateAdminSettings = mutation({
       const id = await ctx.db.insert("adminSettings", {
         insideDhakaShippingCost: args.insideDhakaShippingCost ?? 60,
         outsideDhakaShippingCost: args.outsideDhakaShippingCost ?? 120,
+        siteName: args.siteName ?? 'Ishtile',
+        brandLogoUrl: args.brandLogoUrl,
       });
       return { id };
     }
+  },
+});
+
+export const updateSiteBranding = mutation({
+  args: {
+    siteName: v.string(),
+    brandLogoUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, { siteName, brandLogoUrl }) => {
+    const normalizedSiteName = siteName.trim();
+    if (!normalizedSiteName) {
+      throw new Error('Site name is required');
+    }
+
+    const normalizedLogoUrl = brandLogoUrl?.trim();
+    const existing = await ctx.db.query('adminSettings').first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        siteName: normalizedSiteName,
+        brandLogoUrl: normalizedLogoUrl,
+      });
+      return { id: existing._id };
+    }
+
+    const id = await ctx.db.insert('adminSettings', {
+      insideDhakaShippingCost: 60,
+      outsideDhakaShippingCost: 120,
+      siteName: normalizedSiteName,
+      brandLogoUrl: normalizedLogoUrl,
+    });
+    return { id };
   },
 });
 
