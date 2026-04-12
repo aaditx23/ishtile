@@ -81,7 +81,7 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
             href="/lookbook"
             style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'underline', textUnderlineOffset: '4px' }}
           >
-            View Lookbook
+            View Lookbooks
           </Link>
         </div>
 
@@ -102,7 +102,7 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
             ref={sliderRef}
             style={{
               display: 'flex',
-              gap: '0.85rem',
+              gap: 0,
               overflowX: 'auto',
               scrollSnapType: 'x mandatory',
               scrollbarWidth: 'none',
@@ -115,8 +115,8 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
               <article
                 key={item.id}
                 style={{
-                  flex: '0 0 min(100%, clamp(260px, 38vw, 420px))',
-                  minWidth: 'min(100%, clamp(260px, 38vw, 420px))',
+                  flex: '0 0 min(100%, clamp(360px, 52vw, 640px))',
+                  minWidth: 'min(100%, clamp(360px, 52vw, 640px))',
                   scrollSnapAlign: 'start',
                   border: '1px solid var(--brand-dark)',
                   backgroundColor: 'var(--surface)',
@@ -124,7 +124,7 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
                 }}
               >
                 <Link href={`/lookbook/${item.slug}`}>
-                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4 / 5', borderBottom: '1px solid var(--brand-dark)', background: 'var(--surface-muted)' }}>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '5 / 4', borderBottom: '1px solid var(--brand-dark)', background: 'var(--surface-muted)' }}>
                     <Image src={item.coverImageUrl} alt={item.title} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 66vw" />
                   </div>
                 </Link>

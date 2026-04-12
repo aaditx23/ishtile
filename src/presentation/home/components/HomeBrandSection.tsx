@@ -14,6 +14,7 @@ export default function HomeBrandSection({ brands }: HomeBrandSectionProps) {
       items={brands}
       queryKey="brand"
       sectionPadding="1.25rem 0 2.25rem"
+      center
     />
   );
 }

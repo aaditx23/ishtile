@@ -18,6 +18,7 @@ interface ExploreBlockProps {
   queryKey: 'category' | 'brand';
   sectionPadding: string;
   showShopAll?: boolean;
+  center?: boolean;
 }
 
 export default function ExploreBlock({
@@ -26,6 +27,7 @@ export default function ExploreBlock({
   queryKey,
   sectionPadding,
   showShopAll = false,
+  center = false,
 }: ExploreBlockProps) {
   const visibleItems = items.slice(0, 6);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -86,7 +88,16 @@ export default function ExploreBlock({
           padding: '1.15rem',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: center ? 'column' : 'row',
+            alignItems: 'center',
+            justifyContent: center ? 'center' : 'space-between',
+            gap: center ? '0.45rem' : '0.5rem',
+            textAlign: center ? 'center' : 'left',
+          }}
+        >
           <h2 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{title}</h2>
           {showShopAll ? (
             <Link
@@ -118,6 +129,7 @@ export default function ExploreBlock({
               gap: '0.75rem',
               overflowX: 'auto',
               scrollSnapType: 'x mandatory',
+              justifyContent: center && !canScroll ? 'center' : 'flex-start',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               paddingBottom: '0.25rem',

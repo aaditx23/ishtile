@@ -14,7 +14,7 @@ export default function CategoryExploreBlock({ categories }: CategoryExploreBloc
       items={categories}
       queryKey="category"
       sectionPadding="1.25rem 0 0"
-      showShopAll
+      center
     />
   );
 }

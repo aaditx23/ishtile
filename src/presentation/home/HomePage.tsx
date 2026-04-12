@@ -34,8 +34,9 @@ export default function HomePage({ products, trendingProducts, categories, brand
         {products.length > 0 && <HomeProductSection products={products} />}
         {categories.length > 0 && <CategoryExploreBlock categories={categories} />}
         {trendingProducts.length > 0 && <HomeProductSection products={trendingProducts} title="Trending Products" />}
-        {lookbooks.length > 0 && <LookbookSection lookbooks={lookbooks} />}
         {brands.length > 0 && <HomeBrandSection brands={brands} />}
+        {lookbooks.length > 0 && <LookbookSection lookbooks={lookbooks} />}
+        
       </div>
     </ShopLayout>
   );
