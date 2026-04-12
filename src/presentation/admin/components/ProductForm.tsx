@@ -83,6 +83,10 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (imageUrls.length === 0 && newFiles.length === 0) {
+      toast.error('At least one product image is required.');
+      return;
+    }
     setSaving(true);
     try {
       let finalImageUrls = imageUrls;
@@ -225,7 +229,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
 
       {/* Images */}
       <div>
-        <label style={labelStyle}>Images</label>
+        <label style={labelStyle}>Images *</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           {/* Existing image thumbnails */}
           {imageUrls.map((url, i) => (

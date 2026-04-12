@@ -110,6 +110,7 @@ export default function AdminNewProductView() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.categoryId === 0) { toast.error('Please select a category.'); return; }
+    if (images.length === 0) { toast.error('At least one product image is required.'); return; }
     if (variants.length === 0) { toast.error('At least one variant is required.'); return; }
     
     for (let i = 0; i < variants.length; i++) {
@@ -274,7 +275,7 @@ export default function AdminNewProductView() {
 
             {/* Images upload */}
             <div>
-              <label style={labelStyle}>Images (optional)</label>
+              <label style={labelStyle}>Images *</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {/* Preview thumbnails of selected files */}
                 {images.map((file, i) => (
