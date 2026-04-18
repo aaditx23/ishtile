@@ -1,176 +1,247 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { FiInstagram, FiFacebook, FiMessageCircle } from 'react-icons/fi';
-import { Separator } from '@/components/ui/separator';
-import { getCategories } from '@/application/category/getCategories';
-import { getBrands } from '@/application/brand/getBrands';
+import { FiFacebook, FiInstagram, FiMessageCircle, FiPhone } from 'react-icons/fi';
+import { Antic_Didone } from 'next/font/google';
 
-function FooterColumn({
-  title,
-  links,
-  seeMoreHref,
-}: {
-  title: string;
-  links: { label: string; href: string }[];
-  seeMoreHref?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white">{title}</p>
-      <ul className="flex flex-col gap-2.5">
-        {links.map((l) => (
-          <li key={l.label}>
-            <Link
-              href={l.href}
-              className="text-sm text-neutral-400 hover:text-white transition-colors duration-150"
-            >
-              {l.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {seeMoreHref && (
-        <Link href={seeMoreHref} className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-400 hover:text-white transition-colors duration-150">
-          See more
-        </Link>
-      )}
-    </div>
-  );
-}
+// 2. Initialize it (do this outside of your component function)
+const customFont = Antic_Didone({ 
+  subsets: ['latin'],
+  weight: '400', // Matching the weight from your inline styles
+  display: 'swap',
+});
 
 export default function SiteFooter() {
-  const [categoryLinks, setCategoryLinks] = useState<{ label: string; href: string }[]>([]);
-  const [brandLinks, setBrandLinks] = useState<{ label: string; href: string }[]>([]);
-
   const facebookUrl = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL || 'https://facebook.com';
   const instagramUrl = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL || 'https://instagram.com';
   const whatsappNumberRaw = process.env.NEXT_PUBLIC_SOCIAL_WHATSAPP_NUMBER || '';
   const whatsappNumber = whatsappNumberRaw.replace(/\D/g, '');
   const whatsappUrl = whatsappNumber ? `https://wa.me/${whatsappNumber}` : 'https://wa.me/';
+  const phoneDialUrl = whatsappNumber ? `tel:+${whatsappNumber}` : 'tel:';
 
-  const socialLinks = [
-    { label: 'Facebook', href: facebookUrl, Icon: FiFacebook },
-    { label: 'Instagram', href: instagramUrl, Icon: FiInstagram },
-    { label: 'WhatsApp', href: whatsappUrl, Icon: FiMessageCircle },
+  const links = [
+    { label: 'Home', href: '/' },
+    { label: 'Lookbook', href: '/lookbook' },
+    { label: 'Trending', href: '/products?trending=true' },
+    { label: 'Shop', href: '/products' },
+
   ];
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchFooterData = async () => {
-      try {
-        const [categories, brands] = await Promise.all([
-          getCategories({ activeOnly: true, includeSubcategories: false }),
-          getBrands({ activeOnly: true }),
-        ]);
-
-        if (!isMounted) return;
-
-        setCategoryLinks(
-          categories
-            .slice(0, 4)
-            .map((category) => ({ label: category.name, href: `/products?category=${encodeURIComponent(category.slug)}` })),
-        );
-
-        setBrandLinks(
-          brands
-            .slice(0, 4)
-            .map((brand) => ({ label: brand.name, href: `/products?brand=${encodeURIComponent(brand.slug)}` })),
-        );
-      } catch {
-        if (!isMounted) return;
-        setCategoryLinks([]);
-        setBrandLinks([]);
-      }
-    };
-
-    fetchFooterData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   return (
-    <footer style={{ backgroundColor: 'var(--brand-dark)', color: 'var(--on-primary)', padding:'1rem'}}>
-      {/* Brand Motto — static stylized */}
-      <div style={{ padding: '3rem 2rem', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        <p style={{
-          fontSize: 'clamp(1rem, 4vw, 3.5rem)',
-          fontWeight: 100,
-          // textTransform: 'uppercase',
-          letterSpacing: '0.5rem',
-          lineHeight: 1.15,
-          color: 'rgba(255,255,255,0.6)',
-          userSelect: 'none',
-        }}>
-          Purveyors of fine labels. The absolute IshtiLE
-          {/* <span style={{
-            fontWeight: 500,
-            color: 'var(--brand-gold)',
-            letterSpacing: '0.06em',
-            fontStyle: 'italic',
-          }}>ISHTILE</span> */}
+    <footer style={{ backgroundColor: '#FAF5F1', color: '#232323' }}>
+      <div className="hidden lg:block" style={{ position: 'relative', width: '100%', minHeight: '507px', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: '#FDF7E6', opacity: 0.35 }} />
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.1, background: 'linear-gradient(180deg, #F0E8DA 0%, rgba(240,232,218,0) 60%)' }} />
+        <div
+          style={{
+            position: 'absolute',
+            width: '1351px',
+            height: '784px',
+            left: '-146px',
+            top: '-24px',
+            opacity: 0.32,
+            background: 'radial-gradient(60% 60% at 35% 40%, rgba(214,206,191,0.75) 0%, rgba(214,206,191,0.15) 55%, rgba(214,206,191,0) 100%)',
+          }}
+        />
+        <p
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 0,
+            bottom: '18px',
+            width: '1091px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            margin: 0,
+            fontFamily: customFont.style.fontFamily,
+            fontWeight: 400,
+            fontSize: '250px',
+            lineHeight: 0.85,
+            color: '#010000',
+            opacity: 0.98,
+            userSelect: 'none',
+            pointerEvents: 'none',
+          }}
+        >
+          {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
+            <span key={`${ch}-${idx}`}>{ch}</span>
+          ))}
         </p>
-      </div>
 
-      {/* Main grid */}
-      <div className="px-6 md:px-12 pt-16 pb-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
+        <div style={{ position: 'relative', width: 'min(1920px, 100%)', height: '507px', margin: '0 auto' }}>
+          <p
+            style={{
+              position: 'absolute',
+              width: '532px',
+              left: '559px',
+              top: '35px',
+              fontFamily: '"Doppio One", "Anton", sans-serif',
+              fontWeight: 400,
+              fontSize: '60px',
+              lineHeight: '75px',
+              textAlign: 'right',
+              color: '#010000',
+            }}
+          >
+            <span style={{ display: 'block' }}>Purveyors of fine</span>
+            <span style={{ display: 'block' }}>labels. The</span>
+            <span style={{ display: 'block' }}>absolute</span>
 
-          {/* Brand column */}
-          <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-            <Link href="/" aria-label="Home">
-              <span className="text-2xl font-black uppercase tracking-widest text-white">
-                Ishtile
-              </span>
-            </Link>
-            <p className="text-sm text-neutral-400 leading-relaxed max-w-[200px]">
-              A mindset for purposeful style. Quality clothing for everyone.
-            </p>
+          </p>
+
+          <div style={{ position: 'absolute', width: '499px', left: '1305px', top: '68px' }}>
+            <a
+              href={phoneDialUrl}
+              aria-label="Contact us by phone"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '71px',
+                borderRadius: '36px',
+                backgroundColor: '#D6CEBF',
+                padding: '0 22px 0 29px',
+                gap: '12px',
+                color: '#232323',
+                textDecoration: 'none',
+                fontFamily: '"DM Sans", sans-serif',
+                fontSize: '18px',
+                lineHeight: '23px',
+              }}
+            >
+              <span style={{ opacity: 1 }}>Contact us</span>
+            <FiPhone size={18} color="#322f26" />
+            </a>
           </div>
 
-          {/* Nav columns */}
-          <FooterColumn title="Categories" links={categoryLinks} seeMoreHref="/products" />
-          <FooterColumn title="Brands" links={brandLinks} seeMoreHref="/products" />
+          <div style={{ position: 'absolute', width: '186px', left: '1473px', top: '215px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: '#232323' }}>
+              <FiFacebook size={42} />
+            </a>
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#232323' }}>
+              <FiInstagram size={42} />
+            </a>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ color: '#232323' }}>
+              <FiMessageCircle size={42} />
+            </a>
+          </div>
 
-          <div className="flex flex-col gap-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white">Social Media</p>
-            <ul className="flex flex-col gap-2.5">
-              {socialLinks.map(({ label, href, Icon }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-neutral-400 hover:text-white transition-colors duration-150 inline-flex items-center gap-2"
-                  >
-                    <Icon size={14} />
-                    <span>{label}</span>
-                  </a>
-                </li>
+          <div style={{ position: 'absolute', width: '562px', left: '1285px', top: '381px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '27px' }}>
+            <nav aria-label="Footer links" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
+              {links.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  style={{
+                    fontFamily: '"Helvetica Neue", "DM Sans", sans-serif',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    lineHeight: '17px',
+                    color: '#232323',
+                  }}
+                >
+                  {link.label}
+                </Link>
               ))}
-            </ul>
+            </nav>
+            <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65 }}>
+              © Copyright {new Date().getFullYear()} - Ishtile
+            </p>
           </div>
         </div>
       </div>
 
-      <Separator className="bg-[#2e2c2b]" style={{marginTop:'0.5rem'}} />
+      <div className="lg:hidden" style={{ padding: '2rem 1rem', backgroundColor: '#FAF5F1' }}>
+        <div
+          style={{
+            borderRadius: '20px',
+            padding: '1.25rem',
+            background: 'linear-gradient(180deg, rgba(253,247,230,0.9) 0%, rgba(253,247,230,0.55) 100%)',
+            border: '1px solid rgba(35,35,35,0.08)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: '"Doppio One", "Anton", sans-serif',
+              fontWeight: 400,
+              fontSize: 'clamp(1.5rem, 8vw, 2.5rem)',
+              lineHeight: 1.15,
+              textAlign: 'right',
+              color: '#010000',
+              marginBottom: '1rem',
+            }}
+          >
+            <span style={{ display: 'block' }}>Purveyors of fine</span>
+            <span style={{ display: 'block' }}>labels. The</span>
+            <span style={{ display: 'block' }}>absolute</span>
+          </p>
 
-      {/* Bottom bar */}
-      <div className="px-6 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p className="text-xs text-neutral-500">
-          © {new Date().getFullYear()} Ishtile. All rights reserved.
-        </p>
-        <div className="flex gap-2">
-          <Link href="/pages/privacy" className="text-xs text-neutral-500 hover:text-white transition-colors duration-150">
-            Privacy Policy
-          </Link>
-          <Link href="/pages/terms" className="text-xs text-neutral-500 hover:text-white transition-colors duration-150">
-            Terms of Use
-          </Link>
+          <p
+            aria-hidden="true"
+            style={{
+              width: 'calc(100% + 2.5rem)',
+              marginLeft: '-1.25rem',
+              marginRight: '-1.25rem',
+              marginTop: '-0.25rem',
+              marginBottom: '0.9rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontFamily: customFont.style.fontFamily,
+              fontWeight: 400,
+              fontSize: 'clamp(3.2rem, 18vw, 5.25rem)',
+              lineHeight: 0.82,
+              color: '#010000',
+              opacity: 0.98,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
+              <span key={`mobile-${ch}-${idx}`}>{ch}</span>
+            ))}
+          </p>
+
+          <a
+            href={phoneDialUrl}
+            aria-label="Contact us by phone"
+            style={{
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '56px',
+              borderRadius: '999px',
+              backgroundColor: '#D6CEBF',
+              padding: '0 14px 0 18px',
+              gap: '10px',
+              color: '#232323',
+              textDecoration: 'none',
+              fontFamily: '"DM Sans", sans-serif',
+              fontSize: '16px',
+            }}
+          >
+            <span style={{ opacity: 1 }}>Contact us</span>
+            <FiPhone size={18} color="#322f26" />
+          </a>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: '#232323' }}>
+              <FiFacebook size={24} />
+            </a>
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#232323' }}>
+              <FiInstagram size={24} />
+            </a>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ color: '#232323' }}>
+              <FiMessageCircle size={24} />
+            </a>
+          </div>
+
+          
+
+          <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65 }}>
+            © Copyright {new Date().getFullYear()} - Ishtile
+          </p>
         </div>
       </div>
     </footer>
