@@ -25,6 +25,7 @@ function LoginForm() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const next         = searchParams.get('next') ?? '/';
+  const reason       = searchParams.get('reason');
   const pendingAddToCart = searchParams.get('addToCart') === '1';
   const pendingVariantId = searchParams.get('variantId');
   const pendingQty = Number(searchParams.get('qty') ?? '1');
@@ -37,8 +38,16 @@ function LoginForm() {
 
   useEffect(() => {
     let cancelled = false;
+    let redirected = false;
 
     const verifySession = async () => {
+      // Forced-login path from middleware on stale/expired token.
+      if (reason === 'expired') {
+        tokenStore.clearAll();
+        if (!cancelled) setCheckingSession(false);
+        return;
+      }
+
       const refresh = tokenStore.getRefresh();
       if (!refresh) {
         tokenStore.clearAll();
@@ -54,21 +63,29 @@ function LoginForm() {
       }
 
       try {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 4000);
+
         const res = await fetch('/api/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${access}`,
           },
+          signal: controller.signal,
         });
+
+        window.clearTimeout(timeoutId);
 
         if (!res.ok) throw new Error('Session is invalid');
 
         if (!cancelled) {
+          redirected = true;
           router.replace(next.startsWith('/') ? next : '/');
         }
       } catch {
         tokenStore.clearAll();
-        if (!cancelled) setCheckingSession(false);
+      } finally {
+        if (!cancelled && !redirected) setCheckingSession(false);
       }
     };
 

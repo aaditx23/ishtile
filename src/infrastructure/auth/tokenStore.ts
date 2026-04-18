@@ -13,9 +13,9 @@
  * │                 │                  │ it in an httpOnly SameSite=Strict     │
  * │                 │                  │ cookie instead.                       │
  * ├─────────────────┼──────────────────┼──────────────────────────────────────┤
- * │ Session flag    │ SameSite=Lax     │ Non-secret presence cookie read by    │
- * │ (Ishtile_sess)  │ cookie (JS-set)  │ middleware for server-side redirects. │
- * │                 │                  │ Does NOT contain the JWT.            │
+ * │ Session token   │ SameSite=Lax     │ JWT copied into a browser cookie so   │
+ * │ (Ishtile_sess)  │ cookie (JS-set)  │ middleware can verify signature + exp │
+ * │                 │                  │ on protected routes.                  │
  * └─────────────────┴──────────────────┴──────────────────────────────────────┘
  *
  * IMPORTANT: This module must only be used in client-side code.
@@ -32,14 +32,14 @@ function isBrowser(): boolean {
 
 // ─── Session flag cookie (non-secret, middleware-readable) ────────────────────
 
-function setSessionCookie(): void {
+function setSessionCookie(token: string): void {
   // SameSite=Lax prevents the cookie from being sent on cross-site POSTs
   // (basic CSRF protection). Secure flag added automatically in production.
   // Keep this in sync with refresh-token lifetime so middleware auth gates
   // survive browser restarts.
   const secure = location.protocol === 'https:' ? '; Secure' : '';
   const maxAge = 60 * 60 * 24 * 30; // 30 days
-  document.cookie = `${KEYS.session}=1; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
+  document.cookie = `${KEYS.session}=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
 }
 
 function clearSessionCookie(): void {
@@ -66,7 +66,7 @@ export const tokenStore = {
       const persistedToken = localStorage.getItem(KEYS.refresh);
       if (persistedToken && isLikelyJwt(persistedToken)) {
         _access = persistedToken;
-        setSessionCookie();
+        setSessionCookie(persistedToken);
       }
     }
     return _access;
@@ -75,7 +75,7 @@ export const tokenStore = {
   setAccess(token: string): void {
     _access = token;
     _initialized = true;
-    if (isBrowser()) setSessionCookie();
+    if (isBrowser()) setSessionCookie(token);
   },
 
   clearAccess(): void {

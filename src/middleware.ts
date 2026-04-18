@@ -16,14 +16,29 @@ const AUTH_ROUTES = [
   '/register',
 ];
 
+async function isSessionTokenValid(token: string): Promise<boolean> {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) return false;
+
+    const { jwtVerify } = await import('jose');
+    const encodedSecret = new TextEncoder().encode(secret);
+    await jwtVerify(token, encodedSecret);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Check if user has session cookie (set by client-side auth)
   const sessionCookie = request.cookies.get('Ishtile_sess');
-  const isAuthenticated = !!sessionCookie?.value;
+  const sessionToken = sessionCookie?.value ?? '';
+  const hasSessionToken = sessionToken.length > 0;
 
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route => 
@@ -35,8 +50,28 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
+  // True auth gate: verify JWT signature + expiry for protected routes.
+  if (isProtectedRoute && hasSessionToken) {
+    const valid = await isSessionTokenValid(sessionToken);
+
+    if (!valid) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      loginUrl.searchParams.set('reason', 'expired');
+
+      const res = NextResponse.redirect(loginUrl);
+      // Hard logout path for stale/invalid token: remove middleware session cookie.
+      res.cookies.set('Ishtile_sess', '', {
+        path: '/',
+        maxAge: 0,
+        sameSite: 'lax',
+      });
+      return res;
+    }
+  }
+
   // Redirect unauthenticated users from protected routes to login
-  if (isProtectedRoute && !isAuthenticated) {
+  if (isProtectedRoute && !hasSessionToken) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
