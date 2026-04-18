@@ -121,34 +121,34 @@ export interface Theme {
 
 export const LightColorScheme: ColorScheme = {
   // Brand
-  brandDark: '#263147',
-  brandGold: '#919f90',
-  brandGoldHover: '#728171',
-  brandGoldDeep: '#536352',
+  brandDark: '#232323',
+  brandGold: '#BEAD92',
+  brandGoldHover: '#A89578',
+  brandGoldDeep: '#8C7A5F',
 
   // Surfaces
-  background: '#e8ebed',
-  surface: '#f0f2f4',
-  surfaceVariant: '#d8dbde',
+  background: '#F3EEE7',
+  surface: '#EBE3D8',
+  surfaceVariant: '#DDD2C2',
 
   // Content
   onBackground: '#1C1A19',
   onSurface: '#1C1A19',
-  onSurfaceMuted: '#737373',
-  onSurfaceDisabled: '#A3A3A3',
+  onSurfaceMuted: '#5F584E',
+  onSurfaceDisabled: '#8E877D',
 
   // Primary
   primary: '#1C1A19',
-  onPrimary: '#e8ebed',
+  onPrimary: '#F3EEE7',
 
   // Accent
-  accent: '#919f90',
-  onAccent: '#e8ebed',
+  accent: '#BEAD92',
+  onAccent: '#1C1A19',
 
   // Components
-  border: '#c8cdd2',
-  input: '#c8cdd2',
-  ring: '#919f90',
+  border: '#CBBEAB',
+  input: '#CBBEAB',
+  ring: '#BEAD92',
 
   // Semantic
   destructive: '#DC2626',
@@ -163,17 +163,17 @@ export const LightColorScheme: ColorScheme = {
   onInfo: '#3730a3',
 
   // Product
-  productBg: '#dde0e3',
+  productBg: '#F7F6EB',
 };
 
 // ─── Dark ColorScheme ─────────────────────────────────────────────────────────
 
 export const DarkColorScheme: ColorScheme = {
   // Brand
-  brandDark: '#1C1A19',
-  brandGold: '#C4A882',
-  brandGoldHover: '#A58C69',
-  brandGoldDeep: '#8F6F4A',
+  brandDark: '#232323',
+  brandGold: '#BEAD92',
+  brandGoldHover: '#A89578',
+  brandGoldDeep: '#8C7A5F',
 
   // Surfaces
   background: '#111110',
@@ -191,13 +191,13 @@ export const DarkColorScheme: ColorScheme = {
   onPrimary: '#1C1A19',
 
   // Accent
-  accent: '#C4A882',
+  accent: '#BEAD92',
   onAccent: '#1C1A19',
 
   // Components
   border: '#2E2C2A',
   input: '#2E2C2A',
-  ring: '#C4A882',
+  ring: '#BEAD92',
 
   // Semantic
   destructive: '#EF4444',
@@ -212,7 +212,7 @@ export const DarkColorScheme: ColorScheme = {
   onInfo: '#a5b4fc',
 
   // Product
-  productBg: '#2A2826',
+  productBg: '#242220',
 };
 
 // ─── Typography (shared across themes) ───────────────────────────────────────

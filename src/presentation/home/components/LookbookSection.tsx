@@ -119,7 +119,7 @@ export default function LookbookSection({ lookbooks }: LookbookSectionProps) {
                   minWidth: 'min(100%, clamp(360px, 52vw, 640px))',
                   scrollSnapAlign: 'start',
                   border: '1px solid var(--brand-dark)',
-                  backgroundColor: 'var(--surface)',
+                  backgroundColor: 'var(--product-bg)',
                   overflow: 'hidden',
                 }}
               >

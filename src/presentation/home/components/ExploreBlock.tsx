@@ -168,7 +168,7 @@ export default function ExploreBlock({
                     justifyContent: 'space-between',
                     minHeight: '64px',
                     padding: '0.75rem 0.8rem',
-                    backgroundColor: 'var(--surface)',
+                    backgroundColor: 'var(--product-bg)',
                   }}
                 >
                   <p style={{ color: 'var(--on-surface)', fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>

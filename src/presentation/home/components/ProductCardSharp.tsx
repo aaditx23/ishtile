@@ -44,7 +44,7 @@ export default function ProductCardSharp({ product }: { product: ProductCardData
   const formattedComparePrice = hasComparePrice ? `৳${Number(product.price).toFixed(0)}` : null;
 
   return (
-    <article className="overflow-hidden group bg-surface" style={{ border: '1px solid var(--brand-dark)' }}>
+    <article className="overflow-hidden group bg-product-bg" style={{ border: '1px solid var(--brand-dark)' }}>
       {/* Image area */}
       <div className="relative" style={{ lineHeight: 0 }}>
         <Link href={`/products/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden bg-product-bg leading-none">

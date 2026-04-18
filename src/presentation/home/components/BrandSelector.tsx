@@ -29,10 +29,31 @@ interface BrandSelectorProps {
 
 // ── Brand Card ────────────────────────────────────────────────────────────────
 
-function BrandCard({ label, image, bg = 'var(--surface-variant)', selected, onClick }: BrandCardProps) {
+function BrandCard({ label, image, bg = 'var(--product-bg)', selected, onClick }: BrandCardProps) {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  const validImage = (() => {
+    if (!image) return null;
+    try {
+      new URL(image);
+      return image;
+    } catch {
+      return null;
+    }
+  })();
+
   return (
-    <button
+
+    <article
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      role="button"
+      tabIndex={0}
       style={{
         position:        'relative',
         overflow:        'hidden',
@@ -40,41 +61,61 @@ function BrandCard({ label, image, bg = 'var(--surface-variant)', selected, onCl
         flexShrink:      0,
         width:           'clamp(110px, 28vw, 220px)',
         minWidth:        'unset',
-        aspectRatio:     '3/4',
         backgroundColor: bg,
-        outline:         selected ? '2px solid var(--brand-gold)' : 'none',
+        border:          selected ? '1px solid var(--brand-gold)' : '1px solid var(--brand-dark)',
       }}
-      className="border border-input transition-all duration-200 hover:brightness-105 hover:shadow-md"
+      className="group bg-product-bg transition-all duration-200 hover:brightness-105 hover:shadow-md"
       aria-pressed={selected}
       aria-label={`Filter by ${label}`}
     >
-      {image && (() => { try { new URL(image); return true; } catch { return false; } })() && (
-        <Image
-          src={image}
-          alt={label}
-          fill
-          style={{ objectFit: 'cover', objectPosition: 'center' }}
-          sizes="(max-width: 768px) 150px, 20vw"
-        />
-      )}
+      <div className="relative" style={{ lineHeight: 0 }}>
+        <div className="relative aspect-[4/5] overflow-hidden bg-product-bg leading-none">
+          {validImage ? (
+          <Image
+            src={validImage}
+            alt={label}
+            fill
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
+            sizes="(max-width: 768px) 150px, 20vw"
+          />
+          ) : null}
+        </div>
+      </div>
 
       <div
         style={{
-          position: 'absolute',
-          inset:    0,
-          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 40%)',
+          minHeight: 'clamp(2.75rem, 11vw, 3.5rem)',
+          padding: '0.6rem clamp(0.45rem, 2vw, 0.8rem)',
+          backgroundColor: 'var(--product-bg)',
+          borderTop: '1px solid var(--brand-dark)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.6rem',
         }}
-      />
-
-      <div style={{ position: 'absolute', bottom: 'clamp(0.4rem, 2vw, 1rem)', left: 'clamp(0.4rem, 2vw, 1rem)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <span style={{ color: 'white', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 'clamp(0.6rem, 2.5vw, 1.125rem)', lineHeight: 1 }}>
+      >
+        <span style={{ color: 'var(--on-surface)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 'clamp(0.62rem, 2.2vw, 0.84rem)', lineHeight: 1.1 }}>
           {label}
         </span>
-        {selected && (
-          <span style={{ display: 'block', height: '2px', width: '1.5rem', backgroundColor: 'var(--brand-gold)' }} />
-        )}
+        <span style={{ color: 'var(--on-surface)', fontSize: '0.95rem', fontWeight: 700, lineHeight: 1 }}>
+          &gt;
+        </span>
       </div>
-    </button>
+
+      {selected && (
+        <span
+          style={{
+            position: 'absolute',
+            left: '0.65rem',
+            bottom: '0.4rem',
+            display: 'block',
+            height: '2px',
+            width: '1.6rem',
+            backgroundColor: 'var(--brand-gold)',
+          }}
+        />
+      )}
+    </article>
   );
 }
 
