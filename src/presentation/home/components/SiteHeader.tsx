@@ -32,6 +32,38 @@ const USER_LINKS = [
   { label: 'Favourites', href: '/favourites' },
 ];
 
+const BRANDING_CACHE_KEY = 'ishtile.branding.v1';
+
+function readCachedBranding(): { siteName: string; brandLogoUrl: string | null } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(BRANDING_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { siteName?: unknown; brandLogoUrl?: unknown };
+    const siteName = typeof parsed.siteName === 'string' && parsed.siteName.trim()
+      ? parsed.siteName.trim()
+      : 'Ishtile';
+    const brandLogoUrl = typeof parsed.brandLogoUrl === 'string' && parsed.brandLogoUrl.trim()
+      ? parsed.brandLogoUrl
+      : null;
+    return { siteName, brandLogoUrl };
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedBranding(siteName: string, brandLogoUrl: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(
+      BRANDING_CACHE_KEY,
+      JSON.stringify({ siteName, brandLogoUrl }),
+    );
+  } catch {
+    // Ignore storage failures (private mode/quota).
+  }
+}
+
 function getProfileLabel(username?: string | null): string {
   const normalized = username?.trim();
   if (!normalized) return 'Profile';
@@ -40,15 +72,23 @@ function getProfileLabel(username?: string | null): string {
 
 /* ─── SiteHeader ───────────────────────────────────────────────────────────── */
 
-export default function SiteHeader() {
+interface SiteHeaderProps {
+  initialSiteName?: string;
+  initialBrandLogoUrl?: string | null;
+}
+
+export default function SiteHeader({
+  initialSiteName = 'Ishtile',
+  initialBrandLogoUrl = null,
+}: SiteHeaderProps) {
   const auth         = useCurrentUser();
   const pathname     = usePathname();
   const searchParams = useSearchParams();
 
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
-  const [siteName, setSiteName]       = useState('Ishtile');
-  const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
+  const [siteName, setSiteName]       = useState(initialSiteName);
+  const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(initialBrandLogoUrl);
 
   const isAuth  = auth.status === 'authenticated';
   const isAdmin = isAuth && auth.user.role === 'admin';
@@ -78,16 +118,28 @@ export default function SiteHeader() {
 
   useEffect(() => {
     let mounted = true;
+    const cachedBranding = readCachedBranding();
+
+    if (cachedBranding) {
+      setSiteName(cachedBranding.siteName);
+      setBrandLogoUrl(cachedBranding.brandLogoUrl);
+    }
+
     getSiteBranding()
       .then((branding) => {
         if (!mounted) return;
-        setSiteName(branding.siteName?.trim() || 'Ishtile');
-        setBrandLogoUrl(branding.brandLogoUrl ?? null);
+        const nextSiteName = branding.siteName?.trim() || 'Ishtile';
+        const nextBrandLogoUrl = branding.brandLogoUrl ?? null;
+        setSiteName(nextSiteName);
+        setBrandLogoUrl(nextBrandLogoUrl);
+        writeCachedBranding(nextSiteName, nextBrandLogoUrl);
       })
       .catch(() => {
         if (!mounted) return;
-        setSiteName('Ishtile');
-        setBrandLogoUrl(null);
+        if (!cachedBranding) {
+          setSiteName('Ishtile');
+          setBrandLogoUrl(null);
+        }
       });
 
     return () => {
@@ -220,6 +272,9 @@ export default function SiteHeader() {
                 <img
                   src={brandLogoUrl}
                   alt={siteName}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   style={{ height: '2rem', width: 'auto', maxWidth: '10rem', objectFit: 'contain', userSelect: 'none' }}
                 />
               ) : (
