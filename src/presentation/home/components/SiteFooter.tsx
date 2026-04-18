@@ -12,6 +12,9 @@ const customFont = Antic_Didone({
 });
 
 export default function SiteFooter() {
+  const obscuraUrl = 'https://www.facebook.com/obscuraitbd';
+  const obscuraLogoSrc = '/images/obscura.png';
+
   const facebookUrl = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL || 'https://facebook.com';
   const instagramUrl = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL || 'https://instagram.com';
   const whatsappNumberRaw = process.env.NEXT_PUBLIC_SOCIAL_WHATSAPP_NUMBER || '';
@@ -127,7 +130,7 @@ export default function SiteFooter() {
             </a>
           </div>
 
-          <div style={{ position: 'absolute', width: '562px', left: '1285px', top: '381px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '27px' }}>
+          <div style={{ position: 'absolute', width: '562px', left: '1285px', bottom: '72px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <nav aria-label="Footer links" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
               {links.map((link) => (
                 <Link
@@ -145,9 +148,40 @@ export default function SiteFooter() {
                 </Link>
               ))}
             </nav>
-            <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65 }}>
+            <p style={{ margin: '6px 0 0', fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65, paddingTop:'1rem' }}>
               © Copyright {new Date().getFullYear()} - Ishtile
             </p>
+
+            <a
+              href={obscuraUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Developed by Obscura IT"
+              style={{
+                marginTop: '22px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                color: '#232323',
+                textDecoration: 'none',
+                fontFamily: '"DM Sans", sans-serif',
+                fontSize: '11px',
+                lineHeight: '14px',
+                paddingTop:'1rem'
+                
+              }}
+            >
+              <span>Developed by </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={obscuraLogoSrc}
+                alt="Obscura IT logo"
+                style={{ width: '55px', height: '55px', objectFit: 'contain' }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </a>
           </div>
         </div>
       </div>
@@ -242,6 +276,36 @@ export default function SiteFooter() {
           <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65 }}>
             © Copyright {new Date().getFullYear()} - Ishtile
           </p>
+
+          <a
+            href={obscuraUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Developed by Obscura IT"
+            style={{
+              marginTop: '0.4rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              color: '#232323',
+              textDecoration: 'none',
+              fontFamily: '"DM Sans", sans-serif',
+              fontSize: '11px',
+              lineHeight: '14px',
+              opacity: 0.78,
+            }}
+          >
+            <span>Developed by Obscura IT</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={obscuraLogoSrc}
+              alt="Obscura IT logo"
+              style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </a>
         </div>
       </div>
     </footer>
