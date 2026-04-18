@@ -3,6 +3,7 @@ import HomeProductSection from './components/HomeProductSection';
 import HomeBrandSection from './components/HomeBrandSection';
 import CategoryExploreBlock from './components/CategoryExploreBlock';
 import LookbookSection from './components/LookbookSection';
+import SilhouetteStatementSection from './components/SilhouetteStatementSection';
 import MobileHomePage from './MobileHomePage';
 import ShopLayout from '@/presentation/shared/layouts/ShopLayout';
 import type { ProductCardData } from './components/ProductCard';
@@ -33,10 +34,10 @@ export default function HomePage({ products, trendingProducts, categories, brand
         <HeroBanner heroImages={heroImages} />
         {products.length > 0 && <HomeProductSection products={products} />}
         {categories.length > 0 && <CategoryExploreBlock categories={categories} />}
-        {trendingProducts.length > 0 && <HomeProductSection products={trendingProducts} title="Trending Products" />}
+        <SilhouetteStatementSection />
         {brands.length > 0 && <HomeBrandSection brands={brands} />}
+        {trendingProducts.length > 0 && <HomeProductSection products={trendingProducts} title="Trending Products" />}
         {lookbooks.length > 0 && <LookbookSection lookbooks={lookbooks} />}
-        
       </div>
     </ShopLayout>
   );

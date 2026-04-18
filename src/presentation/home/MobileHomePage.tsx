@@ -6,6 +6,7 @@ import HomeBrandSection from './components/HomeBrandSection';
 import CategoryExploreBlock from './components/CategoryExploreBlock';
 import LookbookSection from './components/LookbookSection';
 import HeroImageCard from './components/HeroImageCard';
+import SilhouetteStatementSection from './components/SilhouetteStatementSection';
 import type { ProductCardData } from './components/ProductCard';
 import type { Category } from '@/domain/category/category.entity';
 import type { Brand } from '@/domain/brand/brand.entity';
@@ -115,9 +116,10 @@ export default function MobileHomePage({ products, trendingProducts, categories,
       <MobileHeroBanner heroImages={heroImages} />
       {products.length > 0 && <HomeProductSection products={products} />}
       {categories.length > 0 && <CategoryExploreBlock categories={categories} />}
+      <SilhouetteStatementSection />
+      {brands.length > 0 && <HomeBrandSection brands={brands} />}
       {trendingProducts.length > 0 && <HomeProductSection products={trendingProducts} title="Trending Products" />}
       {lookbooks.length > 0 && <LookbookSection lookbooks={lookbooks} />}
-      {brands.length > 0 && <HomeBrandSection brands={brands} />}
     </div>
   );
 }

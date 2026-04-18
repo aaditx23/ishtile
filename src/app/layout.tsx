@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Anton } from 'next/font/google';
+import { Doppio_One } from 'next/font/google';
 import '@/styles/globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
@@ -9,7 +9,7 @@ import { LightTheme, DarkTheme, toCssVars, varsToCss } from '@/styles/theme';
 const lightCss = varsToCss(toCssVars(LightTheme));
 const darkCss  = varsToCss(toCssVars(DarkTheme));
 const themeStyles = `:root {\n${lightCss}\n}\n.dark {\n${darkCss}\n}`;
-const anton = Anton({ subsets: ['latin'], weight: '400', display: 'swap' });
+const doppioOne = Doppio_One({ subsets: ['latin'], weight: '400', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Ishtile',
@@ -29,7 +29,7 @@ export default function RootLayout({
         {/* Inject design-system tokens as CSS variables before first paint */}
         <style dangerouslySetInnerHTML={{ __html: themeStyles }} />
       </head>
-      <body className={anton.className}>
+      <body className={doppioOne.className}>
         <ThemeProvider>
           <main>
             {children}
