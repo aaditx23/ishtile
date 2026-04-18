@@ -53,6 +53,20 @@ export default function MobileProductFilters({ categories, brands, total }: Mobi
 
   const hasAny = active.search || active.category || active.brand || active.featured || active.trending || !active.activeOnly;
 
+  const chips: Array<{ key: string; label: string; clear: () => void }> = [];
+  if (active.search) chips.push({ key: 'search', label: active.search, clear: () => push({ search: '' }) });
+  if (active.category) {
+    const selectedCategoryName = categories.find((c) => c.slug === active.category)?.name ?? active.category;
+    chips.push({ key: 'category', label: selectedCategoryName, clear: () => push({ category: '', sub: '' }) });
+  }
+  if (active.brand) {
+    const selectedBrandName = brands.find((b) => b.slug === active.brand)?.name ?? active.brand;
+    chips.push({ key: 'brand', label: selectedBrandName, clear: () => push({ brand: '' }) });
+  }
+  if (active.featured) chips.push({ key: 'featured', label: 'Featured', clear: () => push({ featured: '' }) });
+  if (active.trending) chips.push({ key: 'trending', label: 'Trending', clear: () => push({ trending: '' }) });
+  if (!active.activeOnly) chips.push({ key: 'activeOnly', label: 'Including inactive', clear: () => push({ activeOnly: '' }) });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 1rem 0' }}>
 
@@ -144,18 +158,86 @@ export default function MobileProductFilters({ categories, brands, total }: Mobi
         </button>
       </div>
 
-      {/* ── Extra filters (collapsible) ──────────────────────────── */}
+      {chips.length > 0 && (
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginTop: '-0.1rem' }}>
+          {chips.map((chip) => (
+            <button
+              key={chip.key}
+              onClick={chip.clear}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.28rem 0.5rem',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--surface-variant)',
+                color: 'var(--on-surface)',
+                fontSize: '0.68rem',
+                fontWeight: 600,
+              }}
+              aria-label={`Remove ${chip.label} filter`}
+            >
+              <span>{chip.label}</span>
+              <FiX size={11} />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Extra filters (bottom sheet) ─────────────────────────── */}
       {filtersOpen && (
-        <div
-          style={{
-            display:         'flex',
-            flexDirection:   'column',
-            gap:             '0.75rem',
-            padding:         '0.875rem',
-            border:          '1px solid var(--border)',
-            backgroundColor: 'var(--surface)',
-          }}
-        >
+        <>
+          <button
+            aria-label="Close filters"
+            onClick={() => setFiltersOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0,0,0,0.32)',
+              border: 'none',
+              zIndex: 60,
+              cursor: 'pointer',
+            }}
+          />
+
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 61,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              backgroundColor: 'var(--surface)',
+              borderTop: '1px solid var(--border)',
+              boxShadow: '0 -10px 24px rgba(0,0,0,0.14)',
+              padding: '1rem 1rem 0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.85rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.1rem' }}>
+              <h2 style={{ fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Filter Products</h2>
+              <button
+                onClick={() => setFiltersOpen(false)}
+                style={{
+                  border: '1px solid var(--border)',
+                  background: 'var(--product-bg)',
+                  width: '1.9rem',
+                  height: '1.9rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+                aria-label="Close filters"
+              >
+                <FiX size={14} />
+              </button>
+            </div>
+
           {/* Category */}
           <div>
             <label style={SECTION_LABEL}>Category</label>
@@ -236,7 +318,27 @@ export default function MobileProductFilters({ categories, brands, total }: Mobi
               × Clear all filters
             </button>
           )}
-        </div>
+            <div style={{ position: 'sticky', bottom: 0, background: 'var(--surface)', paddingTop: '0.4rem', marginTop: '0.1rem' }}>
+              <button
+                onClick={() => setFiltersOpen(false)}
+                style={{
+                  width: '100%',
+                  border: '1px solid var(--border)',
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--on-primary)',
+                  padding: '0.7rem 0.8rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  cursor: 'pointer',
+                }}
+              >
+                Show Results
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

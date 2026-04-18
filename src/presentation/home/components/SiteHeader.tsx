@@ -214,7 +214,7 @@ export default function SiteHeader({
                     <NavigationMenuLink asChild active={isLinkActive(link.href)}>
                       <Link
                         href={link.href}
-                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
+                        className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] !text-white visited:!text-white hover:!text-[var(--brand-gold)] focus-visible:!text-[var(--brand-gold)]"
                         style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                       >
                         {link.label}
@@ -231,7 +231,7 @@ export default function SiteHeader({
                         <NavigationMenuLink asChild active={isLinkActive(link.href)}>
                           <Link
                             href={link.href}
-                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
+                            className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] !text-white visited:!text-white hover:!text-[var(--brand-gold)] focus-visible:!text-[var(--brand-gold)]"
                             style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
                           >
                             {link.href === '/profile' ? getProfileLabel(auth.user.username) : link.label}
@@ -250,7 +250,7 @@ export default function SiteHeader({
                         <Link
                           href="/admin"
                           style={{paddingLeft:'0.5rem', paddingRight:'0.5rem' }}
-                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] hover:text-[var(--brand-gold)] text-white"
+                          className="h-auto px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] hover:bg-transparent data-[active]:bg-transparent data-[active]:border-b data-[active]:border-[var(--brand-gold)] data-[active]:rounded-none data-[active]:text-[var(--brand-gold)] !text-white visited:!text-white hover:!text-[var(--brand-gold)] focus-visible:!text-[var(--brand-gold)]"
                         >
                           Dashboard
                         </Link>
