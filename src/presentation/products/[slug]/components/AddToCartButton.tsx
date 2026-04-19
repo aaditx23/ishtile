@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { addToCart } from '@/application/cart/addToCart';
@@ -15,7 +15,6 @@ interface AddToCartButtonProps {
 
 export default function AddToCartButton({ variant, availableStock = 0 }: AddToCartButtonProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [qty, setQty] = useState(1);
 
@@ -33,9 +32,8 @@ export default function AddToCartButton({ variant, availableStock = 0 }: AddToCa
       toast.success('Added to cart!');
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'Not authenticated') {
-        const next = pathname || '/';
         const params = new URLSearchParams({
-          next,
+          next: '/cart',
           addToCart: '1',
           variantId: String(variant.id),
           qty: String(qty),

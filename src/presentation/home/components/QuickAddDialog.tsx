@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -37,7 +37,6 @@ export default function QuickAddDialog({
   productSlug,
 }: QuickAddDialogProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
@@ -83,9 +82,8 @@ export default function QuickAddDialog({
       onOpenChange(false);
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'Not authenticated') {
-        const next = pathname || '/';
         const params = new URLSearchParams({
-          next,
+          next: '/cart',
           addToCart: '1',
           variantId: String(selectedVariant.id),
           qty: String(qty),

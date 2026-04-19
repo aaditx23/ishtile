@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { addToCart } from '@/application/cart/addToCart';
 import { authConvexService } from '@/infrastructure/auth/auth.service';
 
 const labelStyle: React.CSSProperties = {
@@ -23,6 +24,9 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next') ?? '/';
+  const pendingAddToCart = searchParams.get('addToCart') === '1';
+  const pendingVariantId = searchParams.get('variantId');
+  const pendingQty = Number(searchParams.get('qty') ?? '1');
 
   const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
@@ -51,6 +55,13 @@ function RegisterForm() {
         email,
         password,
       });
+
+      if (pendingAddToCart && pendingVariantId) {
+        const safeQty = Number.isFinite(pendingQty) && pendingQty > 0 ? Math.floor(pendingQty) : 1;
+        await addToCart(pendingVariantId as unknown as number, safeQty);
+        toast.success('Added to cart!');
+      }
+
       toast.success('Account created! Welcome to Ishtile.');
       router.push(next);
     } catch (err) {
@@ -117,7 +128,18 @@ function RegisterForm() {
 function LoginLink() {
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
-  const loginUrl = next ? `/login?next=${encodeURIComponent(next)}` : '/login';
+  const pendingAddToCart = searchParams.get('addToCart') === '1';
+  const pendingVariantId = searchParams.get('variantId');
+  const pendingQty = searchParams.get('qty');
+
+  const loginParams = new URLSearchParams();
+  if (next) loginParams.set('next', next);
+  if (pendingAddToCart) {
+    loginParams.set('addToCart', '1');
+    if (pendingVariantId) loginParams.set('variantId', pendingVariantId);
+    if (pendingQty) loginParams.set('qty', pendingQty);
+  }
+  const loginUrl = loginParams.toString() ? `/login?${loginParams.toString()}` : '/login';
   
   return (
     <Link href={loginUrl} style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>

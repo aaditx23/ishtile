@@ -179,7 +179,18 @@ function LoginForm() {
 function RegisterLink() {
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
-  const registerUrl = next ? `/register?next=${encodeURIComponent(next)}` : '/register';
+  const pendingAddToCart = searchParams.get('addToCart') === '1';
+  const pendingVariantId = searchParams.get('variantId');
+  const pendingQty = searchParams.get('qty');
+
+  const registerParams = new URLSearchParams();
+  if (next) registerParams.set('next', next);
+  if (pendingAddToCart) {
+    registerParams.set('addToCart', '1');
+    if (pendingVariantId) registerParams.set('variantId', pendingVariantId);
+    if (pendingQty) registerParams.set('qty', pendingQty);
+  }
+  const registerUrl = registerParams.toString() ? `/register?${registerParams.toString()}` : '/register';
   
   return (
     <Link href={registerUrl} style={{ color: 'var(--brand-gold)', fontWeight: 600, textDecoration: 'none' }}>
