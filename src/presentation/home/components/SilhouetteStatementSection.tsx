@@ -11,7 +11,7 @@ const mobileTextConfig = {
     line1: 'Recognize the silhouette',
     line2: 'that reveals',
     line3: '"you"',
-    fontSize: '24px',
+    fontSize: '18px',
   },
   body: {
     maxWidth: '100%',
