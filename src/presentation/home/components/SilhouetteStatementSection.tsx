@@ -13,11 +13,14 @@ const mobileTextConfig = {
     line3: '"you"',
     fontSize: '24px',
   },
-  body: [
-    'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
-    'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
-    "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
-  ],
+  body: {
+    maxWidth: '100%',
+    paragraphs: [
+      'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
+      'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
+      "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
+    ],
+  },
 };
 
 const desktopTextConfig = {
@@ -27,11 +30,14 @@ const desktopTextConfig = {
     line3: '"you"',
     fontSize: '45px',
   },
-  body: [
-    'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
-    'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
-    "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
-  ],
+  body: {
+    maxWidth: '33%',
+    paragraphs: [
+      'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
+      'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
+      "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
+    ],
+  },
 };
 
 export default function SilhouetteStatementSection({
@@ -104,49 +110,45 @@ export default function SilhouetteStatementSection({
             </span>
           </h3>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'clamp(1.1rem, 3vw, 2.25rem)' }}>
-            <div style={{ width: '100%', maxWidth: '33%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: '"Doppio One", sans-serif',
-                  fontWeight: 400,
-                  fontSize: '15px',
-                  lineHeight: '23px',
-                  letterSpacing: '0.09em',
-                  color: '#F8F4ED',
-                }}
-              >
-                {mobileTextConfig.body[0]}
-              </p>
+          <div className="flex md:hidden" style={{ justifyContent: 'flex-end', marginTop: 'clamp(1.1rem, 3vw, 2.25rem)' }}>
+            <div style={{ width: '100%', maxWidth: mobileTextConfig.body.maxWidth, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {mobileTextConfig.body.paragraphs.map((text, index) => (
+                <p
+                  key={`mobile-body-${index}`}
+                  style={{
+                    margin: 0,
+                    fontFamily: '"Doppio One", "Anton", sans-serif',
+                    fontWeight: 400,
+                    fontSize: '15px',
+                    lineHeight: '23px',
+                    letterSpacing: '0.09em',
+                    color: '#F8F4ED',
+                  }}
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
 
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: '"Doppio One", "Anton", sans-serif',
-                  fontWeight: 400,
-                  fontSize: '15px',
-                  lineHeight: '23px',
-                  letterSpacing: '0.09em',
-                  color: '#F8F4ED',
-                }}
-              >
-                {desktopTextConfig.body[1]}
-              </p>
-
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: '"Doppio One", "Anton", sans-serif',
-                  fontWeight: 400,
-                  fontSize: '15px',
-                  lineHeight: '23px',
-                  letterSpacing: '0.09em',
-                  color: '#F8F4ED',
-                }}
-              >
-                {desktopTextConfig.body[2]}
-              </p>
+          <div className="hidden md:flex" style={{ justifyContent: 'flex-end', marginTop: 'clamp(1.1rem, 3vw, 2.25rem)' }}>
+            <div style={{ width: '100%', maxWidth: desktopTextConfig.body.maxWidth, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {desktopTextConfig.body.paragraphs.map((text, index) => (
+                <p
+                  key={`desktop-body-${index}`}
+                  style={{
+                    margin: 0,
+                    fontFamily: '"Doppio One", "Anton", sans-serif',
+                    fontWeight: 400,
+                    fontSize: '15px',
+                    lineHeight: '23px',
+                    letterSpacing: '0.09em',
+                    color: '#F8F4ED',
+                  }}
+                >
+                  {text}
+                </p>
+              ))}
             </div>
           </div>
         </div>
