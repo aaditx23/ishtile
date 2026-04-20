@@ -164,8 +164,10 @@ export default function SiteHeader({
         zIndex: 50,
         height: '4rem',
         transition: 'background 300ms, box-shadow 300ms',
-        background: scrolled ? 'color-mix(in srgb, var(--brand-dark) 80%, transparent)' : 'color-mix(in srgb, var(--brand-dark) 100%, transparent)',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: scrolled ? 'rgba(35,35,35,0.9)' : '#232323',
+        background: scrolled ? 'rgba(35,35,35,0.9)' : '#232323',
+        backdropFilter: scrolled ? 'blur(6px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(6px)' : 'none',
         boxShadow: scrolled ? '0 4px 12px rgba(0,0,0,0.3)' : 'none',
       }}
     >
