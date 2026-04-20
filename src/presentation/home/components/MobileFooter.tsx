@@ -72,7 +72,6 @@ export default function MobileFooter({
             <FiMessageCircle size={24} />
           </a>
         </div>
-        <div style={{ height: '16px' }} />
         <nav aria-label="Footer links" style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '0.9rem' }}>
           {links.map((link) => (
             <Link
@@ -118,7 +117,7 @@ export default function MobileFooter({
         >
           <span>Developed by Obscura IT</span>
         </a>
-        <div style={{ height: '8px' }} />
+        <div style={{ height: '48px' }} />
         <p
           style={{
             fontFamily: '"Doppio One", "Anton", sans-serif',
