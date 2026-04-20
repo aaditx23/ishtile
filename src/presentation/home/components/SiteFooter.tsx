@@ -79,58 +79,52 @@ export default function SiteFooter() {
           <div
             style={{
               position: 'absolute',
-              width: '1351px',
-              height: '784px',
-              left: '-146px',
-              top: '-24px',
+              width: '100%',
               opacity: 0.32,
               background: 'radial-gradient(60% 60% at 35% 40%, rgba(214,206,191,0.75) 0%, rgba(214,206,191,0.15) 55%, rgba(214,206,191,0) 100%)',
             }}
           />
-          <p
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              left: 0,
-              bottom: '18px',
-              width: '1091px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              margin: 0,
-              fontFamily: customFont.style.fontFamily,
-              fontWeight: 400,
-              fontSize: '250px',
-              lineHeight: 0.85,
-              color: '#010000',
-              opacity: 0.98,
-              userSelect: 'none',
-              pointerEvents: 'none',
-            }}
-          >
-            {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
-              <span key={`${ch}-${idx}`}>{ch}</span>
-            ))}
-          </p>
+            <p
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: 0,
+                bottom: '18px',
+                width: '65%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                margin: 0,
+                fontFamily: customFont.style.fontFamily,
+                fontWeight: 400,
+                fontSize: '250px',
+                lineHeight: 0.85,
+                color: '#010000',
+                opacity: 0.98,
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            >
+              {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
+                <span key={`${ch}-${idx}`}>{ch}</span>
+              ))}
+            </p>
 
-          <div style={{ position: 'relative', width: '1920px', height: '507px', margin: '0 auto' }}>
+          <div style={{ position: 'absolute', width: '65%', height: '100%', margin: '0 auto' }}>
             <p
               style={{
                 position: 'absolute',
-                width: '532px',
-                left: '559px',
+                width: '100%',
                 top: '35px',
                 fontFamily: '"Doppio One", "Anton", sans-serif',
                 fontWeight: 400,
-                fontSize: '60px',
-                lineHeight: '75px',
+                fontSize: '65px',
+
                 textAlign: 'right',
                 color: '#010000',
               }}
             >
-              <span style={{ display: 'block' }}>Purveyors of fine</span>
-              <span style={{ display: 'block' }}>labels. The</span>
-              <span style={{ display: 'block' }}>absolute</span>
-
+              <span style={{ display: 'block' }}>Purveyors of fine labels. </span>
+              <span style={{ display: 'block' }}>The absolute</span>
             </p>
 
             <div style={{ position: 'absolute', width: '499px', left: '1305px', top: '68px' }}>
@@ -190,7 +184,7 @@ export default function SiteFooter() {
                 ))}
               </nav>
               <p style={{ margin: '6px 0 0', fontFamily: '"DM Sans", sans-serif', fontWeight: 400, fontSize: '12px', lineHeight: '16px', color: '#232323', opacity: 0.65, paddingTop:'1rem' }}>
-                © Copyright {new Date().getFullYear()} - Ishtile
+                © Copyright 2026 - Ishtile
               </p>
 
               <a

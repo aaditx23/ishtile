@@ -6,6 +6,34 @@ interface SilhouetteStatementSectionProps {
   imageUrl?: string;
 }
 
+const mobileTextConfig = {
+  heading: {
+    line1: 'Recognize the silhouette',
+    line2: 'that reveals',
+    line3: '"you"',
+    fontSize: '24px',
+  },
+  body: [
+    'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
+    'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
+    "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
+  ],
+};
+
+const desktopTextConfig = {
+  heading: {
+    line1: 'Recognize the silhouette',
+    line2: 'that reveals',
+    line3: '"you"',
+    fontSize: '45px',
+  },
+  body: [
+    'The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.',
+    'To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.',
+    "Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.",
+  ],
+};
+
 export default function SilhouetteStatementSection({
   imageUrl = '/images/silhouette.png',
 }: SilhouetteStatementSectionProps) {
@@ -31,21 +59,53 @@ export default function SilhouetteStatementSection({
       >
         <div style={{ maxWidth: '1560px', margin: '0 auto' }}>
           <h3
+            className="md:hidden"
             style={{
               margin: 0,
               fontFamily: '"Doppio One", sans-serif',
               fontWeight: 400,
-              fontSize: '45px',
-              lineHeight: 'clamp(2.6rem, 7vw, 8.125rem)',
+              fontSize: mobileTextConfig.heading.fontSize,
+
               textTransform: 'uppercase',
-              maxWidth: '933px',
+              maxWidth: '100%',
             }}
           >
-            Recognize the silhouette that reveals... "you"
+            <span className="block text-left">
+              {mobileTextConfig.heading.line1}
+            </span>
+            <span className="block text-left">
+              {mobileTextConfig.heading.line2}
+            </span>
+            <span className="block text-right py-3">
+              {mobileTextConfig.heading.line3}
+            </span>
+          </h3>
+
+          <h3
+            className="hidden md:block"
+            style={{
+              margin: 0,
+              fontFamily: '"Doppio One", sans-serif',
+              fontWeight: 400,
+              fontSize: desktopTextConfig.heading.fontSize,
+              // lineHeight: '2px',
+              textTransform: 'uppercase',
+              maxWidth: '65%',
+            }}
+          >
+            <span className="block text-left">
+              {desktopTextConfig.heading.line1}
+            </span>
+            <span className="block text-left">
+              {desktopTextConfig.heading.line2}
+            </span>
+            <span className="block text-right">
+              {desktopTextConfig.heading.line3}
+            </span>
           </h3>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'clamp(1.1rem, 3vw, 2.25rem)' }}>
-            <div style={{ width: '100%', maxWidth: '505px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ width: '100%', maxWidth: '33%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <p
                 style={{
                   margin: 0,
@@ -57,7 +117,7 @@ export default function SilhouetteStatementSection({
                   color: '#F8F4ED',
                 }}
               >
-                The gear you rock is only as solid as the hustle behind it-and whose hands put in the work.
+                {mobileTextConfig.body[0]}
               </p>
 
               <p
@@ -71,7 +131,7 @@ export default function SilhouetteStatementSection({
                   color: '#F8F4ED',
                 }}
               >
-                To hit our vision without burning the bridge, ishtile only partners with the real ones. We link with makers who match our energy, hold the line on quality, and respect the earth as heavy as we do.
+                {desktopTextConfig.body[1]}
               </p>
 
               <p
@@ -85,7 +145,7 @@ export default function SilhouetteStatementSection({
                   color: '#F8F4ED',
                 }}
               >
-                Top-tier fits aren't just luck. They're born from solid people putting in the hours and doing it right.
+                {desktopTextConfig.body[2]}
               </p>
             </div>
           </div>
