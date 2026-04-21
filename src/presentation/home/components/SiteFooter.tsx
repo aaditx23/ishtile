@@ -3,15 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { FiFacebook, FiInstagram, FiMessageCircle, FiPhone } from 'react-icons/fi';
-import { Antic_Didone } from 'next/font/google';
 import MobileFooter from './MobileFooter';
-
-// 2. Initialize it (do this outside of your component function)
-const customFont = Antic_Didone({ 
-  subsets: ['latin'],
-  weight: '400', // Matching the weight from your inline styles
-  display: 'swap',
-});
 
 export default function SiteFooter() {
   const desktopFrameRef = useRef<HTMLDivElement>(null);
@@ -35,6 +27,7 @@ export default function SiteFooter() {
 
   const obscuraUrl = 'https://www.facebook.com/obscuraitbd';
   const obscuraLogoSrc = '/images/obscura.png';
+  const ishtileWordmarkSrc = '/images/ishtile.png';
 
   const facebookUrl = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL || 'https://facebook.com';
   const instagramUrl = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL || 'https://instagram.com';
@@ -84,30 +77,26 @@ export default function SiteFooter() {
               background: 'radial-gradient(60% 60% at 35% 40%, rgba(214,206,191,0.75) 0%, rgba(214,206,191,0.15) 55%, rgba(214,206,191,0) 100%)',
             }}
           />
-            <p
+            <div
               aria-hidden="true"
               style={{
                 position: 'absolute',
                 left: 0,
                 bottom: '18px',
-                width: '65%',
-                display: 'flex',
-                justifyContent: 'space-between',
+                width: '50%',
                 margin: 0,
-                fontFamily: customFont.style.fontFamily,
-                fontWeight: 400,
-                fontSize: '250px',
-                lineHeight: 0.85,
-                color: '#010000',
                 opacity: 0.98,
                 userSelect: 'none',
                 pointerEvents: 'none',
               }}
             >
-              {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
-                <span key={`${ch}-${idx}`}>{ch}</span>
-              ))}
-            </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={ishtileWordmarkSrc}
+                alt=""
+                style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+              />
+            </div>
 
           <div style={{ position: 'absolute', width: '65%', height: '100%', margin: '0 auto' }}>
             <p
@@ -229,7 +218,6 @@ export default function SiteFooter() {
         whatsappUrl={whatsappUrl}
         obscuraUrl={obscuraUrl}
         obscuraLogoSrc={obscuraLogoSrc}
-        fontFamily={customFont.style.fontFamily}
         links={links}
       />
     </footer>

@@ -15,7 +15,6 @@ interface MobileFooterProps {
   whatsappUrl: string;
   obscuraUrl: string;
   obscuraLogoSrc: string;
-  fontFamily: string;
   links: FooterLink[];
 }
 
@@ -26,7 +25,6 @@ export default function MobileFooter({
   whatsappUrl,
   obscuraUrl,
   obscuraLogoSrc,
-  fontFamily,
   links,
 }: MobileFooterProps) {
   return (
@@ -126,36 +124,28 @@ export default function MobileFooter({
             lineHeight: 1.15,
             textAlign: 'right',
             color: '#010000',
-            marginBottom: '1rem',
+
           }}
         >
           <span style={{ display: 'block' }}>Purveyors of fine labels.</span>
           <span style={{ display: 'block' }}>The absolute</span>
         </p>
 
-        <p
+        <div
           aria-hidden="true"
           style={{
-            width: '80%',
-            // marginLeft: '-1.25rem',
-            // marginRight: '-1.25rem',
-            // marginTop: '-0.25rem',
-            // marginBottom: '0.9rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily,
-            fontWeight: 400,
-            fontSize: 'clamp(3.0rem, 16vw, 5.0rem)',
-            lineHeight: 0.52,
-            color: '#010000',
+            width: '75%',
             userSelect: 'none',
             pointerEvents: 'none',
           }}
         >
-          {['I', 's', 'h', 't', 'i', 'L', 'e'].map((ch, idx) => (
-            <span key={`mobile-${ch}-${idx}`}>{ch}</span>
-          ))}
-        </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/ishtile.png"
+            alt=""
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        </div>
         <div style={{ height: '16px' }} />
       </div>
     </div>
