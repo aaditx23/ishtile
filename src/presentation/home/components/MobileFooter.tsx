@@ -116,34 +116,19 @@ export default function MobileFooter({
           <span>Developed by Obscura IT</span>
         </a>
         <div style={{ height: '48px' }} />
-        <p
-          style={{
-            fontFamily: '"Doppio One", "Anton", sans-serif',
-            fontWeight: 400,
-            fontSize: 'clamp(1.2rem, 6vw, 2.0rem)',
-            lineHeight: 1.15,
-            textAlign: 'right',
-            color: '#010000',
-
-          }}
-        >
-          <span style={{ display: 'block' }}>Purveyors of fine labels.</span>
-          <span style={{ display: 'block' }}>The absolute</span>
-        </p>
-
         <div
           aria-hidden="true"
           style={{
-            width: '75%',
+            width: '100%',
             userSelect: 'none',
             pointerEvents: 'none',
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/ishtile.png"
+            src="/images/footer_logo_mobile.png"
             alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
           />
         </div>
         <div style={{ height: '16px' }} />
